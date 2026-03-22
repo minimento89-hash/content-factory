@@ -525,6 +525,30 @@ html, body {
 .modal { background:var(--bg2);border-radius:24px;padding:32px;max-width:92vw;box-shadow:var(--shadow-lg);animation:modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
 @keyframes modalIn { from{opacity:0;transform:scale(0.95) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
 
+
+
+/* ACCORDION */
+.accordion { background:var(--bg2); border-radius:var(--radius); border:1px solid var(--border); box-shadow:var(--shadow); overflow:hidden; margin-bottom:12px; }
+.accordion-hdr { display:flex; align-items:center; justify-content:space-between; padding:15px 20px; cursor:pointer; user-select:none; transition:background 0.2s; }
+.accordion-hdr:hover { background:var(--bg3); }
+.accordion-title { font-size:0.86rem; font-weight:700; display:flex; align-items:center; gap:8px; }
+.accordion-arrow { font-size:0.8rem; color:var(--dim); transition:transform 0.3s; }
+.accordion-body { display:none; padding:0 20px 18px; border-top:1px solid var(--border); }
+.accordion-body.open { display:block; }
+.accordion-arrow.open { transform:rotate(180deg); }
+
+/* THEME GRID extended */
+.theme-grid-full { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding-top:16px; }
+.theme-section-label { font-family:'DM Mono',monospace; font-size:0.56rem; color:var(--dim); letter-spacing:0.08em; text-transform:uppercase; margin:14px 0 8px; }
+
+/* LAYOUT OPTIONS */
+.layout-opt { cursor:pointer; border-radius:10px; border:2px solid var(--border); background:var(--bg2); overflow:hidden; transition:all 0.2s; }
+.layout-opt:hover { border-color:var(--border2); transform:translateY(-2px); box-shadow:var(--shadow); }
+.layout-opt.sel { border-color:var(--dark); box-shadow:var(--shadow); }
+.lo-preview { padding:8px; background:var(--bg3); border-bottom:1px solid var(--border); height:60px; display:flex; flex-direction:column; justify-content:space-between; }
+.lo-name { font-size:0.72rem; font-weight:700; padding:6px 8px 2px; }
+.lo-desc { font-family:'DM Mono',monospace; font-size:0.5rem; color:var(--dim); padding:0 8px 7px; line-height:1.4; }
+
 /* SCROLLBAR */
 ::-webkit-scrollbar { width:4px; }
 ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:4px; }
@@ -876,10 +900,79 @@ html, body {
           <div class="pipe-step"><div class="ps-dot wait"></div><div class="ps-info"><div class="ps-name">Pubblicazione</div><div class="ps-detail">Amazon · YouTube · TikTok</div></div><div class="ps-badge psb-wait">attesa</div></div>
         </div>
       </div>
-      <div class="grid-3">
-        <div class="card"><div class="card-hdr"><div class="card-title">🔥 Hype Universe</div><span class="card-tag live">live</span></div><div class="card-body"><div class="hype-big">94</div><div style="font-size:0.76rem;color:var(--dim);margin-bottom:12px">Call Me River · In crescita</div><div class="hype-bar-track"><div class="hype-bar-fill" style="width:94%"></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="hype-chip">📚 ⚡72</span><span class="hype-chip">🎬 🔥94</span><span class="hype-chip">📱 🔥88</span></div></div></div>
-        <div class="card"><div class="card-hdr"><div class="card-title">🌡️ Sentiment</div></div><div class="card-body"><div class="emotion-item"><div class="emotion-label">❤️ Amore</div><div class="emotion-track"><div class="emotion-fill" style="width:67%;background:#ff4d6d"></div></div><div class="emotion-pct">67%</div></div><div class="emotion-item"><div class="emotion-label">⏳ Attesa</div><div class="emotion-track"><div class="emotion-fill" style="width:58%;background:var(--purple)"></div></div><div class="emotion-pct">58%</div></div><div class="emotion-item"><div class="emotion-label">😢 Malinconia</div><div class="emotion-track"><div class="emotion-fill" style="width:41%;background:var(--blue)"></div></div><div class="emotion-pct">41%</div></div><div class="emotion-item"><div class="emotion-label">🌱 Speranza</div><div class="emotion-track"><div class="emotion-fill" style="width:34%;background:var(--green)"></div></div><div class="emotion-pct">34%</div></div></div></div>
-        <div class="card"><div class="card-hdr"><div class="card-title">💸 Prezzi</div><span class="card-tag" style="background:rgba(232,197,71,0.15);color:var(--accent2)">💡</span></div><div class="card-body"><div class="price-big">€3.99</div><div class="price-suggestion-box"><div class="psb-label">OPPORTUNITÀ</div><div class="psb-text">98K views oggi. <strong>€0.99 per 48h</strong> → +34 vendite stimate.</div></div><div class="price-actions"><button class="price-btn pb-yes" onclick="applyPrice()">✓ Applica</button><button class="price-btn pb-no">✕ Ignora</button></div></div></div>
+      <div class="stats-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+
+        <!-- HYPE — compact stat-card style -->
+        <div class="stat-card" style="position:relative;overflow:hidden;padding-bottom:0;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:6px;">
+            <div>
+              <div class="stat-label">🔥 Hype Universe <span class="card-tag live" style="vertical-align:middle;margin-left:4px">live</span></div>
+              <div class="stat-value">94</div>
+              <div class="stat-change">Call Me River · In crescita</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">
+              <span style="font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 6px;background:rgba(34,197,94,0.08);color:var(--green);border-radius:20px;">📚 ⚡72</span>
+              <span style="font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 6px;background:rgba(34,197,94,0.08);color:var(--green);border-radius:20px;">📱 🔥88</span>
+            </div>
+          </div>
+          <div class="hype-bar-track" style="margin:0 0 8px;"><div class="hype-bar-fill" style="width:94%"></div></div>
+          <svg width="100%" height="44" viewBox="0 0 200 44" preserveAspectRatio="none" style="display:block;margin:0 -18px;width:calc(100% + 36px);">
+            <defs><linearGradient id="gh" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(232,197,71,0.25)"/><stop offset="100%" stop-color="rgba(232,197,71,0)"/></linearGradient></defs>
+            <path d="M0,36 C20,33 35,30 55,26 C75,22 90,24 110,18 C130,12 150,10 170,6 C185,3 195,2 200,1 L200,44 L0,44 Z" fill="url(#gh)"/>
+            <path d="M0,36 C20,33 35,30 55,26 C75,22 90,24 110,18 C130,12 150,10 170,6 C185,3 195,2 200,1" fill="none" stroke="rgba(232,197,71,0.7)" stroke-width="1.5"/>
+            <circle cx="200" cy="1" r="2.5" fill="#e8c547"/>
+          </svg>
+        </div>
+
+        <!-- SENTIMENT — compact -->
+        <div class="stat-card" style="padding:16px 18px;">
+          <div class="stat-label" style="margin-bottom:10px;">🌡️ Sentiment</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="font-size:0.7rem;width:80px;color:var(--mid);">❤️ Amore</div>
+              <div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;"><div style="width:67%;height:100%;background:#ff4d6d;border-radius:3px;"></div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);width:28px;text-align:right;">67%</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="font-size:0.7rem;width:80px;color:var(--mid);">⏳ Attesa</div>
+              <div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;"><div style="width:58%;height:100%;background:var(--purple);border-radius:3px;"></div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);width:28px;text-align:right;">58%</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="font-size:0.7rem;width:80px;color:var(--mid);">😢 Malinconia</div>
+              <div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;"><div style="width:41%;height:100%;background:var(--blue);border-radius:3px;"></div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);width:28px;text-align:right;">41%</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="font-size:0.7rem;width:80px;color:var(--mid);">🌱 Speranza</div>
+              <div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;"><div style="width:34%;height:100%;background:var(--green);border-radius:3px;"></div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);width:28px;text-align:right;">34%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PREZZI — compact -->
+        <div class="stat-card" style="position:relative;overflow:hidden;padding-bottom:0;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:6px;">
+            <div>
+              <div class="stat-label">💸 Prezzi</div>
+              <div class="stat-value">€3.99</div>
+              <div class="stat-change" style="color:var(--accent2);">💡 Opportunità</div>
+            </div>
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(232,197,71,0.12);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">💰</div>
+          </div>
+          <div style="background:rgba(232,197,71,0.08);border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:0.7rem;color:var(--mid);line-height:1.5;">98K views oggi. <strong style="color:var(--text)">€0.99 per 48h</strong> → +34 vendite stimate.</div>
+          <div style="display:flex;gap:6px;margin-bottom:10px;">
+            <button class="price-btn pb-yes" onclick="applyPrice()" style="flex:2;">✓ Applica</button>
+            <button class="price-btn pb-no" style="flex:1;">✕</button>
+          </div>
+          <svg width="100%" height="30" viewBox="0 0 200 30" preserveAspectRatio="none" style="display:block;margin:0 -18px;width:calc(100% + 36px);">
+            <defs><linearGradient id="gp" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(232,197,71,0.2)"/><stop offset="100%" stop-color="rgba(232,197,71,0)"/></linearGradient></defs>
+            <path d="M0,25 C30,22 60,20 90,15 C120,10 150,8 200,3 L200,30 L0,30 Z" fill="url(#gp)"/>
+            <path d="M0,25 C30,22 60,20 90,15 C120,10 150,8 200,3" fill="none" stroke="rgba(212,176,48,0.6)" stroke-width="1.5"/>
+          </svg>
+        </div>
+
       </div>
       <div class="card"><div class="card-hdr"><div class="card-title">📋 Log di sistema</div><span class="card-tag live">live</span></div><div class="log-item"><div class="log-dot-outer success"><div class="log-inner"></div></div><div class="log-time">10:42</div><div class="log-text"><strong>Capo Red. → Musicale</strong> — BPM ridotto a 72 per Cap.7</div></div><div class="log-item"><div class="log-dot-outer success"><div class="log-inner"></div></div><div class="log-time">10:30</div><div class="log-text"><strong>Musicale</strong> — "Pulse Night" generata · 3:42</div></div><div class="log-item"><div class="log-dot-outer warn"><div class="log-inner"></div></div><div class="log-time">10:00</div><div class="log-text"><strong>Sistema</strong> — Runway ML lento · alternativa: Kling AI</div></div></div>
       <button class="run-btn" onclick="runAll(this)">👑 Capo Redattore · Avvia pipeline completa</button>
@@ -1191,115 +1284,183 @@ html, body {
         <div class="page-sub">Personalizza l'aspetto e il comportamento dell'app · Le modifiche si applicano subito</div>
       </div>
 
-      <!-- THEME SWITCHER -->
-      <div class="card">
-        <div class="card-hdr">
-          <div class="card-title">🎨 Temi & Colori</div>
-          <span class="card-tag" id="currentThemeBadge">Chiaro attivo</span>
+      <!-- ACCORDION: TEMI -->
+      <div class="accordion" id="acc-temi">
+        <div class="accordion-hdr" onclick="toggleAccordion('acc-temi')">
+          <div class="accordion-title">🎨 Temi & Colori <span class="card-tag" id="currentThemeBadge" style="margin-left:8px;">Chiaro attivo</span></div>
+          <div class="accordion-arrow open" id="arr-acc-temi">▼</div>
         </div>
-        <div class="card-body">
-          <div class="theme-grid">
+        <div class="accordion-body open" id="body-acc-temi">
 
-            <!-- Light -->
+          <!-- ORIGINALI -->
+          <div class="theme-section-label">Temi originali</div>
+          <div class="theme-grid">
             <div class="theme-card selected" id="theme-light" onclick="applyTheme('light', this, '🎨 Chiaro')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#f0ede8,#ffffff)">
-                <div class="theme-preview-bar" style="background:rgba(0,0,0,0.05)">
-                  <div class="theme-preview-dot" style="background:#1a1714"></div>
-                  <div class="theme-preview-dot" style="background:#e8c547"></div>
-                  <div class="theme-preview-dot" style="background:#22c55e"></div>
-                </div>
-              </div>
+              <div class="theme-preview" style="background:linear-gradient(135deg,#f0ede8,#ffffff)"><div class="theme-preview-bar" style="background:rgba(0,0,0,0.05)"><div class="theme-preview-dot" style="background:#1a1714"></div><div class="theme-preview-dot" style="background:#e8c547"></div><div class="theme-preview-dot" style="background:#22c55e"></div></div></div>
               <div class="theme-name" style="background:#fff;color:#111">☀️ Chiaro</div>
               <div class="theme-desc" style="background:#fff;color:#888">Sfondo crema, card bianche</div>
             </div>
-
-            <!-- Dark -->
             <div class="theme-card" id="theme-dark" onclick="applyTheme('dark', this, '🌙 Scuro')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#0d1117,#161b22)">
-                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.05)">
-                  <div class="theme-preview-dot" style="background:#e6edf3"></div>
-                  <div class="theme-preview-dot" style="background:#f0b429"></div>
-                  <div class="theme-preview-dot" style="background:#22c55e"></div>
-                </div>
-              </div>
+              <div class="theme-preview" style="background:linear-gradient(135deg,#0d1117,#161b22)"><div class="theme-preview-bar" style="background:rgba(255,255,255,0.05)"><div class="theme-preview-dot" style="background:#58a6ff"></div><div class="theme-preview-dot" style="background:#3fb950"></div><div class="theme-preview-dot" style="background:#f78166"></div></div></div>
               <div class="theme-name">🌙 Scuro</div>
               <div class="theme-desc">GitHub-style dark</div>
             </div>
-
-            <!-- Night -->
             <div class="theme-card" id="theme-night" onclick="applyTheme('night', this, '🌌 Notte')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#080b10,#0d1117)">
-                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.04)">
-                  <div class="theme-preview-dot" style="background:#e8edf5"></div>
-                  <div class="theme-preview-dot" style="background:#8b5cf6"></div>
-                  <div class="theme-preview-dot" style="background:#22c55e"></div>
-                </div>
-              </div>
+              <div class="theme-preview" style="background:linear-gradient(135deg,#000000,#0a0010)"><div class="theme-preview-bar" style="background:rgba(255,255,255,0.03)"><div class="theme-preview-dot" style="background:#7c3aed"></div><div class="theme-preview-dot" style="background:#a78bfa"></div><div class="theme-preview-dot" style="background:#22c55e"></div></div></div>
               <div class="theme-name">🌌 Notte profonda</div>
               <div class="theme-desc">Nero puro + viola</div>
             </div>
-
-            <!-- Purple -->
-            <div class="theme-card" id="theme-purple" onclick="applyTheme('purple', this, '💜 Gradiente Viola')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#1e1130,#3a2260)">
-                <div class="theme-preview-bar" style="background:rgba(168,85,247,0.1)">
-                  <div class="theme-preview-dot" style="background:#f0e8ff"></div>
-                  <div class="theme-preview-dot" style="background:#e879f9"></div>
-                  <div class="theme-preview-dot" style="background:#22c55e"></div>
-                </div>
-              </div>
+            <div class="theme-card" id="theme-purple" onclick="applyTheme('purple', this, '💜 Viola')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#1e1040,#2d1b69,#1a0533)"><div class="theme-preview-bar" style="background:rgba(255,255,255,0.04)"><div class="theme-preview-dot" style="background:#a78bfa"></div><div class="theme-preview-dot" style="background:#e8c547"></div><div class="theme-preview-dot" style="background:#34d399"></div></div></div>
               <div class="theme-name">💜 Gradiente Viola</div>
               <div class="theme-desc">Deep purple gradient</div>
             </div>
-
-            <!-- Ocean -->
             <div class="theme-card" id="theme-ocean" onclick="applyTheme('ocean', this, '🌊 Oceano')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#0a1628,#1a3060)">
-                <div class="theme-preview-bar" style="background:rgba(56,189,248,0.08)">
-                  <div class="theme-preview-dot" style="background:#e0f4ff"></div>
-                  <div class="theme-preview-dot" style="background:#38bdf8"></div>
-                  <div class="theme-preview-dot" style="background:#22c55e"></div>
-                </div>
-              </div>
+              <div class="theme-preview" style="background:linear-gradient(135deg,#0c1e3a,#0a2a4a,#061828)"><div class="theme-preview-bar" style="background:rgba(255,255,255,0.04)"><div class="theme-preview-dot" style="background:#38bdf8"></div><div class="theme-preview-dot" style="background:#0ea5e9"></div><div class="theme-preview-dot" style="background:#22c55e"></div></div></div>
               <div class="theme-name">🌊 Oceano</div>
               <div class="theme-desc">Deep blue · cyan</div>
             </div>
-
-            <!-- Rose -->
             <div class="theme-card" id="theme-rose" onclick="applyTheme('rose', this, '🌹 Rosa')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#fff1f3,#ffe4e8)">
-                <div class="theme-preview-bar" style="background:rgba(244,63,94,0.06)">
-                  <div class="theme-preview-dot" style="background:#1a0a0d"></div>
-                  <div class="theme-preview-dot" style="background:#f43f5e"></div>
-                  <div class="theme-preview-dot" style="background:#22c55e"></div>
-                </div>
-              </div>
-              <div class="theme-name" style="background:#fff5f6;color:#1a0a0d">🌹 Rosa</div>
-              <div class="theme-desc" style="background:#fff5f6;color:#c08090">Chiaro · rose gold</div>
+              <div class="theme-preview" style="background:linear-gradient(135deg,#fff1f3,#ffe4e8)"><div class="theme-preview-bar" style="background:rgba(0,0,0,0.04)"><div class="theme-preview-dot" style="background:#f43f5e"></div><div class="theme-preview-dot" style="background:#e8c547"></div><div class="theme-preview-dot" style="background:#22c55e"></div></div></div>
+              <div class="theme-name" style="background:#fff1f3;color:#111">🌹 Rosa</div>
+              <div class="theme-desc" style="background:#fff1f3;color:#888">Chiaro · rose gold</div>
             </div>
-
-            <!-- Call Me River -->
             <div class="theme-card" id="theme-river" onclick="applyTheme('river', this, '🌊 Call Me River')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#05080e,#141c2e)">
-                <div class="theme-preview-bar" style="background:rgba(123,79,255,0.1)">
-                  <div class="theme-preview-dot" style="background:#e8edf5"></div>
-                  <div class="theme-preview-dot" style="background:#7b4fff"></div>
-                  <div class="theme-preview-dot" style="background:#ff3d8b"></div>
-                </div>
-              </div>
+              <div class="theme-preview" style="background:linear-gradient(135deg,#050c18,#0a1428,#080c20)"><div class="theme-preview-bar" style="background:rgba(255,255,255,0.03)"><div class="theme-preview-dot" style="background:#6366f1"></div><div class="theme-preview-dot" style="background:#8b5cf6"></div><div class="theme-preview-dot" style="background:#ec4899"></div></div></div>
               <div class="theme-name">🌊 Call Me River</div>
               <div class="theme-desc">Tema del libro · Pulse night</div>
             </div>
-
-            <!-- Screenshot theme card -->
-            <div class="theme-card" id="theme-screenshot" onclick="document.getElementById('screenshotInput').click()" style="grid-column:span 2;">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#1a1714,#2a2520);display:flex;align-items:center;justify-content:center;gap:8px;">
+            <div class="theme-card" id="theme-screenshot" onclick="document.getElementById('screenshotInput').click()" style="grid-column:span 1;">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#1a1714,#2a2520);display:flex;align-items:center;justify-content:center;">
                 <div style="font-size:1.4rem">📸</div>
-                <div style="color:rgba(255,255,255,0.6);font-size:0.76rem;font-weight:600">Genera tema da screenshot</div>
               </div>
               <div class="theme-name">📸 Da screenshot</div>
-              <div class="theme-desc">Carica un'immagine → l'AI estrae i colori e crea un tema</div>
+              <div class="theme-desc">AI estrae i colori</div>
               <input type="file" id="screenshotInput" accept="image/*" style="display:none" onchange="generateThemeFromScreenshot(this)">
+            </div>
+          </div>
+
+          <!-- NUOVI TEMI ISPIRATI AI TUOI SCREENSHOT -->
+          <div class="theme-section-label">Temi ispirati · nuovi</div>
+          <div class="theme-grid" style="grid-template-columns:repeat(4,1fr);">
+
+            <!-- Mistico (Tarot/Pianeti) -->
+            <div class="theme-card" id="theme-mystic" onclick="applyTheme('mystic', this, '🔮 Mistico')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#0d0618,#1a0a2e,#0a0d1a)">
+                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.03)">
+                  <div class="theme-preview-dot" style="background:#c084fc"></div>
+                  <div class="theme-preview-dot" style="background:#d4a853"></div>
+                  <div class="theme-preview-dot" style="background:#e879f9"></div>
+                </div>
+                <div style="display:flex;gap:2px;margin-top:4px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:rgba(192,132,252,0.4);"></div>
+                  <div style="width:6px;height:6px;border-radius:50%;background:rgba(212,168,83,0.5);margin-top:1px;"></div>
+                  <div style="width:10px;height:10px;border-radius:50%;background:rgba(139,92,246,0.3);"></div>
+                </div>
+              </div>
+              <div class="theme-name">🔮 Mistico</div>
+              <div class="theme-desc">Viola profondo · oro · pianeti</div>
+            </div>
+
+            <!-- Video Editor (dark total) -->
+            <div class="theme-card" id="theme-studio" onclick="applyTheme('studio', this, '🎬 Studio')">
+              <div class="theme-preview" style="background:#000000;">
+                <div class="theme-preview-bar" style="background:#111111;">
+                  <div class="theme-preview-dot" style="background:#a855f7"></div>
+                  <div class="theme-preview-dot" style="background:#ec4899"></div>
+                  <div class="theme-preview-dot" style="background:#06b6d4"></div>
+                </div>
+                <div style="height:6px;background:linear-gradient(90deg,#a855f7,#ec4899);border-radius:2px;margin-top:4px;width:70%;"></div>
+              </div>
+              <div class="theme-name">🎬 Studio</div>
+              <div class="theme-desc">Nero totale · viola · pink</div>
+            </div>
+
+            <!-- Health/ECG -->
+            <div class="theme-card" id="theme-health" onclick="applyTheme('health', this, '❤️ Health')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#05051a,#0a0a2e,#050520)">
+                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.03)">
+                  <div class="theme-preview-dot" style="background:#3b82f6"></div>
+                  <div class="theme-preview-dot" style="background:#ec4899"></div>
+                  <div class="theme-preview-dot" style="background:#06b6d4"></div>
+                </div>
+                <svg viewBox="0 0 60 12" style="width:100%;margin-top:3px;">
+                  <path d="M0,6 L10,6 L14,2 L17,10 L20,6 L30,6 L34,2 L37,10 L40,6 L60,6" fill="none" stroke="#3b82f6" stroke-width="1.2"/>
+                </svg>
+              </div>
+              <div class="theme-name">❤️ Health</div>
+              <div class="theme-desc">Blu notte · ECG · medicale</div>
+            </div>
+
+            <!-- Luxury Cream -->
+            <div class="theme-card" id="theme-luxury" onclick="applyTheme('luxury', this, '✨ Luxury')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#f5e6c8,#faf0dc,#f0ddb0)">
+                <div class="theme-preview-bar" style="background:rgba(0,0,0,0.04)">
+                  <div class="theme-preview-dot" style="background:#1a1210"></div>
+                  <div class="theme-preview-dot" style="background:#b8960c"></div>
+                  <div class="theme-preview-dot" style="background:#8b6914"></div>
+                </div>
+              </div>
+              <div class="theme-name" style="background:#faf0dc;color:#1a1210;">✨ Luxury</div>
+              <div class="theme-desc" style="background:#faf0dc;color:#8b6914;">Crema dorato · serif</div>
+            </div>
+
+            <!-- Finance Dark Orange -->
+            <div class="theme-card" id="theme-finance" onclick="applyTheme('finance', this, '💳 Finance')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#0a0a0a,#1a1010)">
+                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.04)">
+                  <div class="theme-preview-dot" style="background:#f97316"></div>
+                  <div class="theme-preview-dot" style="background:#ea580c"></div>
+                  <div class="theme-preview-dot" style="background:#22c55e"></div>
+                </div>
+                <div style="height:5px;background:linear-gradient(90deg,#f97316,#ea580c);border-radius:2px;margin-top:4px;width:60%;"></div>
+              </div>
+              <div class="theme-name">💳 Finance</div>
+              <div class="theme-desc">Nero · arancione acceso</div>
+            </div>
+
+            <!-- Crypto Trading -->
+            <div class="theme-card" id="theme-crypto" onclick="applyTheme('crypto', this, '📈 Crypto')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#0f0a1e,#1a0f35,#0a0f1e)">
+                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.03)">
+                  <div class="theme-preview-dot" style="background:#00ff88"></div>
+                  <div class="theme-preview-dot" style="background:#d4a853"></div>
+                  <div class="theme-preview-dot" style="background:#f97316"></div>
+                </div>
+                <svg viewBox="0 0 60 12" style="width:100%;margin-top:3px;">
+                  <path d="M0,10 C10,9 15,7 20,8 C25,9 28,4 32,3 C36,2 40,5 45,4 C50,3 55,2 60,1" fill="none" stroke="#00ff88" stroke-width="1.2"/>
+                </svg>
+              </div>
+              <div class="theme-name">📈 Crypto</div>
+              <div class="theme-desc">Dark purple · verde neon</div>
+            </div>
+
+            <!-- Fintech Blue -->
+            <div class="theme-card" id="theme-fintech" onclick="applyTheme('fintech', this, '⚡ Fintech')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#050a14,#071020,#030810)">
+                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.03)">
+                  <div class="theme-preview-dot" style="background:#2563eb"></div>
+                  <div class="theme-preview-dot" style="background:#3b82f6"></div>
+                  <div class="theme-preview-dot" style="background:#60a5fa"></div>
+                </div>
+                <div style="height:5px;background:linear-gradient(90deg,#2563eb,#60a5fa);border-radius:20px;margin-top:4px;width:80%;"></div>
+              </div>
+              <div class="theme-name">⚡ Fintech</div>
+              <div class="theme-desc">Nero · blu elettrico</div>
+            </div>
+
+            <!-- Neon Matrix -->
+            <div class="theme-card" id="theme-matrix" onclick="applyTheme('matrix', this, '💻 Matrix')">
+              <div class="theme-preview" style="background:#000800">
+                <div class="theme-preview-bar" style="background:#001000">
+                  <div class="theme-preview-dot" style="background:#00ff41"></div>
+                  <div class="theme-preview-dot" style="background:#00cc33"></div>
+                  <div class="theme-preview-dot" style="background:#009922"></div>
+                </div>
+                <div style="font-family:monospace;font-size:5px;color:#00ff41;opacity:0.6;margin-top:3px;letter-spacing:1px;">01 10 11 00 10</div>
+              </div>
+              <div class="theme-name">💻 Matrix</div>
+              <div class="theme-desc">Verde neon · hacker vibe</div>
             </div>
 
           </div>
@@ -1316,106 +1477,86 @@ html, body {
         </div>
       </div>
 
-      <!-- FONT + SPACING -->
-      <div class="settings-grid">
-        <div class="card">
-          <div class="card-hdr"><div class="card-title">📏 Dimensione testo</div></div>
-          <div class="card-body">
-            <div class="font-control">
-              <div><div class="fc-label">Testo principale</div><div class="fc-desc">Dimensione base di tutti i testi</div></div>
-              <div class="fc-buttons">
-                <button class="fc-btn" onclick="changeFontSize(-1)">A−</button>
-                <div class="fc-val" id="fontSizeDisplay">14px</div>
-                <button class="fc-btn" onclick="changeFontSize(1)">A+</button>
-              </div>
-            </div>
-            <input type="range" class="fc-slider" min="11" max="20" value="14" id="fontSlider" oninput="setFontSize(this.value)" style="width:100%;margin-top:8px">
-            <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:4px"><span>Piccolo</span><span>Grande</span></div>
-          </div>
+      <!-- ACCORDION: FONT & SPAZIATURA -->
+      <div class="accordion" id="acc-font">
+        <div class="accordion-hdr" onclick="toggleAccordion('acc-font')">
+          <div class="accordion-title">📏 Font & Spaziatura</div>
+          <div class="accordion-arrow" id="arr-acc-font">▼</div>
         </div>
-
-        <div class="card">
-          <div class="card-hdr"><div class="card-title">📐 Spaziatura layout</div></div>
-          <div class="card-body">
-            <div style="font-size:0.78rem;color:var(--dim);margin-bottom:12px">Quanto spazio tra le card e gli elementi</div>
-            <div class="spacing-preview">
-              <div class="sp-card sel" onclick="setSpacing('compact',this)" id="sp-compact">
-                <div class="sp-preview" style="width:40px;height:24px;"></div>
-                <div class="sp-name">Compatto</div>
-                <div class="sp-desc">più info, meno spazio</div>
+        <div class="accordion-body" id="body-acc-font">
+          <div class="settings-grid" style="margin-top:16px;">
+            <div>
+              <div style="font-size:0.78rem;font-weight:600;margin-bottom:12px;">Dimensione testo</div>
+              <div class="font-control">
+                <div><div class="fc-label">Testo principale</div><div class="fc-desc">Dimensione base di tutti i testi</div></div>
+                <div class="fc-buttons">
+                  <button class="fc-btn" onclick="changeFontSize(-1)">A−</button>
+                  <div class="fc-val" id="fontSizeDisplay">14px</div>
+                  <button class="fc-btn" onclick="changeFontSize(1)">A+</button>
+                </div>
               </div>
-              <div class="sp-card" onclick="setSpacing('normal',this)" id="sp-normal">
-                <div class="sp-preview" style="width:40px;height:30px;"></div>
-                <div class="sp-name">Normale</div>
-                <div class="sp-desc">bilanciato</div>
-              </div>
-              <div class="sp-card" onclick="setSpacing('relaxed',this)" id="sp-relaxed">
-                <div class="sp-preview" style="width:40px;height:38px;"></div>
-                <div class="sp-name">Ampio</div>
-                <div class="sp-desc">più respiro</div>
+              <input type="range" class="fc-slider" min="11" max="20" value="14" id="fontSlider" oninput="setFontSize(this.value)" style="width:100%;margin-top:8px">
+              <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:4px"><span>Piccolo</span><span>Grande</span></div>
+            </div>
+            <div>
+              <div style="font-size:0.78rem;font-weight:600;margin-bottom:12px;">Spaziatura layout</div>
+              <div class="spacing-preview">
+                <div class="sp-card sel" onclick="setSpacing('compact',this)" id="sp-compact">
+                  <div class="sp-preview" style="width:40px;height:24px;"></div>
+                  <div class="sp-name">Compatto</div>
+                  <div class="sp-desc">più info, meno spazio</div>
+                </div>
+                <div class="sp-card" onclick="setSpacing('normal',this)" id="sp-normal">
+                  <div class="sp-preview" style="width:40px;height:30px;"></div>
+                  <div class="sp-name">Normale</div>
+                  <div class="sp-desc">bilanciato</div>
+                </div>
+                <div class="sp-card" onclick="setSpacing('wide',this)" id="sp-wide">
+                  <div class="sp-preview" style="width:40px;height:38px;"></div>
+                  <div class="sp-name">Ampio</div>
+                  <div class="sp-desc">più respiro</div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- AGENTE GRAFICO + FIXER -->
-      <div class="settings-grid">
-
-        <!-- Agente Grafico -->
-        <div class="card">
-          <div class="card-hdr"><div class="card-title">🎨 Agente Grafico AI</div><span class="card-tag live">attivo</span></div>
-          <div class="card-body">
-            <div style="font-size:0.78rem;color:var(--dim);margin-bottom:14px;line-height:1.6">Genera nuovi temi basandosi sul mood del libro corrente o su una tua descrizione.</div>
-            <textarea class="drawer-textarea" id="themePrompt" rows="2" placeholder="Es: 'tema cyberpunk neon verde', 'colori del tramonto', 'freddo e minimalista'..." style="width:100%;margin-bottom:10px"></textarea>
-            <div style="display:flex;gap:8px">
-              <button class="drawer-btn db-dark" style="flex:2" onclick="generateThemeFromPrompt()">🎨 Genera tema AI</button>
-              <button class="drawer-btn db-light" style="flex:1" onclick="generateThemeFromBook()">📖 Da CMR</button>
-            </div>
-            <div id="promptThemeResult" style="display:none;margin-top:12px;background:var(--bg3);border-radius:var(--radius-sm);padding:12px;border:1px solid var(--border)">
-              <div style="font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--green);margin-bottom:8px">✓ TEMA GENERATO</div>
-              <div class="gtp-colors" id="promptColors"></div>
-              <button class="drawer-btn db-accent" style="margin-top:10px;width:100%" onclick="applyPromptTheme()">✓ Applica</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Agente Fixer -->
-        <div class="card">
-          <div class="card-hdr"><div class="card-title">🔧 Agente Fixer</div><span class="card-tag" style="background:rgba(249,115,22,0.1);color:var(--orange)">2 problemi</span></div>
-          <div class="card-body">
-            <div style="font-size:0.78rem;color:var(--dim);margin-bottom:12px">Analizza l'interfaccia e sistema automaticamente problemi di layout, testo e proporzioni.</div>
-            <div class="fixer-item">
-              <div class="fixer-ico" style="background:rgba(249,115,22,0.1)">📐</div>
-              <div class="fixer-info">
-                <div class="fixer-title">Sidebar troppo stretta su schermi &lt; 1280px</div>
-                <div class="fixer-desc">Su alcuni laptop la sidebar comprime il contenuto</div>
-              </div>
-              <button class="fixer-action fix" onclick="fixItem(this,'sidebar')">✓ Fixa</button>
-            </div>
-            <div class="fixer-item">
-              <div class="fixer-ico" style="background:rgba(249,115,22,0.1)">🔤</div>
-              <div class="fixer-info">
-                <div class="fixer-title">Testo DM Mono troppo piccolo su retina</div>
-                <div class="fixer-desc">0.5rem è illeggibile su display ad alta densità</div>
-              </div>
-              <button class="fixer-action fix" onclick="fixItem(this,'font')">✓ Fixa</button>
-            </div>
-            <div class="fixer-item">
-              <div class="fixer-ico" style="background:rgba(34,197,94,0.1)">✓</div>
-              <div class="fixer-info">
-                <div class="fixer-title">Layout griglia dashboard</div>
-                <div class="fixer-desc">Tutto ok · proporzioni corrette</div>
-              </div>
-              <button class="fixer-action" style="color:var(--green);background:rgba(34,197,94,0.08)" disabled>ok</button>
-            </div>
-            <button class="drawer-btn db-light" style="width:100%;margin-top:10px" onclick="runFixer()">🔍 Scansiona di nuovo</button>
           </div>
         </div>
       </div>
 
-      <!-- TOGGLES -->
-      <div class="card">
+      <!-- ACCORDION: LAYOUT -->
+      <div class="accordion" id="acc-layout">
+        <div class="accordion-hdr" onclick="toggleAccordion('acc-layout')">
+          <div class="accordion-title">🖥️ Layout Dashboard</div>
+          <div class="accordion-arrow" id="arr-acc-layout">▼</div>
+        </div>
+        <div class="accordion-body" id="body-acc-layout">
+          <div style="font-size:0.78rem;color:var(--dim);margin:14px 0 14px;">Scegli come vuoi che appaia la tua dashboard principale</div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;" id="layoutGrid">
+            <div class="layout-opt sel" id="lo-1" onclick="selectLayout(1,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="display:flex;gap:3px;margin-bottom:4px;"><div style="width:30%;height:28px;background:var(--bg4);border-radius:2px;"></div><div style="flex:1;height:28px;background:var(--bg4);border-radius:2px;"></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;"><div style="height:12px;background:var(--dark);border-radius:2px;opacity:0.7;"></div><div style="height:12px;background:var(--accent);border-radius:2px;opacity:0.7;"></div><div style="height:12px;background:var(--bg4);border-radius:2px;"></div></div></div><div class="lo-name">Classic</div><div class="lo-desc">Sidebar + cards in alto</div></div>
+            <div class="layout-opt" id="lo-2" onclick="selectLayout(2,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:2px;margin-bottom:4px;"><div style="height:16px;background:var(--dark);border-radius:2px;opacity:0.7;"></div><div style="height:16px;background:var(--accent);border-radius:2px;opacity:0.7;"></div><div style="height:16px;background:var(--bg4);border-radius:2px;"></div><div style="height:16px;background:var(--bg4);border-radius:2px;"></div></div><div style="height:18px;background:var(--bg4);border-radius:2px;"></div></div><div class="lo-name">Wide</div><div class="lo-desc">Niente sidebar, più spazio</div></div>
+            <div class="layout-opt" id="lo-3" onclick="selectLayout(3,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="height:32px;background:var(--dark);border-radius:2px;margin-bottom:4px;opacity:0.8;"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;"><div style="height:10px;background:var(--bg4);border-radius:2px;"></div><div style="height:10px;background:var(--bg4);border-radius:2px;"></div></div></div><div class="lo-name">Focus</div><div class="lo-desc">Director in primo piano</div></div>
+            <div class="layout-opt" id="lo-4" onclick="selectLayout(4,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:2px;"><div style="height:16px;background:var(--bg4);border-radius:2px;"></div><div style="height:16px;background:var(--dark);border-radius:2px;opacity:0.7;"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;"><div style="height:16px;background:var(--accent);border-radius:2px;opacity:0.6;"></div><div style="height:16px;background:var(--bg4);border-radius:2px;"></div></div></div><div class="lo-name">Grid 2×2</div><div class="lo-desc">Card tutte uguali</div></div>
+            <div class="layout-opt" id="lo-5" onclick="selectLayout(5,this)"><div class="lo-preview"><div style="height:6px;background:var(--dark);border-radius:2px;margin-bottom:3px;"></div><div style="display:flex;gap:2px;margin-bottom:2px;"><div style="height:8px;width:30%;background:var(--dark);border-radius:1px;opacity:0.8;"></div><div style="height:8px;width:28%;background:var(--accent);border-radius:1px;opacity:0.7;"></div><div style="height:8px;width:28%;background:var(--bg4);border-radius:1px;"></div></div><div style="height:20px;background:var(--bg4);border-radius:2px;margin-bottom:2px;"></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;"><div style="height:8px;background:var(--bg3);border-radius:1px;"></div><div style="height:8px;background:var(--bg3);border-radius:1px;"></div><div style="height:8px;background:var(--bg3);border-radius:1px;"></div></div></div><div class="lo-name">Compact</div><div class="lo-desc">Massima densità info</div></div>
+            <div class="layout-opt" id="lo-6" onclick="selectLayout(6,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="display:flex;gap:3px;"><div style="flex:2;height:34px;background:var(--dark);border-radius:2px;opacity:0.8;"></div><div style="flex:1;display:flex;flex-direction:column;gap:2px;"><div style="height:16px;background:var(--bg4);border-radius:2px;"></div><div style="height:16px;background:var(--accent);border-radius:2px;opacity:0.6;"></div></div></div></div><div class="lo-name">Magazine</div><div class="lo-desc">Hero + colonna laterale</div></div>
+            <div class="layout-opt" id="lo-7" onclick="selectLayout(7,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:4px;"><div style="height:20px;background:var(--dark);border-radius:2px;opacity:0.8;"></div><div style="height:20px;background:var(--accent);border-radius:2px;opacity:0.7;"></div><div style="height:20px;background:var(--bg4);border-radius:2px;"></div><div style="height:20px;background:var(--bg4);border-radius:2px;"></div></div><div style="height:12px;background:var(--bg4);border-radius:2px;"></div></div><div class="lo-name">Stats First</div><div class="lo-desc">4 KPI grandi in cima</div></div>
+            <div class="layout-opt" id="lo-8" onclick="selectLayout(8,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="display:flex;gap:3px;"><div style="flex:1;display:flex;flex-direction:column;gap:2px;"><div style="height:8px;background:var(--bg4);border-radius:2px;"></div><div style="height:8px;background:var(--bg4);border-radius:2px;"></div><div style="height:8px;background:var(--bg4);border-radius:2px;"></div><div style="height:8px;background:var(--bg4);border-radius:2px;"></div></div><div style="flex:2;height:36px;background:var(--bg4);border-radius:2px;"></div></div></div><div class="lo-name">Pipeline</div><div class="lo-desc">Workflow e log al centro</div></div>
+            <div class="layout-opt" id="lo-9" onclick="selectLayout(9,this)"><div class="lo-preview" style="background:#1a1714;"><div style="height:8px;background:#2a2520;border-radius:2px;margin-bottom:4px;"></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-bottom:4px;"><div style="height:14px;background:rgba(232,197,71,0.4);border-radius:2px;"></div><div style="height:14px;background:rgba(255,255,255,0.1);border-radius:2px;"></div><div style="height:14px;background:rgba(34,197,94,0.3);border-radius:2px;"></div></div><div style="height:12px;background:rgba(255,255,255,0.05);border-radius:2px;"></div></div><div class="lo-name">Dark Pro</div><div class="lo-desc">Tutto scuro, accenti gold</div></div>
+            <div class="layout-opt" id="lo-10" onclick="selectLayout(10,this)"><div class="lo-preview"><div style="height:4px;background:var(--dark);border-radius:2px;margin-bottom:6px;width:40%;"></div><div style="height:22px;background:var(--bg4);border-radius:2px;margin-bottom:4px;width:80%;"></div><div style="height:8px;background:var(--bg3);border-radius:2px;width:60%;margin-bottom:2px;"></div><div style="height:8px;background:var(--bg3);border-radius:2px;width:70%;"></div></div><div class="lo-name">Minimal</div><div class="lo-desc">Solo l'essenziale</div></div>
+          </div>
+          <div style="margin-top:14px;padding:12px;background:var(--bg3);border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);">
+            Layout selezionato: <span id="currentLayoutName" style="color:var(--text);font-weight:600;">Classic attivo</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCORDION: OPZIONI -->
+      <div class="accordion" id="acc-opts">
+        <div class="accordion-hdr" onclick="toggleAccordion('acc-opts')">
+          <div class="accordion-title">🔧 Opzioni & Comportamento</div>
+          <div class="accordion-arrow" id="arr-acc-opts">▼</div>
+        </div>
+        <div class="accordion-body" id="body-acc-opts">
+
+          <div class="card">
         <div class="card-hdr"><div class="card-title">⚙️ Preferenze interfaccia</div></div>
         <div class="card-body">
           <div class="toggle-row"><div><div class="toggle-label">Animazioni</div><div class="toggle-desc">Transizioni fluide tra pagine e card</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
@@ -1426,7 +1567,191 @@ html, body {
         </div>
       </div>
 
-      <!-- RESET -->
+
+      <!-- LAYOUT SECTION -->
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">🖥️ Layout Dashboard</div>
+          <span class="card-tag">10 stili</span>
+        </div>
+        <div class="card-body">
+          <div style="font-size:0.78rem;color:var(--dim);margin-bottom:14px;">Scegli come vuoi che appaia la tua dashboard principale</div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;" id="layoutGrid">
+
+            <!-- Layout 1: Classic (attuale) -->
+            <div class="layout-opt sel" id="lo-1" onclick="selectLayout(1,this)">
+              <div class="lo-preview">
+                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
+                <div style="display:flex;gap:3px;margin-bottom:4px;">
+                  <div style="width:30%;height:28px;background:var(--bg4);border-radius:2px;"></div>
+                  <div style="flex:1;height:28px;background:var(--bg4);border-radius:2px;"></div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;">
+                  <div style="height:12px;background:var(--dark);border-radius:2px;opacity:0.7;"></div>
+                  <div style="height:12px;background:var(--accent);border-radius:2px;opacity:0.7;"></div>
+                  <div style="height:12px;background:var(--bg4);border-radius:2px;"></div>
+                </div>
+              </div>
+              <div class="lo-name">Classic</div>
+              <div class="lo-desc">Sidebar + cards in alto</div>
+            </div>
+
+            <!-- Layout 2: Wide — no sidebar, tutto in larghezza -->
+            <div class="layout-opt" id="lo-2" onclick="selectLayout(2,this)">
+              <div class="lo-preview">
+                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:2px;margin-bottom:4px;">
+                  <div style="height:16px;background:var(--dark);border-radius:2px;opacity:0.7;"></div>
+                  <div style="height:16px;background:var(--accent);border-radius:2px;opacity:0.7;"></div>
+                  <div style="height:16px;background:var(--bg4);border-radius:2px;"></div>
+                  <div style="height:16px;background:var(--bg4);border-radius:2px;"></div>
+                </div>
+                <div style="height:18px;background:var(--bg4);border-radius:2px;"></div>
+              </div>
+              <div class="lo-name">Wide</div>
+              <div class="lo-desc">Niente sidebar, più spazio</div>
+            </div>
+
+            <!-- Layout 3: Focus — 1 card grande al centro -->
+            <div class="layout-opt" id="lo-3" onclick="selectLayout(3,this)">
+              <div class="lo-preview">
+                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
+                <div style="height:32px;background:var(--dark);border-radius:2px;margin-bottom:4px;opacity:0.8;"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+                  <div style="height:10px;background:var(--bg4);border-radius:2px;"></div>
+                  <div style="height:10px;background:var(--bg4);border-radius:2px;"></div>
+                </div>
+              </div>
+              <div class="lo-name">Focus</div>
+              <div class="lo-desc">Director in primo piano</div>
+            </div>
+
+            <!-- Layout 4: Grid — tutto a griglia uguale -->
+            <div class="layout-opt" id="lo-4" onclick="selectLayout(4,this)">
+              <div class="lo-preview">
+                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:2px;">
+                  <div style="height:16px;background:var(--bg4);border-radius:2px;"></div>
+                  <div style="height:16px;background:var(--dark);border-radius:2px;opacity:0.7;"></div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+                  <div style="height:16px;background:var(--accent);border-radius:2px;opacity:0.6;"></div>
+                  <div style="height:16px;background:var(--bg4);border-radius:2px;"></div>
+                </div>
+              </div>
+              <div class="lo-name">Grid 2×2</div>
+              <div class="lo-desc">Card tutte uguali</div>
+            </div>
+
+            <!-- Layout 5: Compact — più info, meno spazio -->
+            <div class="layout-opt" id="lo-5" onclick="selectLayout(5,this)">
+              <div class="lo-preview">
+                <div style="height:6px;background:var(--dark);border-radius:2px;margin-bottom:3px;"></div>
+                <div style="display:flex;gap:2px;margin-bottom:2px;flex-wrap:wrap;">
+                  <div style="height:8px;width:30%;background:var(--dark);border-radius:1px;opacity:0.8;"></div>
+                  <div style="height:8px;width:28%;background:var(--accent);border-radius:1px;opacity:0.7;"></div>
+                  <div style="height:8px;width:28%;background:var(--bg4);border-radius:1px;"></div>
+                </div>
+                <div style="height:20px;background:var(--bg4);border-radius:2px;margin-bottom:2px;"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;">
+                  <div style="height:8px;background:var(--bg3);border-radius:1px;"></div>
+                  <div style="height:8px;background:var(--bg3);border-radius:1px;"></div>
+                  <div style="height:8px;background:var(--bg3);border-radius:1px;"></div>
+                </div>
+              </div>
+              <div class="lo-name">Compact</div>
+              <div class="lo-desc">Massima densità info</div>
+            </div>
+
+            <!-- Layout 6: Magazine — stile editoriale -->
+            <div class="layout-opt" id="lo-6" onclick="selectLayout(6,this)">
+              <div class="lo-preview">
+                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
+                <div style="display:flex;gap:3px;">
+                  <div style="flex:2;height:34px;background:var(--dark);border-radius:2px;opacity:0.8;"></div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:2px;">
+                    <div style="height:16px;background:var(--bg4);border-radius:2px;"></div>
+                    <div style="height:16px;background:var(--accent);border-radius:2px;opacity:0.6;"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="lo-name">Magazine</div>
+              <div class="lo-desc">Hero + colonna laterale</div>
+            </div>
+
+            <!-- Layout 7: Stats First — numeri in primo piano -->
+            <div class="layout-opt" id="lo-7" onclick="selectLayout(7,this)">
+              <div class="lo-preview">
+                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:4px;">
+                  <div style="height:20px;background:var(--dark);border-radius:2px;opacity:0.8;"></div>
+                  <div style="height:20px;background:var(--accent);border-radius:2px;opacity:0.7;"></div>
+                  <div style="height:20px;background:var(--bg4);border-radius:2px;"></div>
+                  <div style="height:20px;background:var(--bg4);border-radius:2px;"></div>
+                </div>
+                <div style="height:12px;background:var(--bg4);border-radius:2px;"></div>
+              </div>
+              <div class="lo-name">Stats First</div>
+              <div class="lo-desc">4 KPI grandi in cima</div>
+            </div>
+
+            <!-- Layout 8: Pipeline — workflow verticale -->
+            <div class="layout-opt" id="lo-8" onclick="selectLayout(8,this)">
+              <div class="lo-preview">
+                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
+                <div style="display:flex;gap:3px;">
+                  <div style="flex:1;display:flex;flex-direction:column;gap:2px;">
+                    <div style="height:8px;background:var(--bg4);border-radius:2px;"></div>
+                    <div style="height:8px;background:var(--bg4);border-radius:2px;"></div>
+                    <div style="height:8px;background:var(--bg4);border-radius:2px;"></div>
+                    <div style="height:8px;background:var(--bg4);border-radius:2px;"></div>
+                  </div>
+                  <div style="flex:2;height:36px;background:var(--bg4);border-radius:2px;"></div>
+                </div>
+              </div>
+              <div class="lo-name">Pipeline</div>
+              <div class="lo-desc">Workflow e log al centro</div>
+            </div>
+
+            <!-- Layout 9: Dark Pro -->
+            <div class="layout-opt" id="lo-9" onclick="selectLayout(9,this)">
+              <div class="lo-preview" style="background:#1a1714;">
+                <div style="height:8px;background:#2a2520;border-radius:2px;margin-bottom:4px;"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-bottom:4px;">
+                  <div style="height:14px;background:rgba(232,197,71,0.4);border-radius:2px;"></div>
+                  <div style="height:14px;background:rgba(255,255,255,0.1);border-radius:2px;"></div>
+                  <div style="height:14px;background:rgba(34,197,94,0.3);border-radius:2px;"></div>
+                </div>
+                <div style="height:12px;background:rgba(255,255,255,0.05);border-radius:2px;"></div>
+              </div>
+              <div class="lo-name">Dark Pro</div>
+              <div class="lo-desc">Tutto scuro, accenti gold</div>
+            </div>
+
+            <!-- Layout 10: Minimal — solo essenziale -->
+            <div class="layout-opt" id="lo-10" onclick="selectLayout(10,this)">
+              <div class="lo-preview">
+                <div style="height:4px;background:var(--dark);border-radius:2px;margin-bottom:6px;width:40%;"></div>
+                <div style="height:22px;background:var(--bg4);border-radius:2px;margin-bottom:4px;width:80%;"></div>
+                <div style="height:8px;background:var(--bg3);border-radius:2px;width:60%;margin-bottom:2px;"></div>
+                <div style="height:8px;background:var(--bg3);border-radius:2px;width:70%;"></div>
+              </div>
+              <div class="lo-name">Minimal</div>
+              <div class="lo-desc">Solo l'essenziale, niente rumore</div>
+            </div>
+
+          </div>
+
+          <div style="margin-top:14px;padding:12px;background:var(--bg3);border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);">
+            ℹ️ Il layout selezionato si applica alla dashboard principale. Temi e colori rimangono invariati. <span id="currentLayoutName" style="color:var(--text);font-weight:600;">Classic attivo</span>
+          </div>
+        </div>
+      </div>
+
+        </div>
+      </div>
+
+            <!-- RESET -->
       <div style="display:flex;gap:10px">
         <button class="drawer-btn db-dark" style="flex:1" onclick="showToast('✓ Impostazioni salvate!')">💾 Salva impostazioni</button>
         <button class="drawer-btn db-light" style="flex:1" onclick="resetSettings()">↩ Ripristina default</button>
@@ -1793,6 +2118,38 @@ function pdSetPhoto(input) {
   };
   r.readAsDataURL(file);
 }
+
+
+// ===== ACCORDION =====
+function toggleAccordion(id) {
+  const body = document.getElementById('body-' + id);
+  const arrow = document.getElementById('arr-' + id);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  arrow.classList.toggle('open', !isOpen);
+}
+
+// ===== LAYOUT SELECTOR =====
+var currentLayout = 1;
+function selectLayout(n, el) {
+  document.querySelectorAll('.layout-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  currentLayout = n;
+  const names = {1:'Classic',2:'Wide',3:'Focus',4:'Grid 2x2',5:'Compact',6:'Magazine',7:'Stats First',8:'Pipeline',9:'Dark Pro',10:'Minimal'};
+  const lbl = document.getElementById('currentLayoutName');
+  if(lbl) lbl.textContent = (names[n]||'Layout '+n) + ' attivo';
+  localStorage.setItem('cf_layout', n);
+  showToast('Layout: ' + (names[n]||n));
+  addLog('info', 'Layout', 'Cambiato a ' + (names[n]||n));
+}
+(function() {
+  const saved = localStorage.getItem('cf_layout');
+  if(saved) {
+    const el = document.getElementById('lo-'+saved);
+    if(el) { document.querySelectorAll('.layout-opt').forEach(o=>o.classList.remove('sel')); el.classList.add('sel'); currentLayout=parseInt(saved); }
+  }
+})();
+
 // ===== GLOBAL STATUS SYSTEM =====
 // Single source of truth for user status - updates everywhere simultaneously
 const STATUS_COLORS = {
