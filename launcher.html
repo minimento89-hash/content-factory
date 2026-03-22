@@ -282,7 +282,8 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
       </div>
     </div>
   </div>
-  <div class="tlogout" onclick="logout()">🔐 Esci</div>
+  <a href="index.html" style="display:flex;align-items:center;gap:5px;padding:7px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;font-size:0.74rem;font-weight:500;color:var(--mid);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--bg4)'" onmouseout="this.style.background='var(--bg2)'">🗺️ Indice</a>
+<div class="tlogout" onclick="logout()">🔐 Esci</div>
 </div>
 
 <!-- BODY -->
@@ -294,22 +295,22 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
   <!-- Quick links -->
   <div class="section-lbl">Accesso rapido</div>
   <div class="quick-grid">
-    <div class="ql-card" onclick="showToast('Apertura Sala Relax...')">
+    <div class="ql-card" onclick="openFactoryPage('lounge')">
       <div class="ql-icon">☕</div>
       <div class="ql-title">Sala Relax</div>
       <div class="ql-sub">Gli agenti ti aspettano</div>
     </div>
-    <div class="ql-card" onclick="showToast('Apertura Impostazioni...')">
+    <div class="ql-card" onclick="openFactoryPage('settings')">
       <div class="ql-icon">⚙️</div>
       <div class="ql-title">Impostazioni</div>
       <div class="ql-sub">Temi · profilo · sicurezza</div>
     </div>
-    <div class="ql-card" onclick="showToast('Apertura Log globale...')">
+    <div class="ql-card" onclick="openFactoryPage('home')">
       <div class="ql-icon">📋</div>
       <div class="ql-title">Log globale</div>
       <div class="ql-sub">Attività di tutti gli studi</div>
     </div>
-    <div class="ql-card" onclick="showToast('Apertura Statistiche...')">
+    <div class="ql-card" onclick="openFactoryPage('social')">
       <div class="ql-icon">📊</div>
       <div class="ql-title">Statistiche</div>
       <div class="ql-sub">Guadagni · views · hype</div>
@@ -340,10 +341,7 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
           <div class="fc-stat"><div class="fc-stat-val">€31</div><div class="fc-stat-lbl">💰 Earn</div></div>
           <div class="fc-stat"><div class="fc-stat-val">110K</div><div class="fc-stat-lbl">👁 Views</div></div>
         </div>
-        <div style="display:flex;gap:7px;margin-top:14px">
-          <button class="fc-btn" style="flex:3" onclick="openFactory('cmr',event)">▶ Apri studio</button>
-          <button class="fc-btn" style="flex:1;background:rgba(239,68,68,0.08);color:var(--red);" onclick="askDeleteStatic('cmr','Io, Scrittore',event)">🗑️</button>
-        </div>
+        <button class="fc-btn" onclick="openFactory('cmr',event)">▶ Apri studio</button>
       </div>
     </div>
 
@@ -367,10 +365,7 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
           <div class="fc-stat"><div class="fc-stat-val">3</div><div class="fc-stat-lbl">📱 App</div></div>
           <div class="fc-stat"><div class="fc-stat-val">—</div><div class="fc-stat-lbl">💰 Earn</div></div>
         </div>
-        <div style="display:flex;gap:7px;margin-top:14px">
-          <button class="fc-btn" style="flex:3" onclick="openFactory('apps',event)">▶ Apri studio</button>
-          <button class="fc-btn" style="flex:1;background:rgba(239,68,68,0.08);color:var(--red);" onclick="askDeleteStatic('apps','Io, Apps',event)">🗑️</button>
-        </div>
+        <button class="fc-btn" onclick="openFactory('apps',event)">▶ Apri studio</button>
       </div>
     </div>
 
@@ -435,17 +430,11 @@ document.getElementById('greetingSub').textContent = 'Hai ' + getFactoryCount() 
 
 function getFactoryCount() {
   const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
-  const hiddenStatic = JSON.parse(localStorage.getItem('cf_deleted_static') || '[]');
-  return (2 - hiddenStatic.length) + saved.length;
+  return 2 + saved.length;
 }
 
-// Load saved factories — also hide deleted static ones
+// Load saved factories
 function loadSavedFactories() {
-  // Hide static cards that were deleted
-  const hiddenStatic = JSON.parse(localStorage.getItem('cf_deleted_static') || '[]');
-  if(hiddenStatic.includes('cmr'))  { const c = document.getElementById('fc-cmr');  if(c) c.remove(); }
-  if(hiddenStatic.includes('apps')) { const c = document.getElementById('fc-apps'); if(c) c.remove(); }
-  // Load user-created factories
   const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
   saved.forEach(f => renderFactoryCard(f));
 }
@@ -518,53 +507,47 @@ function renderFactoryCard(f) {
       <div class="fc-title">${f.name}</div>
     </div>
     <div class="fc-body">
-      <div class="fc-desc" style="color:var(--dim);font-style:italic">Gli agenti stanno analizzando il progetto...</div>
+      <div class="fc-desc">Studio ${f.type} · creato il ${f.created}</div>
       <div class="fc-chips">${agentChips}${extra}</div>
       <div class="fc-stats">
         <div class="fc-stat"><div class="fc-stat-val">${f.agents.length}</div><div class="fc-stat-lbl">🤖 Agenti</div></div>
-        <div class="fc-stat"><div class="fc-stat-val">—</div><div class="fc-stat-lbl">📦 Progetti</div></div>
-        <div class="fc-stat"><div class="fc-stat-val">—</div><div class="fc-stat-lbl">💰 Earn</div></div>
+        <div class="fc-stat"><div class="fc-stat-val">0</div><div class="fc-stat-lbl">📦 Progetti</div></div>
+        <div class="fc-stat"><div class="fc-stat-val">${f.hype}</div><div class="fc-stat-lbl">⚡ Hype</div></div>
       </div>
       <div style="display:flex;gap:7px;margin-top:14px">
         <button class="fc-btn" style="flex:3" onclick="openFactory('${f.id}',event)">▶ Apri studio</button>
-        <button class="fc-btn" style="flex:1;background:rgba(239,68,68,0.08);color:var(--red);" onclick="askDelete('${f.id}','${f.name}',event)">🗑️</button>
+        <button class="fc-btn" style="flex:1;background:rgba(239,68,68,0.1);color:var(--red);" onclick="askDelete('${f.id}','${f.name}',event)">🗑️</button>
       </div>
     </div>`;
   grid.insertBefore(card, newCard);
 }
 
-// Delete — user-created studios
+// Delete
 function askDelete(id, name, e) {
   e.stopPropagation();
-  deleteTarget = { id, isStatic: false };
+  deleteTarget = id;
   document.getElementById('confirmText').innerHTML = `Vuoi eliminare <strong>"${name}"</strong>?<br>Tutti i dati andranno persi.`;
-  document.getElementById('confirmModal').classList.add('open');
-}
-// Delete — static pre-built studios (Io, Scrittore / Io, Apps)
-function askDeleteStatic(id, name, e) {
-  e.stopPropagation();
-  deleteTarget = { id, isStatic: true };
-  document.getElementById('confirmText').innerHTML = `Vuoi eliminare <strong>"${name}"</strong>?<br>Questo studio predefinito verrà rimosso dal launcher.`;
   document.getElementById('confirmModal').classList.add('open');
 }
 function confirmDelete() {
   if(!deleteTarget) return;
-  const { id, isStatic } = deleteTarget;
-  const card = document.getElementById(isStatic ? 'fc-' + id : id);
-  if(card) { card.style.transform = 'scale(0.95)'; card.style.opacity = '0'; card.style.transition = 'all 0.25s'; setTimeout(()=>card.remove(), 250); }
-  if(isStatic) {
-    // Remember deleted static studios
-    const hidden = JSON.parse(localStorage.getItem('cf_deleted_static') || '[]');
-    if(!hidden.includes(id)) hidden.push(id);
-    localStorage.setItem('cf_deleted_static', JSON.stringify(hidden));
-  } else {
-    const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]').filter(f => f.id !== id);
-    localStorage.setItem('cf_factories', JSON.stringify(saved));
-  }
+  const card = document.getElementById(deleteTarget);
+  if(card) card.remove();
+  const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]').filter(f => f.id !== deleteTarget);
+  localStorage.setItem('cf_factories', JSON.stringify(saved));
   document.getElementById('confirmModal').classList.remove('open');
   showToast('🗑️ Studio eliminato');
   deleteTarget = null;
-  setTimeout(()=>{ document.getElementById('greetingSub').textContent = 'Hai ' + getFactoryCount() + ' studi attivi · scegli dove lavorare oggi'; }, 300);
+  document.getElementById('greetingSub').textContent = 'Hai ' + getFactoryCount() + ' studi attivi · scegli dove lavorare oggi';
+}
+
+// Open factory on specific page
+function openFactoryPage(page) {
+  localStorage.setItem('cf_active_studio', 'cmr');
+  localStorage.setItem('cf_active_studio_name', 'Io, Scrittore');
+  localStorage.setItem('cf_open_page', page);
+  showToast('Apertura...');
+  setTimeout(() => { window.location.href = 'content-factory-v9.html'; }, 400);
 }
 
 // Open factory — maps studio IDs to their HTML files

@@ -680,9 +680,9 @@ html, body {
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="logo">
+  <div class="logo" onclick="goToLauncher()" style="cursor:pointer;" title="← Torna al Launcher">
     <div class="logo-icon" id="logoIcon">⚡</div>
-    Content Factory
+    <span id="studioNameLabel">Content Factory</span>
   </div>
   <nav class="top-nav">
     <button class="top-nav-item active" onclick="switchPage('home',this)">Dashboard</button>
@@ -1070,7 +1070,7 @@ html, body {
       </div>
 
       <!-- Link to full lounge -->
-      <div onclick="showToast('☕ Apri agent-lounge-v2.html per la chat completa!')" style="background:var(--bg2);border:2px dashed var(--border2);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--dark)'" onmouseout="this.style.borderColor='var(--border2)'">
+      <div onclick="window.location.href='agent-lounge-v2.html'" style="background:var(--bg2);border:2px dashed var(--border2);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--dark)'" onmouseout="this.style.borderColor='var(--border2)'">
         <div style="font-size:1.8rem;margin-bottom:8px;">💬</div>
         <div style="font-size:0.88rem;font-weight:700;margin-bottom:4px;">Apri la Chat Completa</div>
         <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);">Entra nella sala relax · chatta con gli agenti · reagisci · invia foto</div>
@@ -1600,6 +1600,23 @@ html, body {
 <div class="toast" id="toast"></div>
 
 <script>
+// ===== SESSION & STUDIO INIT =====
+(function() {
+  // Check if launcher asked to open a specific page
+  const openPage = localStorage.getItem('cf_open_page');
+  if(openPage) {
+    localStorage.removeItem('cf_open_page');
+    // Wait for DOM then switch page
+    window.addEventListener('DOMContentLoaded', function() {
+      setTimeout(() => {
+        const btn = Array.from(document.querySelectorAll('.top-nav-item'))
+          .find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+openPage+"'"));
+        switchPage(openPage, btn);
+      }, 100);
+    });
+  }
+})();
+
 // ===== SESSION & STUDIO INIT =====
 (function() {
   // Load active studio name into UI
