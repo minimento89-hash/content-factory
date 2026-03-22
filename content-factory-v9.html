@@ -741,11 +741,117 @@ html, body {
     <div class="page active" id="page-home">
       <div><div class="page-greeting">Buongiorno 👋</div><div class="page-sub">Il Capo Redattore ha 3 decisioni per te · Call Me River Universe</div></div>
       <div class="stats-row">
-        <div class="stat-card dark"><div class="stat-label">🔥 Hype Score</div><div class="stat-value">94</div><div class="stat-change">↑ In crescita</div><div class="stat-icon">🔥</div></div>
-        <div class="stat-card accent"><div class="stat-label">💰 Guadagni</div><div class="stat-value">€31</div><div class="stat-change">↑ +€12 sett.</div><div class="stat-icon">💰</div></div>
-        <div class="stat-card"><div class="stat-label">📚 Libri</div><div class="stat-value">3</div><div class="stat-change">↑ +2 sett.</div><div class="stat-icon">📚</div></div>
-        <div class="stat-card"><div class="stat-label">👁️ Views</div><div class="stat-value">110K</div><div class="stat-change">↑ TikTok EN</div><div class="stat-icon">👁️</div></div>
-        <div class="stat-card"><div class="stat-label">🎵 Canzoni</div><div class="stat-value">6</div><div class="stat-change">↑ +3 nuove</div><div class="stat-icon">🎵</div></div>
+        <!-- HYPE CARD — dark with sparkline -->
+        <div class="stat-card dark" style="position:relative;overflow:hidden;padding-bottom:0;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;">
+            <div>
+              <div class="stat-label">🔥 Hype Score</div>
+              <div class="stat-value">94</div>
+              <div class="stat-change">↑ In crescita</div>
+            </div>
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🔥</div>
+          </div>
+          <svg width="100%" height="52" viewBox="0 0 200 52" preserveAspectRatio="none" style="display:block;margin:0 -18px;width:calc(100% + 36px);">
+            <defs>
+              <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(232,197,71,0.35)"/>
+                <stop offset="100%" stop-color="rgba(232,197,71,0)"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,40 C20,38 30,35 45,32 C60,29 70,28 85,22 C100,16 110,18 125,14 C140,10 155,8 170,6 C185,4 195,3 200,2 L200,52 L0,52 Z" fill="url(#g1)"/>
+            <path d="M0,40 C20,38 30,35 45,32 C60,29 70,28 85,22 C100,16 110,18 125,14 C140,10 155,8 170,6 C185,4 195,3 200,2" fill="none" stroke="rgba(232,197,71,0.8)" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="200" cy="2" r="3" fill="#e8c547"/>
+          </svg>
+        </div>
+
+        <!-- GUADAGNI CARD — accent yellow with sparkline -->
+        <div class="stat-card accent" style="position:relative;overflow:hidden;padding-bottom:0;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;">
+            <div>
+              <div class="stat-label">💰 Guadagni</div>
+              <div class="stat-value">€31</div>
+              <div class="stat-change">↑ +€12 sett.</div>
+            </div>
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(26,23,20,0.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">💰</div>
+          </div>
+          <svg width="100%" height="52" viewBox="0 0 200 52" preserveAspectRatio="none" style="display:block;margin:0 -18px;width:calc(100% + 36px);">
+            <defs>
+              <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(26,23,20,0.2)"/>
+                <stop offset="100%" stop-color="rgba(26,23,20,0)"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,45 C15,43 25,42 40,38 C55,34 65,36 80,30 C95,24 105,26 120,20 C135,14 148,16 162,10 C176,4 188,5 200,4 L200,52 L0,52 Z" fill="url(#g2)"/>
+            <path d="M0,45 C15,43 25,42 40,38 C55,34 65,36 80,30 C95,24 105,26 120,20 C135,14 148,16 162,10 C176,4 188,5 200,4" fill="none" stroke="rgba(26,23,20,0.5)" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="200" cy="4" r="3" fill="rgba(26,23,20,0.6)"/>
+          </svg>
+        </div>
+
+        <!-- VIEWS CARD — light with blue sparkline -->
+        <div class="stat-card" style="position:relative;overflow:hidden;padding-bottom:0;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;">
+            <div>
+              <div class="stat-label">👁️ Views</div>
+              <div class="stat-value">110K</div>
+              <div class="stat-change">↑ TikTok EN</div>
+            </div>
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">👁️</div>
+          </div>
+          <svg width="100%" height="52" viewBox="0 0 200 52" preserveAspectRatio="none" style="display:block;margin:0 -18px;width:calc(100% + 36px);">
+            <defs>
+              <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(59,130,246,0.15)"/>
+                <stop offset="100%" stop-color="rgba(59,130,246,0)"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,48 C10,46 20,44 35,40 C50,36 60,38 75,32 C90,26 100,20 115,16 C130,12 145,14 160,8 C175,2 188,4 200,3 L200,52 L0,52 Z" fill="url(#g3)"/>
+            <path d="M0,48 C10,46 20,44 35,40 C50,36 60,38 75,32 C90,26 100,20 115,16 C130,12 145,14 160,8 C175,2 188,4 200,3" fill="none" stroke="rgba(59,130,246,0.7)" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="200" cy="3" r="3" fill="#3b82f6"/>
+          </svg>
+        </div>
+
+        <!-- LIBRI CARD -->
+        <div class="stat-card" style="position:relative;overflow:hidden;padding-bottom:0;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;">
+            <div>
+              <div class="stat-label">📚 Libri</div>
+              <div class="stat-value">3</div>
+              <div class="stat-change">↑ +2 sett.</div>
+            </div>
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(139,92,246,0.08);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📚</div>
+          </div>
+          <!-- Bar chart stile Crextio -->
+          <div style="display:flex;align-items:flex-end;gap:4px;height:40px;padding:0 0 8px 0;">
+            <div style="flex:1;background:var(--border2);border-radius:3px 3px 0 0;height:30%;"></div>
+            <div style="flex:1;background:var(--border2);border-radius:3px 3px 0 0;height:50%;"></div>
+            <div style="flex:1;background:var(--border2);border-radius:3px 3px 0 0;height:40%;"></div>
+            <div style="flex:1;background:var(--border2);border-radius:3px 3px 0 0;height:60%;"></div>
+            <div style="flex:1;background:var(--border2);border-radius:3px 3px 0 0;height:45%;"></div>
+            <div style="flex:1;background:var(--border2);border-radius:3px 3px 0 0;height:70%;"></div>
+            <div style="flex:1;background:var(--dark);border-radius:3px 3px 0 0;height:100%;"></div>
+          </div>
+        </div>
+
+        <!-- CANZONI CARD -->
+        <div class="stat-card" style="position:relative;overflow:hidden;padding-bottom:0;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;">
+            <div>
+              <div class="stat-label">🎵 Canzoni</div>
+              <div class="stat-value">6</div>
+              <div class="stat-change">↑ +3 nuove</div>
+            </div>
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(249,115,22,0.08);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🎵</div>
+          </div>
+          <!-- Wave bars music style -->
+          <div style="display:flex;align-items:flex-end;gap:3px;height:40px;padding:0 0 8px 0;">
+            <div style="flex:1;background:rgba(249,115,22,0.2);border-radius:3px 3px 0 0;height:60%;"></div>
+            <div style="flex:1;background:rgba(249,115,22,0.3);border-radius:3px 3px 0 0;height:80%;"></div>
+            <div style="flex:1;background:rgba(249,115,22,0.5);border-radius:3px 3px 0 0;height:50%;"></div>
+            <div style="flex:1;background:rgba(249,115,22,0.7);border-radius:3px 3px 0 0;height:90%;"></div>
+            <div style="flex:1;background:rgba(249,115,22,0.5);border-radius:3px 3px 0 0;height:70%;"></div>
+            <div style="flex:1;background:var(--orange);border-radius:3px 3px 0 0;height:100%;"></div>
+          </div>
+        </div>
       </div>
       <div class="grid-main">
         <div class="chief-card">
