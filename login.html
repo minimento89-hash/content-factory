@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Factory — Accesso</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f0ede8;--bg2:#fff;--bg3:#f7f5f2;--bg4:#ede9e3;
+  --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.14);
+  --text:#111;--dim:#9a948c;--mid:#6b6560;
+  --dark:#1a1714;--accent:#e8c547;--accent2:#d4b030;
+  --green:#22c55e;--red:#ef4444;
+  --shadow:0 2px 16px rgba(0,0,0,0.06);
+  --shadow-lg:0 16px 60px rgba(0,0,0,0.13);
+}
+html,body{width:100%;height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+
+.bg-glow{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 15% 15%,rgba(232,197,71,0.1),transparent 55%),radial-gradient(ellipse at 85% 85%,rgba(26,23,20,0.05),transparent 55%);}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,0,0,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.022) 1px,transparent 1px);background-size:44px 44px;}
+
+.card{position:relative;z-index:10;background:var(--bg2);border-radius:28px;padding:44px 40px 36px;width:380px;box-shadow:var(--shadow-lg),0 0 0 1px var(--border);animation:cardIn 0.55s cubic-bezier(0.4,0,0.2,1);}
+@keyframes cardIn{from{opacity:0;transform:translateY(28px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.logo-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:34px;}
+.logo-icon{width:42px;height:42px;background:var(--dark);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;box-shadow:0 4px 14px rgba(0,0,0,0.18);}
+.logo-text{font-size:1.05rem;font-weight:800;letter-spacing:-0.03em;}
+
+.avatar-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:28px;}
+.avatar{width:72px;height:72px;border-radius:50%;background:var(--dark);display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:12px;border:3px solid var(--accent);box-shadow:0 0 0 7px rgba(232,197,71,0.1),var(--shadow);}
+.av-name{font-family:'Instrument Serif',serif;font-size:1.45rem;letter-spacing:-0.02em;margin-bottom:3px;}
+.av-sub{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--dim);}
+
+.pin-label{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);text-align:center;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;}
+.pin-dots{display:flex;gap:11px;justify-content:center;margin-bottom:24px;}
+.dot{width:13px;height:13px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:all 0.18s cubic-bezier(0.4,0,0.2,1);}
+.dot.filled{background:var(--dark);border-color:var(--dark);transform:scale(1.12);}
+.dot.error{background:var(--red);border-color:var(--red);animation:shake 0.38s ease;}
+.dot.ok{background:var(--green);border-color:var(--green);}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.nb{height:56px;border-radius:13px;background:var(--bg3);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:1.15rem;font-weight:600;color:var(--text);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:all 0.13s;user-select:none;}
+.nb:hover{background:var(--bg4);border-color:var(--border2);}
+.nb:active{transform:scale(0.93);background:var(--bg4);}
+.nb.del{color:var(--mid);font-size:1.1rem;}
+.nb.special{font-size:0.7rem;color:var(--dim);gap:2px;}
+.nb-letters{font-family:'DM Mono',monospace;font-size:0.42rem;color:var(--dim);letter-spacing:0.05em;}
+
+.msg{font-family:'DM Mono',monospace;font-size:0.58rem;text-align:center;min-height:20px;margin-top:12px;}
+.msg.error{color:var(--red);}
+.msg.hint{color:var(--dim);}
+.msg.hint strong{color:var(--accent2);}
+
+.attempts-bar{display:flex;gap:5px;justify-content:center;margin-top:8px;}
+.att{width:7px;height:7px;border-radius:50%;background:var(--green);transition:background 0.2s;}
+.att.used{background:var(--red);}
+
+.lock-row{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:16px;font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);}
+
+/* Overlays */
+.overlay{display:none;position:absolute;inset:0;border-radius:28px;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--bg2);}
+.overlay.show{display:flex;}
+.check-ring{width:70px;height:70px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:2rem;animation:pop 0.45s cubic-bezier(0.4,0,0.2,1);}
+@keyframes pop{from{transform:scale(0);opacity:0}70%{transform:scale(1.15)}to{transform:scale(1);opacity:1}}
+.ov-title{font-family:'Instrument Serif',serif;font-size:1.3rem;letter-spacing:-0.02em;}
+.ov-sub{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--dim);text-align:center;}
+.lock-icon-big{font-size:2.5rem;animation:wobble 0.5s ease;}
+@keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.countdown{font-family:'DM Mono',monospace;font-size:2.2rem;font-weight:700;color:var(--red);}
+
+/* Change PIN modal */
+.modal-bg{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.2);backdrop-filter:blur(6px);align-items:center;justify-content:center;}
+.modal-bg.show{display:flex;}
+.modal-box{background:var(--bg2);border-radius:22px;padding:30px;width:340px;box-shadow:var(--shadow-lg);border:1px solid var(--border);}
+.modal-title{font-family:'Instrument Serif',serif;font-size:1.3rem;margin-bottom:4px;}
+.modal-sub{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);margin-bottom:20px;}
+.flabel{font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--dim);margin-bottom:5px;display:block;letter-spacing:0.06em;}
+.finput{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:1.1rem;letter-spacing:0.3em;outline:none;margin-bottom:10px;font-family:'DM Mono',monospace;text-align:center;color:var(--text);}
+.finput:focus{border-color:var(--border2);}
+.ferr{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--red);min-height:18px;margin-bottom:8px;}
+.mactions{display:flex;gap:8px;}
+.mbtn{flex:1;padding:11px;border:none;border-radius:11px;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.mbtn.dark{background:var(--dark);color:#fff;}
+.mbtn.dark:hover{background:#2a2520;}
+.mbtn.light{background:var(--bg4);color:var(--mid);}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="bg-grid"></div>
+
+<!-- Change PIN modal -->
+<div class="modal-bg" id="changePinModal">
+  <div class="modal-box">
+    <div class="modal-title">Cambia PIN</div>
+    <div class="modal-sub">Scegli un nuovo PIN a 6 cifre</div>
+    <label class="flabel">NUOVO PIN</label>
+    <input class="finput" id="np1" type="password" inputmode="numeric" maxlength="6" placeholder="······">
+    <label class="flabel">CONFERMA PIN</label>
+    <input class="finput" id="np2" type="password" inputmode="numeric" maxlength="6" placeholder="······">
+    <div class="ferr" id="pinChangeErr"></div>
+    <div class="mactions">
+      <button class="mbtn dark" onclick="savePin()">💾 Salva</button>
+      <button class="mbtn light" onclick="document.getElementById('changePinModal').classList.remove('show')">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<!-- Login card -->
+<div class="card" id="card">
+
+  <!-- Success overlay -->
+  <div class="overlay" id="ovSuccess">
+    <div class="check-ring">✓</div>
+    <div class="ov-title">Bentornato!</div>
+    <div class="ov-sub" id="ovSuccessMsg">Caricamento studio...</div>
+  </div>
+
+  <!-- Locked overlay -->
+  <div class="overlay" id="ovLocked">
+    <div class="lock-icon-big">🔒</div>
+    <div class="ov-title" style="color:var(--red)">Accesso bloccato</div>
+    <div class="countdown" id="countdownNum">30</div>
+    <div class="ov-sub">Troppi tentativi errati<br>Gli agenti stanno guardando 👀</div>
+  </div>
+
+  <!-- Logo -->
+  <div class="logo-row">
+    <div class="logo-icon">⚡</div>
+    <div class="logo-text">Content Factory</div>
+  </div>
+
+  <!-- Avatar -->
+  <div class="avatar-wrap">
+    <div class="avatar" id="avEmoji">🦁</div>
+    <div class="av-name" id="avName">Il Capo</div>
+    <div class="av-sub" id="avSub">Fondatore · Call Me River</div>
+  </div>
+
+  <!-- PIN -->
+  <div class="pin-label">Inserisci il tuo PIN</div>
+  <div class="pin-dots">
+    <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
+    <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
+    <div class="dot" id="d4"></div><div class="dot" id="d5"></div>
+  </div>
+
+  <!-- Numpad -->
+  <div class="numpad">
+    <button class="nb" onclick="press('1')">1</button>
+    <button class="nb" onclick="press('2')">2<span class="nb-letters">ABC</span></button>
+    <button class="nb" onclick="press('3')">3<span class="nb-letters">DEF</span></button>
+    <button class="nb" onclick="press('4')">4<span class="nb-letters">GHI</span></button>
+    <button class="nb" onclick="press('5')">5<span class="nb-letters">JKL</span></button>
+    <button class="nb" onclick="press('6')">6<span class="nb-letters">MNO</span></button>
+    <button class="nb" onclick="press('7')">7<span class="nb-letters">PQRS</span></button>
+    <button class="nb" onclick="press('8')">8<span class="nb-letters">TUV</span></button>
+    <button class="nb" onclick="press('9')">9<span class="nb-letters">WXYZ</span></button>
+    <button class="nb special" onclick="openChangePinModal()">🔑<span class="nb-letters">Cambia PIN</span></button>
+    <button class="nb" onclick="press('0')">0</button>
+    <button class="nb del" onclick="del()">⌫</button>
+  </div>
+
+  <div class="msg hint" id="msgEl">PIN di default: <strong>1 2 3 4 5 6</strong> · cambialo subito!</div>
+  <div class="attempts-bar">
+    <div class="att" id="a0"></div>
+    <div class="att" id="a1"></div>
+    <div class="att" id="a2"></div>
+  </div>
+  <div class="lock-row">🔒 Sessione locale · dati protetti · nessuna trasmissione</div>
+
+</div>
+
+<script>
+// Load saved profile
+const profile = JSON.parse(localStorage.getItem('cf_profile')||'{"name":"Il Capo","sub":"Fondatore · Call Me River","emoji":"🦁"}');
+document.getElementById('avEmoji').textContent = profile.emoji||'🦁';
+document.getElementById('avName').textContent  = profile.name||'Il Capo';
+document.getElementById('avSub').textContent   = profile.sub||'Fondatore · Call Me River';
+
+let correctPin = localStorage.getItem('cf_pin')||'123456';
+let pin=[], attempts=0, locked=false;
+const MAX=3;
+
+function press(v){
+  if(locked) return;
+  if(pin.length>=6) return;
+  pin.push(v);
+  refreshDots();
+  setMsg('','hint');
+  if(pin.length===6) setTimeout(checkPin,200);
+}
+function del(){
+  if(locked) return;
+  if(pin.length>0){pin.pop();refreshDots();setMsg('','hint');}
+}
+function refreshDots(){
+  for(let i=0;i<6;i++){
+    const d=document.getElementById('d'+i);
+    d.className='dot'+(i<pin.length?' filled':'');
+  }
+}
+function checkPin(){
+  if(pin.join('')===correctPin){
+    for(let i=0;i<6;i++) document.getElementById('d'+i).className='dot ok';
+    setTimeout(()=>{
+      document.getElementById('ovSuccessMsg').textContent='Bentornato, '+profile.name+'! 🚀';
+      document.getElementById('ovSuccess').classList.add('show');
+      // Save session
+      sessionStorage.setItem('cf_logged','1');
+      setTimeout(()=>{
+        // Redirect to launcher — for demo shows alert
+        document.getElementById('ovSuccessMsg').textContent='Caricamento Launcher...';
+        setTimeout(()=>{ window.location.href = 'launcher.html'; },1200);
+      },1200);
+    },350);
+  } else {
+    attempts++;
+    for(let i=0;i<6;i++) document.getElementById('d'+i).className='dot error';
+    for(let i=0;i<attempts&&i<MAX;i++) document.getElementById('a'+(MAX-1-i)).classList.add('used');
+    if(attempts>=MAX){ setTimeout(lockScreen,500); }
+    else {
+      const rem=MAX-attempts;
+      setMsg('PIN errato · '+rem+' tentativ'+(rem===1?'o':'i')+' rimast'+(rem===1?'o':'i'),'error');
+      setTimeout(()=>{for(let i=0;i<6;i++)document.getElementById('d'+i).className='dot';},600);
+    }
+    pin=[];
+  }
+}
+function lockScreen(){
+  locked=true;
+  document.getElementById('ovLocked').classList.add('show');
+  let t=30;
+  document.getElementById('countdownNum').textContent=t;
+  const iv=setInterval(()=>{
+    t--;
+    document.getElementById('countdownNum').textContent=t;
+    if(t<=0){
+      clearInterval(iv);
+      locked=false; attempts=0; pin=[];
+      document.getElementById('ovLocked').classList.remove('show');
+      for(let i=0;i<6;i++) document.getElementById('d'+i).className='dot';
+      for(let i=0;i<MAX;i++) document.getElementById('a'+i).classList.remove('used');
+      setMsg('PIN di default: <strong>1 2 3 4 5 6</strong> · cambialo subito!','hint');
+    }
+  },1000);
+}
+function resetAll(){pin=[];attempts=0;for(let i=0;i<6;i++)document.getElementById('d'+i).className='dot';}
+function setMsg(t,c){const m=document.getElementById('msgEl');m.innerHTML=t;m.className='msg '+c;}
+
+// Change PIN
+function openChangePinModal(){
+  document.getElementById('changePinModal').classList.add('show');
+  document.getElementById('np1').value='';
+  document.getElementById('np2').value='';
+  document.getElementById('pinChangeErr').textContent='';
+  setTimeout(()=>document.getElementById('np1').focus(),100);
+}
+function savePin(){
+  const p1=document.getElementById('np1').value;
+  const p2=document.getElementById('np2').value;
+  const err=document.getElementById('pinChangeErr');
+  if(p1.length!==6||!/^\d+$/.test(p1)){err.textContent='⚠ PIN deve essere 6 cifre numeriche';return;}
+  if(p1!==p2){err.textContent='⚠ I due PIN non coincidono';return;}
+  if(p1==='123456'){err.textContent='⚠ Scegli un PIN diverso dal default';return;}
+  localStorage.setItem('cf_pin',p1);
+  correctPin=p1;
+  document.getElementById('changePinModal').classList.remove('show');
+  setMsg('✓ PIN cambiato con successo!','hint');
+  setTimeout(()=>setMsg('','hint'),3000);
+}
+
+// Keyboard support
+document.addEventListener('keydown',e=>{
+  if(e.key>='0'&&e.key<='9') press(e.key);
+  else if(e.key==='Backspace') del();
+});
+</script>
+
+<div style="position:relative;z-index:10;text-align:center;margin-top:16px;font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);">
+  Primo accesso? <a href="register.html" style="color:var(--text);font-weight:600;text-decoration:none;">Crea account →</a>
+</div>
+</body>
+</html>

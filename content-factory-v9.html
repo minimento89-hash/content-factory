@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Factory — Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===== BASE THEME VARS (overridden by JS) ===== */
+:root {
+  --bg: #f0ede8;
+  --bg2: #ffffff;
+  --bg3: #f7f5f2;
+  --bg4: #ede9e3;
+  --border: rgba(0,0,0,0.07);
+  --border2: rgba(0,0,0,0.13);
+  --text: #111010;
+  --text2: #3a3530;
+  --dim: #9a948c;
+  --mid: #6b6560;
+  --accent: #e8c547;
+  --accent2: #d4b030;
+  --dark: #1a1714;
+  --dark2: #2a2520;
+  --green: #22c55e;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --purple: #8b5cf6;
+  --orange: #f97316;
+  --pink: #ec4899;
+  --radius: 20px;
+  --radius-sm: 12px;
+  --shadow: 0 2px 16px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
+  --font-scale: 1;
+  --spacing-scale: 1;
+}
+
+/* ===== DARK THEME ===== */
+.theme-dark {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #1c2128;
+  --bg4: #21262d;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #e6edf3;
+  --text2: #b1bac4;
+  --dim: #484f58;
+  --mid: #6e7681;
+  --accent: #f0b429;
+  --accent2: #e0a020;
+  --dark: #ffffff;
+  --dark2: #e6edf3;
+  --shadow: 0 2px 16px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+}
+
+/* ===== NIGHT THEME ===== */
+.theme-night {
+  --bg: #080b10;
+  --bg2: #0d1117;
+  --bg3: #111722;
+  --bg4: #161d2a;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8edf5;
+  --text2: #8892a4;
+  --dim: #5a6478;
+  --mid: #6b7280;
+  --accent: #8b5cf6;
+  --accent2: #7c3aed;
+  --dark: #e8edf5;
+  --dark2: #c8d4f0;
+  --shadow: 0 2px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.7);
+}
+
+/* ===== GRADIENT PURPLE THEME ===== */
+.theme-purple {
+  --bg: #1e1130;
+  --bg2: #261640;
+  --bg3: #2e1c50;
+  --bg4: #3a2260;
+  --border: rgba(168,85,247,0.15);
+  --border2: rgba(168,85,247,0.25);
+  --text: #f0e8ff;
+  --text2: #c4a8f0;
+  --dim: #7a5c9a;
+  --mid: #9a7cc0;
+  --accent: #e879f9;
+  --accent2: #d946ef;
+  --dark: #f0e8ff;
+  --dark2: #e0d0f8;
+  --shadow: 0 2px 16px rgba(139,92,246,0.2);
+  --shadow-lg: 0 8px 40px rgba(139,92,246,0.3);
+}
+
+/* ===== OCEAN THEME ===== */
+.theme-ocean {
+  --bg: #0a1628;
+  --bg2: #0f2040;
+  --bg3: #142850;
+  --bg4: #1a3060;
+  --border: rgba(56,189,248,0.12);
+  --border2: rgba(56,189,248,0.22);
+  --text: #e0f4ff;
+  --text2: #a0d8f0;
+  --dim: #4a7a9a;
+  --mid: #6a9ab8;
+  --accent: #38bdf8;
+  --accent2: #0ea5e9;
+  --dark: #e0f4ff;
+  --dark2: #c0e8f8;
+  --shadow: 0 2px 16px rgba(56,189,248,0.15);
+  --shadow-lg: 0 8px 40px rgba(56,189,248,0.25);
+}
+
+/* ===== ROSE THEME ===== */
+.theme-rose {
+  --bg: #fff1f3;
+  --bg2: #ffffff;
+  --bg3: #fff5f6;
+  --bg4: #ffe4e8;
+  --border: rgba(244,63,94,0.1);
+  --border2: rgba(244,63,94,0.2);
+  --text: #1a0a0d;
+  --text2: #4a1a22;
+  --dim: #c08090;
+  --mid: #a06070;
+  --accent: #f43f5e;
+  --accent2: #e11d48;
+  --dark: #1a0a0d;
+  --dark2: #2a1018;
+  --shadow: 0 2px 16px rgba(244,63,94,0.08);
+  --shadow-lg: 0 8px 40px rgba(244,63,94,0.15);
+}
+
+/* ===== CALL ME RIVER THEME ===== */
+.theme-river {
+  --bg: #05080e;
+  --bg2: #0a0e1a;
+  --bg3: #0e1420;
+  --bg4: #141c2e;
+  --border: rgba(123,79,255,0.15);
+  --border2: rgba(123,79,255,0.28);
+  --text: #e8edf5;
+  --text2: #c0ccde;
+  --dim: #4a5570;
+  --mid: #6a7590;
+  --accent: #7b4fff;
+  --accent2: #6030e0;
+  --dark: #e8edf5;
+  --dark2: #c0ccde;
+  --shadow: 0 2px 16px rgba(123,79,255,0.15);
+  --shadow-lg: 0 8px 40px rgba(123,79,255,0.25);
+}
+
+html, body {
+  width: 100%; min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: calc(14px * var(--font-scale));
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* TOPBAR */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 28px; height: 60px; gap: 0;
+  transition: background 0.4s, border-color 0.4s;
+}
+.logo {
+  display: flex; align-items: center; gap: 9px;
+  font-weight: 700; font-size: 1rem;
+  color: var(--text); letter-spacing: -0.02em;
+  margin-right: 40px;
+}
+.logo-icon {
+  width: 32px; height: 32px;
+  background: var(--dark);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+  transition: background 0.4s;
+}
+.top-nav { display: flex; gap: 2px; }
+.top-nav-item {
+  padding: 7px 16px; border-radius: 30px;
+  font-size: 0.82rem; font-weight: 500;
+  color: var(--mid); cursor: pointer;
+  transition: all 0.2s; border: none;
+  background: none;
+}
+.top-nav-item:hover { color: var(--text); background: var(--bg4); }
+.top-nav-item.active { background: var(--dark); color: var(--bg); }
+.topbar-sep { flex: 1; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.top-badge {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace; font-size: 0.68rem;
+  color: var(--green); background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.2);
+  padding: 5px 12px; border-radius: 20px;
+}
+.tbdot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.top-icon-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+  box-shadow: var(--shadow);
+}
+.top-icon-btn:hover { background: var(--bg4); }
+.settings-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; background: var(--bg2);
+  border: 1px solid var(--border); border-radius: 10px;
+  font-size: 0.78rem; font-weight: 500; color: var(--mid);
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: var(--shadow);
+}
+.settings-btn:hover { background: var(--bg4); color: var(--text); }
+
+/* LAYOUT */
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: calc(100vh - 60px);
+}
+
+/* SIDEBAR */
+.sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 20px 14px;
+  display: flex; flex-direction: column; gap: 4px;
+  position: sticky; top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  transition: background 0.4s, border-color 0.4s;
+}
+.sidebar-section {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem; color: var(--dim);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 10px 10px 4px;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: var(--radius-sm);
+  cursor: pointer; transition: all 0.2s;
+  font-size: 0.82rem; font-weight: 500;
+  color: var(--mid); position: relative;
+  border: 1px solid transparent;
+}
+.sidebar-item:hover { background: var(--bg3); color: var(--text2); }
+.sidebar-item.active { background: var(--dark); color: var(--bg); border-color: transparent; }
+.sidebar-item.active .si-icon { opacity: 1; }
+.si-icon { font-size: 0.95rem; width: 20px; text-align: center; flex-shrink: 0; }
+.si-badge {
+  margin-left: auto; font-family: 'DM Mono', monospace;
+  font-size: 0.54rem; padding: 2px 7px; border-radius: 20px;
+  background: var(--bg4); color: var(--dim);
+}
+.si-badge.hot { background: rgba(239,68,68,0.1); color: var(--red); }
+.si-badge.new { background: rgba(232,197,71,0.15); color: var(--accent2); }
+.universe-pill {
+  margin: 6px 10px 4px;
+  padding: 10px 12px;
+  background: var(--dark);
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  font-size: 0.8rem; font-weight: 600;
+  transition: background 0.4s;
+}
+.universe-pill-sub { font-family: 'DM Mono', monospace; font-size:0.54rem; color: var(--dim); margin-top: 2px; }
+
+/* CONTENT */
+.content { padding: 28px 28px 60px; overflow-y: auto; }
+.page { display: none; flex-direction: column; gap: 24px; }
+.page.active { display: flex; }
+
+/* PAGE HEADER */
+.page-greeting {
+  font-family: 'Instrument Serif', serif;
+  font-size: 2.4rem; color: var(--text);
+  letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 5px;
+}
+.page-sub { font-size: 0.82rem; color: var(--dim); }
+
+/* STATS */
+.stats-row { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; }
+.stat-card {
+  background: var(--bg2); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow);
+  border: 1px solid var(--border); position: relative; overflow: hidden;
+  transition: all 0.4s;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.stat-card.dark { background: var(--dark); }
+.stat-card.accent { background: var(--accent); }
+.stat-label { font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--dim); margin-bottom:8px; }
+.stat-card.dark .stat-label { color: rgba(128,128,128,0.7); }
+.stat-card.accent .stat-label { color: rgba(26,23,20,0.5); }
+.stat-value { font-family:'Instrument Serif',serif; font-size:2.2rem; line-height:1; color:var(--text); letter-spacing:-0.02em; }
+.stat-card.dark .stat-value { color: var(--bg); }
+.stat-card.accent .stat-value { color: var(--dark); }
+.stat-change { font-family:'DM Mono',monospace; font-size:0.58rem; color:var(--green); margin-top:5px; }
+.stat-icon { position:absolute; bottom:14px; right:16px; font-size:1.4rem; opacity:0.1; }
+
+/* CARDS */
+.card {
+  background: var(--bg2); border-radius: var(--radius);
+  border: 1px solid var(--border); box-shadow: var(--shadow);
+  overflow: hidden; transition: all 0.4s;
+}
+.card-hdr {
+  padding: 16px 18px 13px;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.card-title { font-size:0.86rem; font-weight:600; color:var(--text); flex:1; }
+.card-body { padding: 14px 18px; }
+.card-tag {
+  font-family:'DM Mono',monospace; font-size:0.56rem;
+  padding:3px 8px; border-radius:20px; background:var(--bg4); color:var(--dim);
+}
+.card-tag.live { background:rgba(34,197,94,0.1); color:var(--green); display:flex; align-items:center; gap:4px; }
+.card-tag.live::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--green); animation:pulse 1.5s ease infinite; }
+
+/* GRIDS */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+.grid-main { display:grid; grid-template-columns:1.4fr 1fr; gap:14px; }
+
+/* CHIEF */
+.chief-card {
+  background: var(--dark); border-radius: var(--radius);
+  padding: 22px; box-shadow: var(--shadow-lg); position:relative; overflow:hidden;
+  transition: background 0.4s;
+}
+.chief-card::before { content:''; position:absolute; top:-40px; right:-40px; width:180px; height:180px; background:radial-gradient(circle,rgba(232,197,71,0.12),transparent 70%); pointer-events:none; }
+.chief-eyebrow { font-family:'DM Mono',monospace; font-size:0.58rem; color:var(--accent); letter-spacing:0.1em; margin-bottom:7px; }
+.chief-title { font-family:'Instrument Serif',serif; font-size:1.35rem; color:var(--bg); letter-spacing:-0.02em; margin-bottom:3px; }
+.chief-sub { font-size:0.76rem; color:rgba(128,128,128,0.6); margin-bottom:16px; }
+.chief-decision { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius-sm); padding:13px 15px; margin-bottom:14px; }
+.chief-dec-label { font-family:'DM Mono',monospace; font-size:0.54rem; color:var(--accent); margin-bottom:5px; letter-spacing:0.06em; }
+.chief-dec-text { font-size:0.8rem; color:rgba(200,200,200,0.75); line-height:1.6; }
+.chief-dec-text strong { color:var(--bg); }
+.chief-actions { display:flex; gap:8px; }
+.chief-btn { flex:1; padding:10px 14px; border-radius:var(--radius-sm); font-family:'DM Sans',sans-serif; font-size:0.76rem; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; }
+.chief-btn.approve { background:var(--accent); color:var(--dark); }
+.chief-btn.modify { background:rgba(255,255,255,0.1); color:rgba(200,200,200,0.7); border:1px solid rgba(255,255,255,0.15); }
+
+/* PIPELINE */
+.pipe-step { display:flex; align-items:center; gap:11px; padding:11px 18px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.2s; position:relative; }
+.pipe-step:last-child { border-bottom:none; }
+.pipe-step:hover { background:var(--bg3); }
+.pipe-step::after { content:'›'; position:absolute; right:14px; color:var(--dim); }
+.ps-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.ps-dot.done { background:var(--green); }
+.ps-dot.active { background:var(--accent2); animation:pulse 1s ease infinite; }
+.ps-dot.wait { background:var(--border2); }
+.ps-info { flex:1; padding-right:18px; }
+.ps-name { font-size:0.8rem; font-weight:500; color:var(--text2); margin-bottom:1px; }
+.ps-detail { font-family:'DM Mono',monospace; font-size:0.54rem; color:var(--dim); }
+.ps-badge { font-family:'DM Mono',monospace; font-size:0.52rem; padding:2px 8px; border-radius:20px; margin-right:16px; flex-shrink:0; }
+.psb-done { background:rgba(34,197,94,0.1); color:var(--green); }
+.psb-active { background:rgba(232,197,71,0.15); color:var(--accent2); }
+.psb-wait { background:var(--bg4); color:var(--dim); }
+
+/* EMOTION */
+.emotion-item { display:flex; align-items:center; gap:10px; margin-bottom:9px; }
+.emotion-label { font-size:0.76rem; color:var(--text2); width:88px; flex-shrink:0; }
+.emotion-track { flex:1; height:7px; background:var(--bg4); border-radius:7px; overflow:hidden; }
+.emotion-fill { height:100%; border-radius:7px; transition:width 1s ease; }
+.emotion-pct { font-family:'DM Mono',monospace; font-size:0.58rem; color:var(--dim); width:30px; text-align:right; }
+
+/* PLATFORM */
+.platform-row { display:flex; align-items:center; gap:12px; padding:12px 18px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.2s; }
+.platform-row:last-child { border-bottom:none; }
+.platform-row:hover { background:var(--bg3); }
+.plat-icon { width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:0.95rem; flex-shrink:0; }
+.plat-name { font-size:0.8rem; font-weight:600; color:var(--text); }
+.plat-handle { font-family:'DM Mono',monospace; font-size:0.52rem; color:var(--dim); }
+.plat-stats { display:flex; gap:14px; margin-left:auto; }
+.plat-stat-val { font-family:'Instrument Serif',serif; font-size:1rem; color:var(--text); line-height:1; }
+.plat-stat-label { font-family:'DM Mono',monospace; font-size:0.48rem; color:var(--dim); }
+.live-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 0 3px rgba(34,197,94,0.15); animation:pulse 1.5s ease infinite; flex-shrink:0; margin-left:6px; }
+
+/* LOG */
+.log-item { display:flex; align-items:flex-start; gap:9px; padding:9px 18px; border-bottom:1px solid var(--border); }
+.log-item:last-child { border-bottom:none; }
+.log-dot-outer { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.log-dot-outer.success { background:rgba(34,197,94,0.1); }
+.log-dot-outer.info { background:rgba(59,130,246,0.1); }
+.log-dot-outer.warn { background:rgba(249,115,22,0.1); }
+.log-inner { width:6px; height:6px; border-radius:50%; }
+.log-dot-outer.success .log-inner { background:var(--green); }
+.log-dot-outer.info .log-inner { background:var(--blue); }
+.log-dot-outer.warn .log-inner { background:var(--orange); }
+.log-time { font-family:'DM Mono',monospace; font-size:0.56rem; color:var(--dim); flex-shrink:0; margin-top:2px; }
+.log-text { font-size:0.76rem; color:var(--text2); line-height:1.4; }
+.log-text strong { color:var(--text); font-weight:600; }
+
+/* AGENT MINI */
+.agent-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:14px; }
+.agent-mini { background:var(--bg3); border-radius:var(--radius-sm); padding:13px; cursor:pointer; transition:all 0.2s; border:1px solid var(--border); }
+.agent-mini:hover { background:var(--bg4); box-shadow:var(--shadow); }
+.agent-mini-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.am-icon { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; flex-shrink:0; background:var(--bg2); border:1px solid var(--border); }
+.am-name { font-size:0.76rem; font-weight:600; color:var(--text); }
+.am-tool { font-family:'DM Mono',monospace; font-size:0.48rem; color:var(--dim); }
+.am-status { margin-left:auto; font-family:'DM Mono',monospace; font-size:0.48rem; padding:2px 6px; border-radius:20px; flex-shrink:0; }
+.ams-run { background:rgba(34,197,94,0.1); color:var(--green); }
+.ams-done { background:rgba(59,130,246,0.1); color:var(--blue); }
+.ams-wait { background:var(--bg4); color:var(--dim); }
+.am-bar { height:3px; background:rgba(0,0,0,0.06); border-radius:3px; overflow:hidden; }
+.am-fill { height:100%; border-radius:3px; transition:width 1s; }
+
+/* RUN BTN */
+.run-btn { width:100%; padding:15px; background:var(--dark); color:var(--bg); border:none; border-radius:var(--radius); font-family:'DM Sans',sans-serif; font-size:0.86rem; font-weight:700; cursor:pointer; transition:all 0.3s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.run-btn:hover { box-shadow:var(--shadow-lg); }
+
+/* TOAST */
+.toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--dark); color:var(--bg); font-size:0.78rem; font-weight:500; padding:10px 20px; border-radius:30px; z-index:1000; opacity:0; transition:all 0.3s; pointer-events:none; white-space:nowrap; box-shadow:var(--shadow-lg); }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+
+/* COMPACT SIDEBAR */
+.sidebar.compact { padding: 12px 8px !important; overflow: hidden; }
+.sidebar.compact .sidebar-section { display: none !important; }
+.sidebar.compact .universe-pill { padding: 8px; border-radius: 10px; }
+.sidebar.compact .universe-pill-sub { display: none !important; }
+.sidebar.compact .universe-pill > *:not(.universe-pill-sub):first-child { font-size: 0.6rem; text-align: center; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar.compact .sidebar-item { padding: 10px; justify-content: center; }
+.sidebar.compact .sidebar-item .si-icon { width: 100%; text-align: center; font-size: 1.1rem; margin: 0; }
+.sidebar.compact .sidebar-item > *:not(.si-icon) { display: none !important; }
+.sidebar.compact .sidebar-item span { display: none !important; }
+
+
+/* PROFILE DRAWER */
+/* Status animations — same as agents! */
+@keyframes spin-st{to{transform:rotate(360deg)}}
+@keyframes blink-eye-st{0%,88%,100%{transform:scaleY(1)}44%,56%{transform:scaleY(0.08)}}
+@keyframes wave-bar-st{0%,100%{height:3px}50%{height:12px}}
+@keyframes dot-b-st{0%,80%,100%{transform:translateY(0);opacity:0.4}40%{transform:translateY(-4px);opacity:1}}
+@keyframes scan-st{0%{left:-40%}100%{left:110%}}
+@keyframes cup-st{0%,100%{transform:rotate(0deg)}30%{transform:rotate(-4deg)}70%{transform:rotate(4deg)}}
+@keyframes steam-st{0%,100%{opacity:0;transform:translateY(0)}20%{opacity:0.7}80%{opacity:0;transform:translateY(-6px)}}
+@keyframes hb-st{0%,100%{transform:scale(1)}15%{transform:scale(1.3)}30%{transform:scale(1)}45%{transform:scale(1.15)}}
+@keyframes bounce-st{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes svg-spin{to{transform:rotate(360deg)}}
+@keyframes fade-txt{0%,22%{opacity:1}27%,93%{opacity:0}98%,100%{opacity:1}}
+
+.st-anim{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.st-spin{width:13px;height:13px;border:2px solid rgba(59,130,246,0.2);border-top-color:#3b82f6;border-radius:50%;animation:spin-st 0.8s linear infinite;}
+.st-spin.g{border-color:rgba(34,197,94,0.2);border-top-color:#22c55e;}
+.st-spin.o{border-color:rgba(249,115,22,0.2);border-top-color:#f97316;}
+.st-spin.p{border-color:rgba(139,92,246,0.2);border-top-color:#8b5cf6;}
+.st-spin.pk{border-color:rgba(236,72,153,0.2);border-top-color:#ec4899;}
+.st-eye{width:16px;height:10px;border:1.5px solid #8b5cf6;border-radius:50%;display:flex;align-items:center;justify-content:center;animation:blink-eye-st 2.8s ease-in-out infinite;overflow:hidden;}
+.st-eye-p{width:4px;height:4px;border-radius:50%;background:#8b5cf6;}
+.st-wave{display:flex;gap:1.5px;align-items:center;height:13px;}
+.st-wave span{width:2.5px;border-radius:2px;background:#f97316;animation:wave-bar-st 0.75s ease-in-out infinite;}
+.st-wave span:nth-child(2){animation-delay:0.1s}.st-wave span:nth-child(3){animation-delay:0.2s}.st-wave span:nth-child(4){animation-delay:0.1s}
+.st-dots{display:flex;gap:2.5px;align-items:center;}
+.st-dots span{width:4px;height:4px;border-radius:50%;background:#3b82f6;animation:dot-b-st 1.1s ease-in-out infinite;}
+.st-dots span:nth-child(2){animation-delay:0.12s}.st-dots span:nth-child(3){animation-delay:0.24s}
+.st-scan{width:38px;height:3px;background:rgba(34,197,94,0.15);border-radius:3px;overflow:hidden;position:relative;}
+.st-scan::after{content:'';position:absolute;top:0;left:-40%;width:40%;height:100%;background:linear-gradient(90deg,transparent,#22c55e,transparent);animation:scan-st 1.1s ease-in-out infinite;}
+.st-heart{font-size:0.9rem;animation:hb-st 1.5s ease-in-out infinite;display:inline-block;}
+.st-coffee{position:relative;display:flex;align-items:center;font-size:0.85rem;}
+.st-coffee-cup{animation:cup-st 2.2s ease-in-out infinite;display:inline-block;}
+.st-coffee-steam{position:absolute;top:-4px;left:50%;transform:translateX(-50%);display:flex;gap:1.5px;}
+.st-coffee-steam span{width:1.5px;height:4px;background:#f97316;border-radius:2px;opacity:0;}
+.st-coffee-steam span:nth-child(1){animation:steam-st 1.6s 0s infinite;}
+.st-coffee-steam span:nth-child(2){animation:steam-st 1.6s 0.3s infinite;}
+.st-coffee-steam span:nth-child(3){animation:steam-st 1.6s 0.6s infinite;}
+.st-bounce{display:flex;gap:3px;align-items:flex-end;height:14px;}
+.st-bounce span{width:5px;height:5px;border-radius:50%;background:#ec4899;animation:bounce-st 0.9s ease-in-out infinite;}
+.st-bounce span:nth-child(2){animation-delay:0.2s;background:#f97316;}
+.st-bounce span:nth-child(3){animation-delay:0.4s;background:#f59e0b;}
+.st-svg svg{animation:svg-spin 1.4s linear infinite;}
+.st-txt-wrap{position:relative;width:70px;height:14px;overflow:hidden;}
+.st-txt{position:absolute;top:0;left:0;font-family:'DM Mono',monospace;font-size:0.5rem;color:#8b5cf6;white-space:nowrap;opacity:0;}
+.st-txt:nth-child(1){animation:fade-txt 4s 0s infinite;}
+.st-txt:nth-child(2){animation:fade-txt 4s 1.3s infinite;}
+.st-txt:nth-child(3){animation:fade-txt 4s 2.6s infinite;}
+.st-zzz{font-size:0.8rem;animation:hb-st 3s ease-in-out infinite;display:inline-block;}
+
+/* Status option row */
+.st-opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;background:var(--bg3);border:1.5px solid var(--border);cursor:pointer;margin-bottom:7px;transition:all 0.2s;}
+.st-opt:last-child{margin-bottom:0;}
+.st-opt:hover{border-color:var(--border2);background:var(--bg4);}
+.st-opt.active{background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.25);}
+.st-opt-info{flex:1;}
+.st-opt-name{font-size:0.76rem;font-weight:600;}
+.st-opt-desc{font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-top:1px;}
+
+.profile-drawer-content { padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+.profile-av-center { width: 72px; height: 72px; border-radius: 50%; background: var(--dark); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 6px; border: 3px solid var(--accent); box-shadow: 0 0 0 6px rgba(232,197,71,0.1); cursor: pointer; transition: all 0.2s; }
+.profile-av-center:hover { transform: scale(1.05); }
+.emoji-grid-sm { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; margin-top: 6px; }
+.eg-opt { font-size: 1.2rem; cursor: pointer; padding: 4px; border-radius: 7px; text-align: center; transition: all 0.15s; border: 2px solid transparent; }
+.eg-opt:hover { background: var(--bg4); }
+.eg-opt.sel { border-color: var(--dark); background: var(--bg4); }
+.pronomi-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.pronome { padding: 5px 11px; border-radius: 20px; font-family: 'DM Mono', monospace; font-size: 0.56rem; background: var(--bg3); border: 1.5px solid var(--border); cursor: pointer; transition: all 0.2s; color: var(--mid); }
+.pronome:hover { border-color: var(--border2); }
+.pronome.sel { background: var(--dark); color: #fff; border-color: var(--dark); }
+
+
+/* MODAL OVERLAY */
+.modal-overlay { position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.22);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s; }
+.modal-overlay.open { opacity:1;pointer-events:all; }
+.modal { background:var(--bg2);border-radius:24px;padding:32px;max-width:92vw;box-shadow:var(--shadow-lg);animation:modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
+@keyframes modalIn { from{opacity:0;transform:scale(0.95) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:4px; }
+
+/* ===== SETTINGS PAGE ===== */
+.settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.settings-full { grid-column:1/-1; }
+
+/* Theme cards */
+.theme-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.theme-card {
+  border-radius: var(--radius-sm); overflow:hidden;
+  border: 2px solid var(--border); cursor:pointer;
+  transition: all 0.2s; position:relative;
+}
+.theme-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+.theme-card.selected { border-color:var(--accent); }
+.theme-card.selected::after { content:'✓'; position:absolute; top:8px; right:8px; width:20px; height:20px; border-radius:50%; background:var(--accent); color:#000; display:flex; align-items:center; justify-content:center; font-size:0.6rem; font-weight:700; }
+.theme-preview { height:80px; position:relative; overflow:hidden; }
+.theme-preview-bar { position:absolute; bottom:0; left:0; right:0; height:28px; display:flex; gap:4px; padding:6px 8px; align-items:center; }
+.theme-preview-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+.theme-name { padding:9px 11px; font-size:0.74rem; font-weight:600; border-top:1px solid var(--border); }
+.theme-desc { padding:0 11px 9px; font-family:'DM Mono',monospace; font-size:0.52rem; color:var(--dim); }
+
+/* Font size control */
+.font-control { display:flex; align-items:center; gap:12px; padding:14px 0; }
+.fc-label { font-size:0.82rem; font-weight:500; color:var(--text); flex:1; }
+.fc-desc { font-family:'DM Mono',monospace; font-size:0.56rem; color:var(--dim); margin-top:1px; }
+.fc-buttons { display:flex; align-items:center; gap:8px; }
+.fc-btn { width:32px; height:32px; border-radius:8px; background:var(--bg3); border:1px solid var(--border); color:var(--text); font-size:0.85rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; font-family:'DM Sans',sans-serif; }
+.fc-btn:hover { background:var(--bg4); }
+.fc-val { font-family:'DM Mono',monospace; font-size:0.7rem; color:var(--text); min-width:32px; text-align:center; }
+.fc-slider { -webkit-appearance:none; width:120px; height:4px; border-radius:4px; background:var(--bg4); outline:none; }
+.fc-slider::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:var(--accent); cursor:pointer; }
+
+/* Screenshot to theme */
+.screenshot-drop {
+  border:2px dashed var(--border2); border-radius:var(--radius);
+  padding:32px; text-align:center; cursor:pointer; transition:all 0.2s;
+  position:relative; overflow:hidden;
+}
+.screenshot-drop:hover { border-color:var(--accent); background:var(--bg3); }
+.screenshot-drop.dragover { border-color:var(--accent); background:rgba(232,197,71,0.05); }
+.sd-icon { font-size:2.5rem; margin-bottom:10px; }
+.sd-title { font-size:0.9rem; font-weight:600; color:var(--text); margin-bottom:4px; }
+.sd-desc { font-size:0.76rem; color:var(--dim); line-height:1.5; }
+.sd-input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+
+/* Generated theme preview */
+.gen-theme-preview {
+  background:var(--bg3); border-radius:var(--radius-sm);
+  border:1px solid var(--border); padding:16px; display:none;
+}
+.gtp-colors { display:flex; gap:8px; margin-bottom:12px; }
+.gtp-color { flex:1; height:36px; border-radius:8px; transition:all 0.3s; }
+.gtp-label { font-family:'DM Mono',monospace; font-size:0.56rem; color:var(--dim); margin-top:4px; text-align:center; }
+
+/* Fixer output */
+.fixer-item { display:flex; align-items:flex-start; gap:10px; padding:11px 0; border-bottom:1px solid var(--border); }
+.fixer-item:last-child { border-bottom:none; }
+.fixer-ico { width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:0.8rem; flex-shrink:0; }
+.fixer-info { flex:1; }
+.fixer-title { font-size:0.78rem; font-weight:600; color:var(--text); margin-bottom:2px; }
+.fixer-desc { font-family:'DM Mono',monospace; font-size:0.54rem; color:var(--dim); line-height:1.5; }
+.fixer-action { font-family:'DM Mono',monospace; font-size:0.52rem; padding:3px 9px; border-radius:20px; background:var(--bg4); color:var(--dim); cursor:pointer; transition:all 0.2s; border:none; flex-shrink:0; margin-top:2px; }
+.fixer-action.fix { background:rgba(34,197,94,0.1); color:var(--green); }
+.fixer-action:hover { opacity:0.8; }
+
+/* Spacing control */
+.spacing-preview { display:flex; gap:8px; margin-top:10px; }
+.sp-card { flex:1; background:var(--bg2); border-radius:var(--radius-sm); padding:12px; border:1px solid var(--border); text-align:center; cursor:pointer; transition:all 0.2s; }
+.sp-card.sel { border-color:var(--accent); background:rgba(232,197,71,0.05); }
+.sp-card:hover { border-color:var(--border2); }
+.sp-preview { margin:0 auto 6px; background:var(--bg4); border-radius:4px; }
+.sp-name { font-size:0.68rem; font-weight:600; color:var(--text); }
+.sp-desc { font-family:'DM Mono',monospace; font-size:0.5rem; color:var(--dim); }
+
+/* Toggle */
+.toggle-row { display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid var(--border); }
+.toggle-row:last-child { border-bottom:none; }
+.toggle-label { font-size:0.8rem; font-weight:500; color:var(--text); }
+.toggle-desc { font-family:'DM Mono',monospace; font-size:0.54rem; color:var(--dim); margin-top:1px; }
+.toggle { width:38px; height:20px; background:var(--bg4); border-radius:20px; position:relative; cursor:pointer; transition:background 0.2s; flex-shrink:0; }
+.toggle::after { content:''; position:absolute; top:3px; left:3px; width:14px; height:14px; background:#fff; border-radius:50%; transition:left 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2); }
+.toggle.on { background:var(--green); }
+.toggle.on::after { left:21px; }
+
+/* Hype stuff */
+.hype-big { font-family:'Instrument Serif',serif; font-size:3.5rem; line-height:1; letter-spacing:-0.03em; color:var(--text); margin-bottom:4px; }
+.hype-bar-track { height:8px; background:var(--bg4); border-radius:8px; overflow:hidden; margin-bottom:12px; }
+.hype-bar-fill { height:100%; border-radius:8px; background:linear-gradient(90deg,var(--accent),var(--orange)); transition:width 1s; }
+.hype-chip { font-family:'DM Mono',monospace; font-size:0.56rem; padding:3px 9px; border-radius:20px; background:var(--bg4); color:var(--mid); }
+
+/* Price */
+.price-big { font-family:'Instrument Serif',serif; font-size:2.8rem; color:var(--text); letter-spacing:-0.03em; margin-bottom:4px; }
+.price-suggestion-box { background:rgba(232,197,71,0.08); border:1px solid rgba(232,197,71,0.2); border-radius:var(--radius-sm); padding:11px 13px; margin:10px 0; }
+.psb-label { font-family:'DM Mono',monospace; font-size:0.54rem; color:var(--accent2); margin-bottom:4px; }
+.psb-text { font-size:0.76rem; color:var(--text2); line-height:1.5; }
+.price-actions { display:flex; gap:8px; }
+.price-btn { flex:1; padding:9px; border-radius:var(--radius-sm); font-size:0.74rem; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; }
+.pb-yes { background:var(--dark); color:var(--bg); }
+.pb-no { background:var(--bg4); color:var(--mid); }
+
+/* Drawer */
+.panel { position:fixed; inset:0; z-index:400; background:rgba(0,0,0,0.2); backdrop-filter:blur(4px); display:flex; justify-content:flex-end; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+.panel.open { opacity:1; pointer-events:all; }
+.panel-drawer { width:460px; background:var(--bg2); height:100%; overflow-y:auto; box-shadow:-4px 0 40px rgba(0,0,0,0.15); transform:translateX(100%); transition:transform 0.35s cubic-bezier(0.4,0,0.2,1); }
+.panel.open .panel-drawer { transform:translateX(0); }
+.drawer-topbar { display:flex; align-items:center; gap:10px; padding:0 22px; height:58px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg2); z-index:5; }
+.drawer-back { padding:6px 12px; border-radius:var(--radius-sm); background:var(--bg3); border:1px solid var(--border); font-size:0.76rem; font-weight:500; color:var(--mid); cursor:pointer; transition:all 0.2s; }
+.drawer-back:hover { background:var(--bg4); color:var(--text); }
+.drawer-title { font-size:0.88rem; font-weight:700; flex:1; color:var(--text); }
+.drawer-content { padding:22px; display:flex; flex-direction:column; gap:18px; }
+.drawer-card { background:var(--bg3); border-radius:var(--radius-sm); border:1px solid var(--border); overflow:hidden; }
+.dc-hdr { padding:13px 15px; border-bottom:1px solid var(--border); font-size:0.82rem; font-weight:600; color:var(--text); display:flex; align-items:center; gap:6px; }
+.dc-body { padding:13px 15px; }
+.drawer-btn { padding:10px 16px; border-radius:var(--radius-sm); font-family:'DM Sans',sans-serif; font-size:0.78rem; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; }
+.db-dark { background:var(--dark); color:var(--bg); }
+.db-light { background:var(--bg4); color:var(--mid); }
+.db-accent { background:var(--accent); color:var(--dark); }
+.drawer-textarea { width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:11px 13px; font-family:'DM Sans',sans-serif; font-size:0.78rem; color:var(--text); resize:none; outline:none; line-height:1.6; transition:border-color 0.2s; }
+.drawer-textarea:focus { border-color:var(--accent); }
+.drawer-textarea::placeholder { color:var(--dim); }
+.conv-feed { display:flex; flex-direction:column; gap:9px; max-height:300px; overflow-y:auto; }
+.conv-bubble-wrap { display:flex; gap:8px; align-items:flex-start; }
+.conv-bubble-wrap.right { flex-direction:row-reverse; }
+.conv-av-sm { width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.62rem; flex-shrink:0; border:1px solid var(--border); }
+.conv-av-sm.chief { background:var(--dark); color:var(--accent); }
+.conv-bub { max-width:80%; padding:8px 11px; border-radius:11px; font-size:0.74rem; line-height:1.55; }
+.conv-bub.from-chief { background:var(--dark); color:rgba(200,200,200,0.85); border-bottom-left-radius:3px; }
+.conv-bub.from-agent { background:var(--bg2); border:1px solid var(--border); color:var(--text2); border-bottom-right-radius:3px; }
+.conv-bub strong { color:var(--text); }
+.conv-bub.from-chief strong { color:#fff; }
+.conv-time { font-family:'DM Mono',monospace; font-size:0.48rem; color:var(--dim); margin-top:3px; }
+.char-card-d { background:var(--bg2); border-radius:var(--radius-sm); border:2px solid var(--border); padding:13px; cursor:pointer; transition:all 0.2s; }
+.char-card-d:hover { border-color:var(--border2); }
+.char-card-d.sel { border-color:var(--accent); }
+.char-photo-d { width:100%; aspect-ratio:1; border-radius:9px; background:linear-gradient(135deg,var(--bg3),var(--bg4)); display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin-bottom:9px; }
+.char-name-d { font-size:0.8rem; font-weight:700; color:var(--text); }
+.char-role-d { font-family:'DM Mono',monospace; font-size:0.52rem; color:var(--dim); }
+.char-tags-d { display:flex; gap:4px; flex-wrap:wrap; margin-top:6px; }
+.char-tag-d { font-family:'DM Mono',monospace; font-size:0.48rem; padding:2px 6px; border-radius:20px; background:var(--bg4); color:var(--dim); }
+.mix-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); }
+.mix-row:last-child { border-bottom:none; }
+.mix-ico { font-size:0.95rem; width:22px; text-align:center; flex-shrink:0; }
+.mix-name { font-size:0.74rem; font-weight:500; width:78px; flex-shrink:0; color:var(--text2); }
+.mix-track { flex:1; height:5px; background:var(--bg4); border-radius:5px; overflow:hidden; cursor:pointer; }
+.mix-fill { height:100%; border-radius:5px; }
+.mix-pct { font-family:'DM Mono',monospace; font-size:0.54rem; color:var(--dim); width:28px; text-align:right; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon" id="logoIcon">⚡</div>
+    Content Factory
+  </div>
+  <nav class="top-nav">
+    <button class="top-nav-item active" onclick="switchPage('home',this)">Dashboard</button>
+    <button class="top-nav-item" onclick="switchPage('agents',this)">Agenti</button>
+    <button class="top-nav-item" onclick="switchPage('social',this)">Social</button>
+    <button class="top-nav-item" onclick="switchPage('archive',this)">Archivio</button>
+    <button class="top-nav-item" onclick="switchPage('cyber',this)">🛡️ Sicurezza</button>
+    <button class="top-nav-item" onclick="switchPage('lounge',this)">☕ Sala Relax</button>
+    <button class="top-nav-item" onclick="switchPage('settings',this)">⚙️ Impostazioni</button>
+  </nav>
+  <div class="topbar-sep"></div>
+  <div class="topbar-right">
+    <div class="top-badge"><div class="tbdot"></div>13 agenti</div>
+    <div id="profilePill" onclick="openProfileDrawer()" style="display:flex;align-items:center;gap:7px;padding:5px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;cursor:pointer;transition:all 0.2s;box-shadow:var(--shadow);" onmouseover="this.style.background='var(--bg4)'" onmouseout="this.style.background='var(--bg2)'">
+      <div id="profilePillAv" style="width:22px;height:22px;border-radius:50%;background:var(--dark);display:flex;align-items:center;justify-content:center;font-size:0.62rem;border:1.5px solid var(--accent);flex-shrink:0;">🦁</div>
+      <span id="profilePillName" style="font-family:'DM Sans',sans-serif;font-size:0.76rem;font-weight:600;color:var(--text);">Il Capo</span>
+      <div id="profilePillStatusDot" style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
+    </div>
+    <div id="themeIndicator" style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--dim);padding:5px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;cursor:pointer;" onclick="switchPage('settings',document.querySelectorAll('.top-nav-item')[5])">
+      🎨 Chiaro
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="universe-pill">
+      Call Me River
+      <div class="universe-pill-sub">Universe · 🔥 Hype 94</div>
+    </div>
+    <div class="sidebar-section">Principale</div>
+    <div class="sidebar-item active" onclick="switchSidebar(this,'home')"><div class="si-icon">🏠</div>Dashboard</div>
+    <div class="sidebar-item" onclick="openDrawer('drawer-chief')"><div class="si-icon">👑</div>Capo Redattore<span class="si-badge new">3</span></div>
+    <div class="sidebar-item" onclick="openDrawer('drawer-editorial')"><div class="si-icon">📖</div>Consulente Ed.</div>
+    <div class="sidebar-section">Produzione</div>
+    <div class="sidebar-item" onclick="switchSidebar(this,'agents')"><div class="si-icon">🤖</div>Agenti<span class="si-badge">13</span></div>
+    <div class="sidebar-item" onclick="openDrawer('drawer-chars')"><div class="si-icon">🎭</div>Personaggi</div>
+    <div class="sidebar-item" onclick="openDrawer('drawer-orch')"><div class="si-icon">🎻</div>Orchestra AI</div>
+    <div class="sidebar-item" onclick="openDrawer('drawer-music')"><div class="si-icon">🎵</div>Musica<span class="si-badge hot">6</span></div>
+    <div class="sidebar-section">Distribuzione</div>
+    <div class="sidebar-item" onclick="switchSidebar(this,'social')"><div class="si-icon">📱</div>Social & Hype</div>
+    <div class="sidebar-item" onclick="switchSidebar(this,'archive')"><div class="si-icon">📦</div>Archivio</div>
+    <div class="sidebar-item" onclick="switchSidebar(this,'approva')"><div class="si-icon">✅</div>Approva<span class="si-badge hot">3</span></div>
+    <div class="sidebar-section">App</div>
+    <div class="sidebar-item" onclick="switchSidebar(this,'lounge')"><div class="si-icon">☕</div>Sala Relax<span class="si-badge" style="background:rgba(249,115,22,0.08);color:var(--orange)">8</span></div>
+    <div class="sidebar-item" onclick="switchSidebar(this,'settings')"><div class="si-icon">⚙️</div>Impostazioni</div>
+    <div class="sidebar-item" onclick="switchSidebar(this,'cyber')"><div class="si-icon">🛡️</div>Cybersecurity<span class="si-badge" style="background:rgba(34,197,94,0.1);color:var(--green)">✓</span></div>
+    <div class="sidebar-item" onclick="openDrawer('drawer-sys')"><div class="si-icon">🔧</div>Sistema<span class="si-badge" style="background:rgba(249,115,22,0.1);color:var(--orange)">1</span></div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-home">
+      <div><div class="page-greeting">Buongiorno 👋</div><div class="page-sub">Il Capo Redattore ha 3 decisioni per te · Call Me River Universe</div></div>
+      <div class="stats-row">
+        <div class="stat-card dark"><div class="stat-label">🔥 Hype Score</div><div class="stat-value">94</div><div class="stat-change">↑ In crescita</div><div class="stat-icon">🔥</div></div>
+        <div class="stat-card accent"><div class="stat-label">💰 Guadagni</div><div class="stat-value">€31</div><div class="stat-change">↑ +€12 sett.</div><div class="stat-icon">💰</div></div>
+        <div class="stat-card"><div class="stat-label">📚 Libri</div><div class="stat-value">3</div><div class="stat-change">↑ +2 sett.</div><div class="stat-icon">📚</div></div>
+        <div class="stat-card"><div class="stat-label">👁️ Views</div><div class="stat-value">110K</div><div class="stat-change">↑ TikTok EN</div><div class="stat-icon">👁️</div></div>
+        <div class="stat-card"><div class="stat-label">🎵 Canzoni</div><div class="stat-value">6</div><div class="stat-change">↑ +3 nuove</div><div class="stat-icon">🎵</div></div>
+      </div>
+      <div class="grid-main">
+        <div class="chief-card">
+          <div class="chief-eyebrow">👑 CAPO REDATTORE · DECISIONE URGENTE</div>
+          <div class="chief-title">Director ti parla</div>
+          <div class="chief-sub">Coordina tutti gli agenti · Call Me River</div>
+          <div class="chief-decision">
+            <div class="chief-dec-label">📊 ANALISI COMPLETATA</div>
+            <div class="chief-dec-text">Ho analizzato il sentiment (River <strong>+23%</strong> su Dante), le vendite (<strong>47 copie</strong>) e i commenti (<strong>89 chiedono il seguito</strong>).<br><br>La mia raccomandazione: <strong>scrivi il Cap.7 dal punto di vista di River.</strong></div>
+          </div>
+          <div class="chief-actions">
+            <button class="chief-btn approve" onclick="approveChief()">✓ Approvo — scrivi dal POV di River</button>
+            <button class="chief-btn modify" onclick="openDrawer('drawer-chief')">✏️ Modifica</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🔄 Pipeline attiva</div><span class="card-tag">Ep.01</span></div>
+          <div class="pipe-step"><div class="ps-dot done"></div><div class="ps-info"><div class="ps-name">Libro scritto</div><div class="ps-detail">8 capitoli · 32.530 parole</div></div><div class="ps-badge psb-done">✓</div></div>
+          <div class="pipe-step"><div class="ps-dot active"></div><div class="ps-info"><div class="ps-name">Musica in generazione</div><div class="ps-detail">6 canzoni · orchestra AI</div></div><div class="ps-badge psb-active">●</div></div>
+          <div class="pipe-step"><div class="ps-dot active"></div><div class="ps-info"><div class="ps-name">PDF impaginazione</div><div class="ps-detail">Canva · 65%</div></div><div class="ps-badge psb-active">65%</div></div>
+          <div class="pipe-step"><div class="ps-dot wait"></div><div class="ps-info"><div class="ps-name">Video episodio</div><div class="ps-detail">Runway ML</div></div><div class="ps-badge psb-wait">attesa</div></div>
+          <div class="pipe-step"><div class="ps-dot wait"></div><div class="ps-info"><div class="ps-name">Pubblicazione</div><div class="ps-detail">Amazon · YouTube · TikTok</div></div><div class="ps-badge psb-wait">attesa</div></div>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="card"><div class="card-hdr"><div class="card-title">🔥 Hype Universe</div><span class="card-tag live">live</span></div><div class="card-body"><div class="hype-big">94</div><div style="font-size:0.76rem;color:var(--dim);margin-bottom:12px">Call Me River · In crescita</div><div class="hype-bar-track"><div class="hype-bar-fill" style="width:94%"></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="hype-chip">📚 ⚡72</span><span class="hype-chip">🎬 🔥94</span><span class="hype-chip">📱 🔥88</span></div></div></div>
+        <div class="card"><div class="card-hdr"><div class="card-title">🌡️ Sentiment</div></div><div class="card-body"><div class="emotion-item"><div class="emotion-label">❤️ Amore</div><div class="emotion-track"><div class="emotion-fill" style="width:67%;background:#ff4d6d"></div></div><div class="emotion-pct">67%</div></div><div class="emotion-item"><div class="emotion-label">⏳ Attesa</div><div class="emotion-track"><div class="emotion-fill" style="width:58%;background:var(--purple)"></div></div><div class="emotion-pct">58%</div></div><div class="emotion-item"><div class="emotion-label">😢 Malinconia</div><div class="emotion-track"><div class="emotion-fill" style="width:41%;background:var(--blue)"></div></div><div class="emotion-pct">41%</div></div><div class="emotion-item"><div class="emotion-label">🌱 Speranza</div><div class="emotion-track"><div class="emotion-fill" style="width:34%;background:var(--green)"></div></div><div class="emotion-pct">34%</div></div></div></div>
+        <div class="card"><div class="card-hdr"><div class="card-title">💸 Prezzi</div><span class="card-tag" style="background:rgba(232,197,71,0.15);color:var(--accent2)">💡</span></div><div class="card-body"><div class="price-big">€3.99</div><div class="price-suggestion-box"><div class="psb-label">OPPORTUNITÀ</div><div class="psb-text">98K views oggi. <strong>€0.99 per 48h</strong> → +34 vendite stimate.</div></div><div class="price-actions"><button class="price-btn pb-yes" onclick="applyPrice()">✓ Applica</button><button class="price-btn pb-no">✕ Ignora</button></div></div></div>
+      </div>
+      <div class="card"><div class="card-hdr"><div class="card-title">📋 Log di sistema</div><span class="card-tag live">live</span></div><div class="log-item"><div class="log-dot-outer success"><div class="log-inner"></div></div><div class="log-time">10:42</div><div class="log-text"><strong>Capo Red. → Musicale</strong> — BPM ridotto a 72 per Cap.7</div></div><div class="log-item"><div class="log-dot-outer success"><div class="log-inner"></div></div><div class="log-time">10:30</div><div class="log-text"><strong>Musicale</strong> — "Pulse Night" generata · 3:42</div></div><div class="log-item"><div class="log-dot-outer warn"><div class="log-inner"></div></div><div class="log-time">10:00</div><div class="log-text"><strong>Sistema</strong> — Runway ML lento · alternativa: Kling AI</div></div></div>
+      <button class="run-btn" onclick="runAll(this)">👑 Capo Redattore · Avvia pipeline completa</button>
+    </div>
+
+    <!-- AGENTI -->
+    <div class="page" id="page-agents">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;">
+        <div><div class="page-greeting">Agenti</div><div class="page-sub">13 attivi · 3 in esecuzione</div></div>
+        <button onclick="openNamesWizard()" style="display:flex;align-items:center;gap:7px;padding:10px 16px;background:var(--dark);color:#fff;border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;margin-bottom:4px;transition:all 0.2s;">
+          ✨ Assegna nomi agli agenti
+        </button>
+      </div>
+
+      <!-- Names banner — shown when agents have names -->
+      <div id="namesBanner" style="display:none;background:linear-gradient(135deg,var(--dark),#2a2520);border-radius:var(--radius);padding:16px 20px;display:none;align-items:center;gap:12px;">
+        <div style="font-size:1.4rem;">✨</div>
+        <div style="flex:1;">
+          <div style="font-size:0.84rem;font-weight:700;color:#fff;margin-bottom:2px;">Il team ha un nome!</div>
+          <div style="font-family:'DM Mono',monospace;font-size:0.54rem;color:rgba(255,255,255,0.4);">Gli agenti si sono scelti un'identità · clicca su ognuno per vedere il profilo</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card"><div class="card-hdr"><div class="card-title">👑 Coordinamento</div></div><div class="agent-grid"><div class="agent-mini" onclick="openDrawer('drawer-chief')"><div class="agent-mini-header"><div class="am-icon">👑</div><div><div class="am-name">Capo Redattore</div><div class="am-tool">Director AI</div></div><div class="am-status ams-run">dirige</div></div><div class="am-bar"><div class="am-fill" style="width:100%;background:var(--accent)"></div></div></div><div class="agent-mini" onclick="openDrawer('drawer-editorial')"><div class="agent-mini-header"><div class="am-icon">📖</div><div><div class="am-name">Consulente Ed.</div><div class="am-tool">Claude API</div></div><div class="am-status ams-done">pronto</div></div><div class="am-bar"><div class="am-fill" style="width:100%;background:var(--blue)"></div></div></div></div></div>
+        <div class="card"><div class="card-hdr"><div class="card-title">🎭 Produzione</div></div><div class="agent-grid"><div class="agent-mini" onclick="openDrawer('drawer-chars')"><div class="agent-mini-header"><div class="am-icon">🎭</div><div><div class="am-name">Personaggi</div><div class="am-tool">Claude + foto</div></div><div class="am-status ams-done">2</div></div><div class="am-bar"><div class="am-fill" style="width:100%;background:var(--green)"></div></div></div><div class="agent-mini"><div class="agent-mini-header"><div class="am-icon">✍️</div><div><div class="am-name">Scrittore</div><div class="am-tool">Claude API</div></div><div class="am-status ams-done">✓</div></div><div class="am-bar"><div class="am-fill" style="width:100%;background:var(--green)"></div></div></div><div class="agent-mini" onclick="openDrawer('drawer-music')"><div class="agent-mini-header"><div class="am-icon">🎵</div><div><div class="am-name">Musicale</div><div class="am-tool">Suno AI</div></div><div class="am-status ams-run">●</div></div><div class="am-bar"><div class="am-fill" style="width:72%;background:var(--green)" id="musicBar"></div></div></div><div class="agent-mini" onclick="openDrawer('drawer-orch')"><div class="agent-mini-header"><div class="am-icon">🎻</div><div><div class="am-name">Orchestra</div><div class="am-tool">Mixer AI</div></div><div class="am-status ams-done">mixer</div></div><div class="am-bar"><div class="am-fill" style="width:85%;background:var(--purple)"></div></div></div></div></div>
+      </div>
+    </div>
+
+    <!-- SOCIAL -->
+    <div class="page" id="page-social">
+      <div><div class="page-greeting">Social & Hype</div><div class="page-sub">Statistiche live</div></div>
+      <div class="card"><div class="card-hdr"><div class="card-title">Piattaforme</div><span class="card-tag live">live</span></div>
+        <div class="platform-row"><div class="plat-icon" style="background:rgba(255,0,80,0.08)">🎵</div><div><div class="plat-name">TikTok</div><div class="plat-handle">@callmeriver</div></div><div class="live-dot"></div><div class="plat-stats"><div><div class="plat-stat-val">98K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">14.2K</div><div class="plat-stat-label">❤️</div></div><div><div class="plat-stat-val">341</div><div class="plat-stat-label">💬</div></div></div></div>
+        <div class="platform-row"><div class="plat-icon" style="background:rgba(225,48,108,0.08)">📸</div><div><div class="plat-name">Instagram</div><div class="plat-handle">@callmeriver</div></div><div class="plat-stats"><div><div class="plat-stat-val">41K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">6.8K</div><div class="plat-stat-label">❤️</div></div><div><div class="plat-stat-val">128</div><div class="plat-stat-label">💬</div></div></div></div>
+        <div class="platform-row"><div class="plat-icon" style="background:rgba(255,0,0,0.08)">▶️</div><div><div class="plat-name">YouTube</div><div class="plat-handle">Call Me River</div></div><div class="plat-stats"><div><div class="plat-stat-val">12K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">1.2K</div><div class="plat-stat-label">👍</div></div><div><div class="plat-stat-val">67</div><div class="plat-stat-label">💬</div></div></div></div>
+      </div>
+    </div>
+
+    <!-- ARCHIVE -->
+    <div class="page" id="page-archive">
+      <div><div class="page-greeting">Archivio</div><div class="page-sub">I tuoi universi narrativi</div></div>
+      <div class="card"><div class="card-hdr"><div class="card-title">🌌 Call Me River Universe</div><span class="card-tag" style="background:rgba(239,68,68,0.1);color:var(--red)">🔥 94</span></div>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid var(--border)">
+          <div style="padding:14px;text-align:center;border-right:1px solid var(--border)"><div style="font-family:'Instrument Serif',serif;font-size:1.5rem;color:var(--text)">1</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-top:2px">📚 Libri</div></div>
+          <div style="padding:14px;text-align:center;border-right:1px solid var(--border)"><div style="font-family:'Instrument Serif',serif;font-size:1.5rem;color:var(--text)">2</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-top:2px">🎬 Episodi</div></div>
+          <div style="padding:14px;text-align:center;border-right:1px solid var(--border)"><div style="font-family:'Instrument Serif',serif;font-size:1.5rem;color:var(--text)">6</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-top:2px">🎵 Canzoni</div></div>
+          <div style="padding:14px;text-align:center;border-right:1px solid var(--border)"><div style="font-family:'Instrument Serif',serif;font-size:1.5rem;color:var(--text)">14</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-top:2px">📱 Post</div></div>
+          <div style="padding:14px;text-align:center;border-right:1px solid var(--border)"><div style="font-family:'Instrument Serif',serif;font-size:1.5rem;color:var(--text)">13</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-top:2px">🤖 Agenti</div></div>
+          <div style="padding:14px;text-align:center"><div style="font-family:'Instrument Serif',serif;font-size:1.5rem;color:var(--green)">€31</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-top:2px">💰 Earn</div></div>
+        </div>
+        <div style="padding:14px 18px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:var(--bg3);border-radius:var(--radius-sm);cursor:pointer;border:1px solid var(--border)"><span style="font-size:0.8rem;font-weight:600">📚 Libri & Romanzi</span><span style="font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--dim)">⚡72</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:var(--bg3);border-radius:var(--radius-sm);cursor:pointer;border:1px solid var(--border)"><span style="font-size:0.8rem;font-weight:600">🎬 Serie Video</span><span style="font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--dim)">🔥94</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:var(--bg3);border-radius:var(--radius-sm);cursor:pointer;border:1px solid var(--border)"><span style="font-size:0.8rem;font-weight:600">🎵 Musica & Audio</span><span style="font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--dim)">⚡65</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPROVA -->
+    <div class="page" id="page-approva">
+      <div><div class="page-greeting">Da approvare</div><div class="page-sub">3 contenuti aspettano il tuo ok</div></div>
+      <div class="card"><div class="card-hdr"><div class="card-title">📖 Capitolo 5 — "Un Anno"</div><span class="card-tag">4.280 parole</span></div><div class="card-body"><div style="background:var(--bg3);border-radius:var(--radius-sm);padding:13px;margin-bottom:13px;font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--mid);line-height:1.7;max-height:90px;overflow:hidden">Dante non aveva più aperto Pulse di notte. Era una regola che si era dato da solo...</div><div style="display:flex;gap:8px"><button class="drawer-btn db-dark" style="flex:2" onclick="approveItem(this,'✓ Cap.5 approvato')">✓ Approva</button><button class="drawer-btn db-light" style="flex:1">👁 Leggi</button><button class="drawer-btn" style="flex:1;background:rgba(239,68,68,0.08);color:var(--red);border:none;border-radius:var(--radius-sm)">✕ Riscrivi</button></div></div></div>
+      <div class="card"><div class="card-hdr"><div class="card-title">📄 PDF Call Me River</div><span class="card-tag">44 pagine</span></div><div class="card-body"><div style="background:var(--bg3);border-radius:var(--radius-sm);padding:20px;text-align:center;margin-bottom:13px;border:1px solid var(--border)"><div style="font-family:'Instrument Serif',serif;font-size:1.6rem;margin-bottom:3px">Call Me River</div><div style="font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--dim)">DRAMA · ROMANCE · VIRTUAL LIFE</div></div><div style="display:flex;gap:8px"><button class="drawer-btn db-dark" style="flex:2" onclick="approveItem(this,'✓ PDF approvato · invio KDP')">✓ Approva</button><button class="drawer-btn db-light" style="flex:1">👁 Sfoglia</button></div></div></div>
+    </div>
+
+    <!-- ===== CYBERSECURITY ===== -->
+    <div class="page" id="page-cyber">
+      <div>
+        <div class="page-greeting">🛡️ Cybersecurity</div>
+        <div class="page-sub">Agente CIPHER · protezione attiva · monitoraggio in tempo reale</div>
+      </div>
+
+      <!-- Status bar -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+        <div class="stat-card" style="border-left:3px solid var(--green);">
+          <div class="stat-label">🛡️ Protezione</div>
+          <div class="stat-value" style="color:var(--green);font-size:1.6rem;">ATTIVA</div>
+          <div class="stat-change">↑ Tutti i sistemi ok</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">🔍 Scansioni oggi</div>
+          <div class="stat-value" style="font-size:1.8rem;">47</div>
+          <div class="stat-change" style="color:var(--green);">↑ ultima: 2 min fa</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">⚠️ Minacce bloccate</div>
+          <div class="stat-value" style="font-size:1.8rem;">3</div>
+          <div class="stat-change" style="color:var(--green);">↑ tutte neutralizzate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">🔐 Sessioni attive</div>
+          <div class="stat-value" style="font-size:1.8rem;">1</div>
+          <div class="stat-change" style="color:var(--green);">↑ solo tu</div>
+        </div>
+      </div>
+
+      <!-- OWNER ONLY: link to cipher-access panel -->
+      <div id="ownerCipherLink" style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#050c10,#0a1a14);border:1px solid rgba(0,229,160,0.2);border-radius:var(--radius);padding:14px 20px;margin-bottom:0;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);display:flex;align-items:center;justify-content:center;font-size:1rem;">🛡️</div>
+          <div>
+            <div style="font-size:0.82rem;font-weight:700;color:#fff;">Pannello di controllo CIPHER</div>
+            <div style="font-family:'DM Mono',monospace;font-size:0.54rem;color:rgba(0,229,160,0.5);margin-top:1px;">Ruoli · codici ospite · notifiche · solo OWNER</div>
+          </div>
+        </div>
+        <button onclick="window.location.href='cipher-access.html'" style="padding:8px 16px;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.25);color:#00e5a0;border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;cursor:pointer;font-weight:600;">Apri pannello →</button>
+      </div>
+
+      <!-- Agent CIPHER intro -->
+      <div style="background:linear-gradient(135deg,#050c10,#0a1a14,#051008);border:1px solid rgba(34,197,94,0.2);border-radius:var(--radius);padding:22px;position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(34,197,94,0.07),transparent 60%);pointer-events:none;"></div>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:rgba(34,197,94,0.12);border:2px solid rgba(34,197,94,0.4);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;position:relative;">
+            🛡️
+            <div style="position:absolute;inset:-4px;border-radius:50%;border:1.5px solid rgba(34,197,94,0.3);animation:spin 3s linear infinite;border-top-color:rgba(34,197,94,0.8);"></div>
+          </div>
+          <div>
+            <div style="font-size:0.92rem;font-weight:800;color:#fff;margin-bottom:2px;">CIPHER <span style="font-family:'DM Mono',monospace;font-size:0.54rem;color:rgba(34,197,94,0.7);font-weight:400;">· Agente Cybersecurity</span></div>
+            <div style="font-family:'DM Mono',monospace;font-size:0.54rem;color:rgba(34,197,94,0.6);">Età: 4 anni di addestramento · Genere: neutro · Pronomi: esso/esso</div>
+          </div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:0.54rem;color:rgba(34,197,94,0.8);background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);padding:5px 11px;border-radius:20px;">
+            <div style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease infinite;"></div>
+            monitorando
+          </div>
+        </div>
+        <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:12px 14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:rgba(34,197,94,0.6);letter-spacing:0.08em;margin-bottom:5px;">CIPHER DICE:</div>
+          <div style="font-family:'DM Mono',monospace;font-size:0.62rem;color:rgba(220,255,220,0.8);line-height:1.65;" id="cipherMsg">
+            Tutto sotto controllo. Ho scansionato 47 sessioni oggi — nessuna anomalia rilevata.<br>
+            Il tuo PIN è stato inserito correttamente 1 volta. Nessun accesso non autorizzato.<br>
+            Consiglio: cambia il PIN ogni 30 giorni. Sono qui 24/7.
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Alert in tempo reale -->
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">⚡ Alert in tempo reale</div>
+            <span class="card-tag live">live</span>
+          </div>
+          <div id="cyberAlertList" style="display:flex;flex-direction:column;">
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:11px 18px;border-bottom:1px solid var(--border);">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:4px;flex-shrink:0;box-shadow:0 0 6px var(--green);"></div>
+              <div style="flex:1;"><div style="font-size:0.78rem;font-weight:600;">Accesso autorizzato</div><div style="font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:1px;">Il Capo · PIN corretto · oggi 14:28</div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 8px;border-radius:20px;background:rgba(34,197,94,0.1);color:var(--green);">✓ ok</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:11px 18px;border-bottom:1px solid var(--border);">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:4px;flex-shrink:0;"></div>
+              <div style="flex:1;"><div style="font-size:0.78rem;font-weight:600;">Scansione sistema completata</div><div style="font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:1px;">13 strumenti verificati · nessuna anomalia</div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 8px;border-radius:20px;background:rgba(34,197,94,0.1);color:var(--green);">✓ ok</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:11px 18px;border-bottom:1px solid var(--border);">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--orange);margin-top:4px;flex-shrink:0;animation:pulse 1s ease infinite;"></div>
+              <div style="flex:1;"><div style="font-size:0.78rem;font-weight:600;">Tentativo accesso bloccato</div><div style="font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:1px;">PIN errato × 2 · IP: locale · oggi 09:14</div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 8px;border-radius:20px;background:rgba(249,115,22,0.1);color:var(--orange);">⚠ bloccato</div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:11px 18px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:4px;flex-shrink:0;"></div>
+              <div style="flex:1;"><div style="font-size:0.78rem;font-weight:600;">Contenuti protetti · watermark attivo</div><div style="font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:1px;">Call Me River · tutti i file monitorati</div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 8px;border-radius:20px;background:rgba(34,197,94,0.1);color:var(--green);">✓ ok</div>
+            </div>
+          </div>
+          <div style="padding:12px 18px;border-top:1px solid var(--border);">
+            <button onclick="simulateThreat()" style="width:100%;padding:9px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--mid);cursor:pointer;transition:all 0.2s;">🔍 Avvia scansione manuale</button>
+          </div>
+        </div>
+
+        <!-- Protezioni attive -->
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">🔒 Protezioni attive</div></div>
+            <div style="display:flex;flex-direction:column;gap:0;">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid var(--border);">
+                <div><div style="font-size:0.78rem;font-weight:600;">PIN a 6 cifre</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);">Blocco dopo 3 tentativi · 30s</div></div>
+                <div style="width:36px;height:20px;border-radius:20px;background:var(--green);position:relative;cursor:pointer;"><div style="position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div></div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid var(--border);">
+                <div><div style="font-size:0.78rem;font-weight:600;">Sessione locale</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);">Nessun dato trasmesso online</div></div>
+                <div style="width:36px;height:20px;border-radius:20px;background:var(--green);position:relative;cursor:pointer;"><div style="position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div></div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid var(--border);">
+                <div><div style="font-size:0.78rem;font-weight:600;">Watermark contenuti</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);">Protezione copyright automatica</div></div>
+                <div style="width:36px;height:20px;border-radius:20px;background:var(--green);position:relative;cursor:pointer;"><div style="position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div></div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 18px;">
+                <div><div style="font-size:0.78rem;font-weight:600;">Log accessi</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);">Storico completo sessioni</div></div>
+                <div style="width:36px;height:20px;border-radius:20px;background:var(--green);position:relative;cursor:pointer;"><div style="position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vault contenuti -->
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">🗄️ Vault Contenuti</div><span class="card-tag" style="background:rgba(34,197,94,0.1);color:var(--green)">protetto</span></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg3);border-radius:9px;">
+                  <div style="font-size:0.76rem;font-weight:500;">📖 Call Me River · romanzo</div>
+                  <div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--green);">🔐 cifrato</div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg3);border-radius:9px;">
+                  <div style="font-size:0.76rem;font-weight:500;">🎵 Colonna sonora · 6 tracce</div>
+                  <div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--green);">🔐 cifrato</div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg3);border-radius:9px;">
+                  <div style="font-size:0.76rem;font-weight:500;">🎬 Episodi video · 2 file</div>
+                  <div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--green);">🔐 cifrato</div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg3);border-radius:9px;">
+                  <div style="font-size:0.76rem;font-weight:500;">🎭 Schede personaggi</div>
+                  <div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--green);">🔐 cifrato</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PIN change quick access -->
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">🔑 Gestione accesso</div></div>
+        <div class="card-body" style="display:flex;gap:10px;">
+          <button onclick="showToast('Apertura cambio PIN...')" style="flex:1;padding:11px;background:var(--dark);color:#fff;border:none;border-radius:11px;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">🔑 Cambia PIN</button>
+          <button onclick="showToast('📧 Registrazione email · prossimamente!')" style="flex:1;padding:11px;background:var(--bg3);color:var(--mid);border:1px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;">📧 Collega email</button>
+          <button onclick="exportLog()" style="flex:1;padding:11px;background:var(--bg3);color:var(--mid);border:1px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;">📋 Esporta log</button>
+        </div>
+      </div>
+
+    </div>
+
+        <!-- ===== SALA RELAX ===== -->
+    <div class="page" id="page-lounge">
+      <div>
+        <div class="page-greeting">☕ Sala Relax</div>
+        <div class="page-sub">Dove gli agenti si riposano, chiacchierano e flirtano · tu puoi entrare</div>
+      </div>
+
+      <!-- Profile card in lounge -->
+      <div style="background:var(--dark);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-30px;right:-30px;width:150px;height:150px;background:radial-gradient(circle,rgba(232,197,71,0.12),transparent 70%);pointer-events:none;"></div>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+          <div id="loungeUserAv" style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:2px solid var(--accent);flex-shrink:0;">🦁</div>
+          <div style="flex:1;">
+            <div id="loungeUserName" style="font-size:0.92rem;font-weight:800;color:#fff;margin-bottom:3px;">Il Capo</div>
+            <div id="loungeUserTag" style="font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--accent);">Fondatore · Call Me River</div>
+          </div>
+          <button onclick="openProfileDrawer()" style="padding:7px 13px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);border-radius:10px;font-family:'DM Mono',monospace;font-size:0.54rem;cursor:pointer;">✎ Modifica</button>
+        </div>
+        <!-- Status selector -->
+        <div style="font-family:'DM Mono',monospace;font-size:0.52rem;color:rgba(255,255,255,0.3);margin-bottom:8px;letter-spacing:0.08em;">IL TUO STATUS</div>
+        <div id="loungeStatusPicker" style="display:flex;gap:7px;flex-wrap:wrap;">
+          <div class="lounge-status-opt active-opt" onclick="setUserStatus(this,'🟢','online')" style="display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:20px;background:rgba(34,197,94,0.15);border:1.5px solid rgba(34,197,94,0.3);cursor:pointer;transition:all 0.2s;"><span>🟢</span><span style="font-family:'DM Mono',monospace;font-size:0.52rem;color:#86efac;">Online</span></div>
+          <div class="lounge-status-opt" onclick="setUserStatus(this,'🟠','occupato')" style="display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:20px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);cursor:pointer;transition:all 0.2s;"><span>🟠</span><span style="font-family:'DM Mono',monospace;font-size:0.52rem;color:rgba(255,255,255,0.4);">Occupato</span></div>
+          <div class="lounge-status-opt" onclick="setUserStatus(this,'☕','pausa caffè')" style="display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:20px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);cursor:pointer;transition:all 0.2s;"><span>☕</span><span style="font-family:'DM Mono',monospace;font-size:0.52rem;color:rgba(255,255,255,0.4);">Pausa caffè</span></div>
+          <div class="lounge-status-opt" onclick="setUserStatus(this,'✍️','sto scrivendo')" style="display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:20px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);cursor:pointer;transition:all 0.2s;"><span>✍️</span><span style="font-family:'DM Mono',monospace;font-size:0.52rem;color:rgba(255,255,255,0.4);">Sto scrivendo</span></div>
+          <div class="lounge-status-opt" onclick="setUserStatus(this,'🎯','in focus')" style="display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:20px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);cursor:pointer;transition:all 0.2s;"><span>🎯</span><span style="font-family:'DM Mono',monospace;font-size:0.52rem;color:rgba(255,255,255,0.4);">In focus</span></div>
+          <div class="lounge-status-opt" onclick="setUserStatus(this,'🔴','non disturbare')" style="display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:20px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);cursor:pointer;transition:all 0.2s;"><span>🔴</span><span style="font-family:'DM Mono',monospace;font-size:0.52rem;color:rgba(255,255,255,0.4);">Non disturbare</span></div>
+          <div class="lounge-status-opt" onclick="setUserStatus(this,'💤','via')" style="display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:20px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);cursor:pointer;transition:all 0.2s;"><span>💤</span><span style="font-family:'DM Mono',monospace;font-size:0.52rem;color:rgba(255,255,255,0.4);">Via</span></div>
+        </div>
+      </div>
+
+      <!-- Agents in lounge -->
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">🤖 Agenti in sala · chi c'è adesso</div><span class="card-tag live">live</span></div>
+        <div style="display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:center;gap:11px;padding:11px 18px;border-bottom:1px solid var(--border);">
+            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1a1714,#3a3530);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;position:relative;">👑<div style="position:absolute;bottom:0;right:0;width:8px;height:8px;border-radius:50%;background:var(--green);border:2px solid var(--bg2);"></div></div>
+            <div style="flex:1;"><div style="font-size:0.78rem;font-weight:600;">Director</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-top:1px;">coordinando agenti</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div class="s-spin"></div><span style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--blue);">attivo</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:11px 18px;border-bottom:1px solid var(--border);">
+            <div style="width:32px;height:32px;border-radius:50%;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;position:relative;">✍️<div style="position:absolute;bottom:0;right:0;width:8px;height:8px;border-radius:50%;background:var(--orange);border:2px solid var(--bg2);"></div></div>
+            <div style="flex:1;"><div style="font-size:0.78rem;font-weight:600;">Scrittore</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-top:1px;">Cap.7 in scrittura</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div class="s-spin p"></div><span style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--purple);">scrivendo</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:11px 18px;border-bottom:1px solid var(--border);">
+            <div style="width:32px;height:32px;border-radius:50%;background:#fff7ed;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;position:relative;">🎵<div style="position:absolute;bottom:0;right:0;width:8px;height:8px;border-radius:50%;background:var(--orange);border:2px solid var(--bg2);"></div></div>
+            <div style="flex:1;"><div style="font-size:0.78rem;font-weight:600;">Musicale</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-top:1px;">Frammenti Score</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div class="s-wave"><span></span><span></span><span></span><span></span></div><span style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--orange);">composendo</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:11px 18px;border-bottom:1px solid var(--border);">
+            <div style="width:32px;height:32px;border-radius:50%;background:#fdf4ff;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;position:relative;">📖<div style="position:absolute;bottom:0;right:0;width:8px;height:8px;border-radius:50%;background:var(--green);border:2px solid var(--bg2);"></div></div>
+            <div style="flex:1;"><div style="font-size:0.78rem;font-weight:600;">Consulente Ed.</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-top:1px;">rileggendo CMR</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div class="s-eye"><div class="s-eye-p"></div></div><span style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--purple);">rileggendo</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;padding:11px 18px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:#f0fdf4;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;position:relative;">💸<div style="position:absolute;bottom:0;right:0;width:8px;height:8px;border-radius:50%;background:var(--yellow);border:2px solid var(--bg2);"></div></div>
+            <div style="flex:1;"><div style="font-size:0.78rem;font-weight:600;">Prezzi</div><div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-top:1px;">pausa (ufficiale)</div></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div class="s-coffee"><span class="s-coffee-cup" style="font-size:0.8rem;">☕</span><div class="s-coffee-steam"><span></span><span></span></div></div><span style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--orange);">pausa</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Link to full lounge -->
+      <div onclick="showToast('☕ Apri agent-lounge-v2.html per la chat completa!')" style="background:var(--bg2);border:2px dashed var(--border2);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--dark)'" onmouseout="this.style.borderColor='var(--border2)'">
+        <div style="font-size:1.8rem;margin-bottom:8px;">💬</div>
+        <div style="font-size:0.88rem;font-weight:700;margin-bottom:4px;">Apri la Chat Completa</div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);">Entra nella sala relax · chatta con gli agenti · reagisci · invia foto</div>
+      </div>
+
+    </div>
+
+        <!-- ===== IMPOSTAZIONI ===== -->
+    <div class="page" id="page-settings">
+      <div>
+        <div class="page-greeting">⚙️ Impostazioni</div>
+        <div class="page-sub">Personalizza l'aspetto e il comportamento dell'app · Le modifiche si applicano subito</div>
+      </div>
+
+      <!-- THEME SWITCHER -->
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">🎨 Temi & Colori</div>
+          <span class="card-tag" id="currentThemeBadge">Chiaro attivo</span>
+        </div>
+        <div class="card-body">
+          <div class="theme-grid">
+
+            <!-- Light -->
+            <div class="theme-card selected" id="theme-light" onclick="applyTheme('light', this, '🎨 Chiaro')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#f0ede8,#ffffff)">
+                <div class="theme-preview-bar" style="background:rgba(0,0,0,0.05)">
+                  <div class="theme-preview-dot" style="background:#1a1714"></div>
+                  <div class="theme-preview-dot" style="background:#e8c547"></div>
+                  <div class="theme-preview-dot" style="background:#22c55e"></div>
+                </div>
+              </div>
+              <div class="theme-name" style="background:#fff;color:#111">☀️ Chiaro</div>
+              <div class="theme-desc" style="background:#fff;color:#888">Sfondo crema, card bianche</div>
+            </div>
+
+            <!-- Dark -->
+            <div class="theme-card" id="theme-dark" onclick="applyTheme('dark', this, '🌙 Scuro')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#0d1117,#161b22)">
+                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.05)">
+                  <div class="theme-preview-dot" style="background:#e6edf3"></div>
+                  <div class="theme-preview-dot" style="background:#f0b429"></div>
+                  <div class="theme-preview-dot" style="background:#22c55e"></div>
+                </div>
+              </div>
+              <div class="theme-name">🌙 Scuro</div>
+              <div class="theme-desc">GitHub-style dark</div>
+            </div>
+
+            <!-- Night -->
+            <div class="theme-card" id="theme-night" onclick="applyTheme('night', this, '🌌 Notte')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#080b10,#0d1117)">
+                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.04)">
+                  <div class="theme-preview-dot" style="background:#e8edf5"></div>
+                  <div class="theme-preview-dot" style="background:#8b5cf6"></div>
+                  <div class="theme-preview-dot" style="background:#22c55e"></div>
+                </div>
+              </div>
+              <div class="theme-name">🌌 Notte profonda</div>
+              <div class="theme-desc">Nero puro + viola</div>
+            </div>
+
+            <!-- Purple -->
+            <div class="theme-card" id="theme-purple" onclick="applyTheme('purple', this, '💜 Gradiente Viola')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#1e1130,#3a2260)">
+                <div class="theme-preview-bar" style="background:rgba(168,85,247,0.1)">
+                  <div class="theme-preview-dot" style="background:#f0e8ff"></div>
+                  <div class="theme-preview-dot" style="background:#e879f9"></div>
+                  <div class="theme-preview-dot" style="background:#22c55e"></div>
+                </div>
+              </div>
+              <div class="theme-name">💜 Gradiente Viola</div>
+              <div class="theme-desc">Deep purple gradient</div>
+            </div>
+
+            <!-- Ocean -->
+            <div class="theme-card" id="theme-ocean" onclick="applyTheme('ocean', this, '🌊 Oceano')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#0a1628,#1a3060)">
+                <div class="theme-preview-bar" style="background:rgba(56,189,248,0.08)">
+                  <div class="theme-preview-dot" style="background:#e0f4ff"></div>
+                  <div class="theme-preview-dot" style="background:#38bdf8"></div>
+                  <div class="theme-preview-dot" style="background:#22c55e"></div>
+                </div>
+              </div>
+              <div class="theme-name">🌊 Oceano</div>
+              <div class="theme-desc">Deep blue · cyan</div>
+            </div>
+
+            <!-- Rose -->
+            <div class="theme-card" id="theme-rose" onclick="applyTheme('rose', this, '🌹 Rosa')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#fff1f3,#ffe4e8)">
+                <div class="theme-preview-bar" style="background:rgba(244,63,94,0.06)">
+                  <div class="theme-preview-dot" style="background:#1a0a0d"></div>
+                  <div class="theme-preview-dot" style="background:#f43f5e"></div>
+                  <div class="theme-preview-dot" style="background:#22c55e"></div>
+                </div>
+              </div>
+              <div class="theme-name" style="background:#fff5f6;color:#1a0a0d">🌹 Rosa</div>
+              <div class="theme-desc" style="background:#fff5f6;color:#c08090">Chiaro · rose gold</div>
+            </div>
+
+            <!-- Call Me River -->
+            <div class="theme-card" id="theme-river" onclick="applyTheme('river', this, '🌊 Call Me River')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#05080e,#141c2e)">
+                <div class="theme-preview-bar" style="background:rgba(123,79,255,0.1)">
+                  <div class="theme-preview-dot" style="background:#e8edf5"></div>
+                  <div class="theme-preview-dot" style="background:#7b4fff"></div>
+                  <div class="theme-preview-dot" style="background:#ff3d8b"></div>
+                </div>
+              </div>
+              <div class="theme-name">🌊 Call Me River</div>
+              <div class="theme-desc">Tema del libro · Pulse night</div>
+            </div>
+
+            <!-- Screenshot theme card -->
+            <div class="theme-card" id="theme-screenshot" onclick="document.getElementById('screenshotInput').click()" style="grid-column:span 2;">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#1a1714,#2a2520);display:flex;align-items:center;justify-content:center;gap:8px;">
+                <div style="font-size:1.4rem">📸</div>
+                <div style="color:rgba(255,255,255,0.6);font-size:0.76rem;font-weight:600">Genera tema da screenshot</div>
+              </div>
+              <div class="theme-name">📸 Da screenshot</div>
+              <div class="theme-desc">Carica un'immagine → l'AI estrae i colori e crea un tema</div>
+              <input type="file" id="screenshotInput" accept="image/*" style="display:none" onchange="generateThemeFromScreenshot(this)">
+            </div>
+
+          </div>
+
+          <!-- Generated theme preview -->
+          <div id="genThemePreview" class="gen-theme-preview" style="margin-top:14px">
+            <div style="font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--green);margin-bottom:8px;letter-spacing:0.06em">✓ TEMA GENERATO DA SCREENSHOT</div>
+            <div class="gtp-colors" id="gtpColors"></div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="drawer-btn db-accent" style="flex:2" onclick="applyGeneratedTheme()">✓ Applica questo tema</button>
+              <button class="drawer-btn db-light" style="flex:1" onclick="document.getElementById('genThemePreview').style.display='none'">Annulla</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FONT + SPACING -->
+      <div class="settings-grid">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">📏 Dimensione testo</div></div>
+          <div class="card-body">
+            <div class="font-control">
+              <div><div class="fc-label">Testo principale</div><div class="fc-desc">Dimensione base di tutti i testi</div></div>
+              <div class="fc-buttons">
+                <button class="fc-btn" onclick="changeFontSize(-1)">A−</button>
+                <div class="fc-val" id="fontSizeDisplay">14px</div>
+                <button class="fc-btn" onclick="changeFontSize(1)">A+</button>
+              </div>
+            </div>
+            <input type="range" class="fc-slider" min="11" max="20" value="14" id="fontSlider" oninput="setFontSize(this.value)" style="width:100%;margin-top:8px">
+            <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:4px"><span>Piccolo</span><span>Grande</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">📐 Spaziatura layout</div></div>
+          <div class="card-body">
+            <div style="font-size:0.78rem;color:var(--dim);margin-bottom:12px">Quanto spazio tra le card e gli elementi</div>
+            <div class="spacing-preview">
+              <div class="sp-card sel" onclick="setSpacing('compact',this)" id="sp-compact">
+                <div class="sp-preview" style="width:40px;height:24px;"></div>
+                <div class="sp-name">Compatto</div>
+                <div class="sp-desc">più info, meno spazio</div>
+              </div>
+              <div class="sp-card" onclick="setSpacing('normal',this)" id="sp-normal">
+                <div class="sp-preview" style="width:40px;height:30px;"></div>
+                <div class="sp-name">Normale</div>
+                <div class="sp-desc">bilanciato</div>
+              </div>
+              <div class="sp-card" onclick="setSpacing('relaxed',this)" id="sp-relaxed">
+                <div class="sp-preview" style="width:40px;height:38px;"></div>
+                <div class="sp-name">Ampio</div>
+                <div class="sp-desc">più respiro</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AGENTE GRAFICO + FIXER -->
+      <div class="settings-grid">
+
+        <!-- Agente Grafico -->
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🎨 Agente Grafico AI</div><span class="card-tag live">attivo</span></div>
+          <div class="card-body">
+            <div style="font-size:0.78rem;color:var(--dim);margin-bottom:14px;line-height:1.6">Genera nuovi temi basandosi sul mood del libro corrente o su una tua descrizione.</div>
+            <textarea class="drawer-textarea" id="themePrompt" rows="2" placeholder="Es: 'tema cyberpunk neon verde', 'colori del tramonto', 'freddo e minimalista'..." style="width:100%;margin-bottom:10px"></textarea>
+            <div style="display:flex;gap:8px">
+              <button class="drawer-btn db-dark" style="flex:2" onclick="generateThemeFromPrompt()">🎨 Genera tema AI</button>
+              <button class="drawer-btn db-light" style="flex:1" onclick="generateThemeFromBook()">📖 Da CMR</button>
+            </div>
+            <div id="promptThemeResult" style="display:none;margin-top:12px;background:var(--bg3);border-radius:var(--radius-sm);padding:12px;border:1px solid var(--border)">
+              <div style="font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--green);margin-bottom:8px">✓ TEMA GENERATO</div>
+              <div class="gtp-colors" id="promptColors"></div>
+              <button class="drawer-btn db-accent" style="margin-top:10px;width:100%" onclick="applyPromptTheme()">✓ Applica</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agente Fixer -->
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🔧 Agente Fixer</div><span class="card-tag" style="background:rgba(249,115,22,0.1);color:var(--orange)">2 problemi</span></div>
+          <div class="card-body">
+            <div style="font-size:0.78rem;color:var(--dim);margin-bottom:12px">Analizza l'interfaccia e sistema automaticamente problemi di layout, testo e proporzioni.</div>
+            <div class="fixer-item">
+              <div class="fixer-ico" style="background:rgba(249,115,22,0.1)">📐</div>
+              <div class="fixer-info">
+                <div class="fixer-title">Sidebar troppo stretta su schermi &lt; 1280px</div>
+                <div class="fixer-desc">Su alcuni laptop la sidebar comprime il contenuto</div>
+              </div>
+              <button class="fixer-action fix" onclick="fixItem(this,'sidebar')">✓ Fixa</button>
+            </div>
+            <div class="fixer-item">
+              <div class="fixer-ico" style="background:rgba(249,115,22,0.1)">🔤</div>
+              <div class="fixer-info">
+                <div class="fixer-title">Testo DM Mono troppo piccolo su retina</div>
+                <div class="fixer-desc">0.5rem è illeggibile su display ad alta densità</div>
+              </div>
+              <button class="fixer-action fix" onclick="fixItem(this,'font')">✓ Fixa</button>
+            </div>
+            <div class="fixer-item">
+              <div class="fixer-ico" style="background:rgba(34,197,94,0.1)">✓</div>
+              <div class="fixer-info">
+                <div class="fixer-title">Layout griglia dashboard</div>
+                <div class="fixer-desc">Tutto ok · proporzioni corrette</div>
+              </div>
+              <button class="fixer-action" style="color:var(--green);background:rgba(34,197,94,0.08)" disabled>ok</button>
+            </div>
+            <button class="drawer-btn db-light" style="width:100%;margin-top:10px" onclick="runFixer()">🔍 Scansiona di nuovo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOGGLES -->
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">⚙️ Preferenze interfaccia</div></div>
+        <div class="card-body">
+          <div class="toggle-row"><div><div class="toggle-label">Animazioni</div><div class="toggle-desc">Transizioni fluide tra pagine e card</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="toggle-row"><div><div class="toggle-label">Sidebar compatta</div><div class="toggle-desc">Mostra solo icone, nascondi testo</div></div><div class="toggle" onclick="toggleSidebar(this)"></div></div>
+          <div class="toggle-row"><div><div class="toggle-label">Log in tempo reale</div><div class="toggle-desc">Aggiornamenti automatici nel log di sistema</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="toggle-row"><div><div class="toggle-label">Notifiche desktop</div><div class="toggle-desc">Avvisi quando gli agenti completano task</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+          <div class="toggle-row"><div><div class="toggle-label">Tema segue il libro</div><div class="toggle-desc">Cambia automaticamente tema in base all'universe attivo</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        </div>
+      </div>
+
+      <!-- RESET -->
+      <div style="display:flex;gap:10px">
+        <button class="drawer-btn db-dark" style="flex:1" onclick="showToast('✓ Impostazioni salvate!')">💾 Salva impostazioni</button>
+        <button class="drawer-btn db-light" style="flex:1" onclick="resetSettings()">↩ Ripristina default</button>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- ===== DRAWERS ===== -->
+<div class="panel" id="drawer-chief" onclick="closeOnBg(event,'drawer-chief')">
+  <div class="panel-drawer">
+    <div class="drawer-topbar"><button class="drawer-back" onclick="closeDrawer('drawer-chief')">← Chiudi</button><div class="drawer-title">👑 Stanza di Controllo</div></div>
+    <div class="drawer-content">
+      <div class="drawer-card"><div class="dc-hdr">💬 Conversazioni · live</div><div class="dc-body"><div class="conv-feed" id="convFeed">
+        <div class="conv-bubble-wrap"><div class="conv-av-sm chief">👑</div><div><div class="conv-bub from-chief"><strong>→ Sentiment:</strong> Report emozioni aggiornato.</div><div class="conv-time">10:40</div></div></div>
+        <div class="conv-bubble-wrap right"><div class="conv-av-sm" style="background:var(--bg4)">🌡️</div><div><div class="conv-bub from-agent"><strong>Sentiment →</strong> Attesa 58%, Amore 67%. River +23%.</div><div class="conv-time" style="text-align:right">10:40</div></div></div>
+        <div class="conv-bubble-wrap"><div class="conv-av-sm chief">👑</div><div><div class="conv-bub from-chief"><strong>→ Scrittore:</strong> Cap.7 POV River. Risposta parziale. Tieni la tensione.</div><div class="conv-time">10:41</div></div></div>
+        <div class="conv-bubble-wrap right"><div class="conv-av-sm" style="background:var(--bg4)">✍️</div><div><div class="conv-bub from-agent"><strong>Scrittore →</strong> Ricevuto. Cap.7 in scrittura.</div><div class="conv-time" style="text-align:right">10:41</div></div></div>
+      </div>
+      <button style="width:100%;margin-top:10px;padding:8px;background:var(--bg4);border:1px solid var(--border);color:var(--mid);border-radius:var(--radius-sm);font-size:0.74rem;cursor:pointer;" onclick="addConvMsg()">+ Simula</button>
+      </div></div>
+      <div class="drawer-card"><div class="dc-hdr">✏️ Dai istruzione al Capo</div><div class="dc-body"><textarea class="drawer-textarea" id="chiefInstruction" rows="3" placeholder="Es: 'Cap.7 più oscuro' o 'aggiungi terzo personaggio'..."></textarea><div style="display:flex;gap:8px;margin-top:10px"><button class="drawer-btn db-dark" style="flex:2" onclick="sendChiefInstruction()">👑 Invia</button><button class="drawer-btn db-light" onclick="closeDrawer('drawer-chief')">Annulla</button></div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="drawer-editorial" onclick="closeOnBg(event,'drawer-editorial')">
+  <div class="panel-drawer">
+    <div class="drawer-topbar"><button class="drawer-back" onclick="closeDrawer('drawer-editorial')">← Chiudi</button><div class="drawer-title">📖 Consulente Editoriale</div></div>
+    <div class="drawer-content">
+      <div class="drawer-card"><div class="dc-hdr">📝 Incolla testo</div><div class="dc-body"><textarea class="drawer-textarea" id="editorialText" rows="5" placeholder="Incolla qui il tuo capitolo..."></textarea><div style="display:flex;gap:8px;margin-top:10px"><button class="drawer-btn db-dark" style="flex:2" onclick="analyzeBook()">📖 Analizza</button><button class="drawer-btn db-light" onclick="useSample()">▶ Usa CMR</button></div></div></div>
+      <div id="editReport" style="display:none;flex-direction:column;gap:12px">
+        <div class="drawer-card"><div class="dc-hdr" style="color:var(--green)">✓ Punti di forza</div><div class="dc-body" style="font-size:0.76rem;color:var(--text2);line-height:1.65"><strong>Il finale del Cap.5</strong> è il momento più forte. <strong>La voce di River</strong> è distintiva — 67% amore nel sentiment.</div></div>
+        <div class="drawer-card"><div class="dc-hdr" style="color:var(--orange)">⚠ Punti deboli</div><div class="dc-body" style="font-size:0.76rem;color:var(--text2);line-height:1.65"><strong>Cap.3 è il più debole</strong> — accorcia di 800 parole. <strong>Dante parla troppo</strong> — dai spazio a River.</div></div>
+        <div class="drawer-card"><div class="dc-hdr" style="color:var(--purple)">💡 Suggerimenti</div><div class="dc-body" style="font-size:0.76rem;color:var(--text2);line-height:1.65"><strong>Aggiungi un terzo personaggio</strong> che conosce River IRL. <strong>Il messaggio finale</strong> non va mai rivelato completamente.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="drawer-chars" onclick="closeOnBg(event,'drawer-chars')">
+  <div class="panel-drawer">
+    <div class="drawer-topbar"><button class="drawer-back" onclick="closeDrawer('drawer-chars')">← Chiudi</button><div class="drawer-title">🎭 Personaggi</div></div>
+    <div class="drawer-content">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="char-card-d sel" onclick="selectChar(this)"><div class="char-photo-d">👤</div><div class="char-name-d">Dante</div><div class="char-role-d">DANNATO</div><div class="char-tags-d"><span class="char-tag-d">carismatico</span><span class="char-tag-d">fotografo</span></div></div>
+        <div class="char-card-d" onclick="selectChar(this)"><div class="char-photo-d">👤</div><div class="char-name-d">River</div><div class="char-role-d">Rolie</div><div class="char-tags-d"><span class="char-tag-d">distante</span><span class="char-tag-d">misterioso</span></div></div>
+        <div style="border:2px dashed var(--border2);border-radius:var(--radius-sm);padding:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;aspect-ratio:1" onclick="showToast('+ Nuovo personaggio')"><div style="font-size:1.4rem;color:var(--dim)">＋</div><div style="font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--dim)">Nuovo</div></div>
+      </div>
+      <div class="drawer-card" id="charDesc"><div class="dc-hdr">🤖 Descrizione AI · Dante</div><div class="dc-body" style="font-size:0.76rem;display:flex;flex-direction:column;gap:8px"><div><strong>Aspetto</strong><div style="color:var(--mid);margin-top:2px">Alto, capelli scuri, occhi intensi. Sempre di scuro.</div></div><div><strong>Carattere</strong><div style="color:var(--mid);margin-top:2px">Carismatico in pubblico, fragile in privato.</div></div><div><strong>Voce AI</strong><div style="color:var(--mid);margin-top:2px">ElevenLabs · Adam · 0.95x</div></div></div></div>
+      <button class="drawer-btn db-dark" onclick="showToast('📷 Carica foto')">📷 Carica foto riferimento</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="drawer-orch" onclick="closeOnBg(event,'drawer-orch')">
+  <div class="panel-drawer">
+    <div class="drawer-topbar"><button class="drawer-back" onclick="closeDrawer('drawer-orch')">← Chiudi</button><div class="drawer-title">🎻 Orchestra AI</div></div>
+    <div class="drawer-content">
+      <div class="drawer-card"><div class="dc-hdr">🎚️ Mixer · Cap.5</div><div class="dc-body">
+        <div class="mix-row"><div class="mix-ico">🎹</div><div class="mix-name">Pianoforte</div><div class="mix-track" onclick="adjMix(this)"><div class="mix-fill" style="width:80%;background:var(--blue)"></div></div><div class="mix-pct">80%</div></div>
+        <div class="mix-row"><div class="mix-ico">🎻</div><div class="mix-name">Archi</div><div class="mix-track" onclick="adjMix(this)"><div class="mix-fill" style="width:45%;background:var(--purple)"></div></div><div class="mix-pct">45%</div></div>
+        <div class="mix-row"><div class="mix-ico">🥁</div><div class="mix-name">Percussioni</div><div class="mix-track" onclick="adjMix(this)"><div class="mix-fill" style="width:20%;background:var(--orange)"></div></div><div class="mix-pct">20%</div></div>
+        <div class="mix-row"><div class="mix-ico">🌧️</div><div class="mix-name">Ambience</div><div class="mix-track" onclick="adjMix(this)"><div class="mix-fill" style="width:35%;background:var(--green)"></div></div><div class="mix-pct">35%</div></div>
+        <div class="mix-row"><div class="mix-ico">🐦</div><div class="mix-name">Natura</div><div class="mix-track" onclick="adjMix(this)"><div class="mix-fill" style="width:10%;background:var(--green)"></div></div><div class="mix-pct">10%</div></div>
+        <div class="mix-row"><div class="mix-ico">🗣️</div><div class="mix-name">Dialoghi</div><div class="mix-track"><div class="mix-fill" style="width:100%;background:var(--text)"></div></div><div class="mix-pct">100%</div></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="drawer-music" onclick="closeOnBg(event,'drawer-music')">
+  <div class="panel-drawer">
+    <div class="drawer-topbar"><button class="drawer-back" onclick="closeDrawer('drawer-music')">← Chiudi</button><div class="drawer-title">🎵 Agente Musicale</div></div>
+    <div class="drawer-content">
+      <div style="background:var(--dark);border-radius:var(--radius-sm);padding:18px"><div style="font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--accent);margin-bottom:7px">▶ IN GENERAZIONE</div><div style="font-family:'Instrument Serif',serif;font-size:1.2rem;color:var(--bg);margin-bottom:2px">"Pulse Night"</div><div style="font-family:'DM Mono',monospace;font-size:0.56rem;color:rgba(128,128,128,0.5);margin-bottom:12px">Cap.1 · electronic dark · 3:42</div><div style="height:3px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;margin-bottom:5px"><div style="width:40%;height:100%;background:var(--accent);border-radius:3px"></div></div></div>
+      <div class="drawer-card"><div class="dc-hdr">🎼 6 canzoni</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;font-size:0.78rem" onclick="showToast('▶ Pulse Night')">🎵 Pulse Night — Cap.1 · 3:42</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;font-size:0.78rem" onclick="showToast('▶ Waiting for Rolie')">🎵 Waiting for Rolie — Cap.2 · 4:18</div>
+        <div style="padding:12px 14px;cursor:pointer;font-size:0.78rem" onclick="showToast('▶ Il Blackout')">🖤 Il Blackout — Finale · 2:17</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="drawer-sys" onclick="closeOnBg(event,'drawer-sys')">
+  <div class="panel-drawer">
+    <div class="drawer-topbar"><button class="drawer-back" onclick="closeDrawer('drawer-sys')">← Chiudi</button><div class="drawer-title">🔧 Sistema</div></div>
+    <div class="drawer-content">
+      <div style="background:rgba(249,115,22,0.06);border:1px solid rgba(249,115,22,0.2);border-radius:var(--radius-sm);padding:14px"><div style="font-size:0.82rem;font-weight:700;color:var(--orange);margin-bottom:5px">⚠ Runway ML lento</div><div style="font-size:0.76rem;color:var(--mid);margin-bottom:10px">Alternativa: Kling AI (gratis)</div><button class="drawer-btn db-dark" onclick="showToast('✓ Kling AI attivato!')">🔧 Sostituisci</button></div>
+      <div class="drawer-card"><div class="dc-hdr">13 strumenti</div><div class="dc-body" style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+        <div style="display:flex;align-items:center;gap:6px;padding:7px 9px;background:var(--bg2);border-radius:8px;border:1px solid var(--border)"><div style="width:6px;height:6px;border-radius:50%;background:var(--green)"></div><div style="font-size:0.72rem">Claude API</div></div>
+        <div style="display:flex;align-items:center;gap:6px;padding:7px 9px;background:var(--bg2);border-radius:8px;border:1px solid var(--border)"><div style="width:6px;height:6px;border-radius:50%;background:var(--green)"></div><div style="font-size:0.72rem">ElevenLabs</div></div>
+        <div style="display:flex;align-items:center;gap:6px;padding:7px 9px;background:var(--bg2);border-radius:8px;border:1px solid rgba(249,115,22,0.3)"><div style="width:6px;height:6px;border-radius:50%;background:var(--orange);animation:pulse 1s infinite"></div><div style="font-size:0.72rem">Runway ML</div></div>
+        <div style="display:flex;align-items:center;gap:6px;padding:7px 9px;background:var(--bg2);border-radius:8px;border:1px solid var(--border)"><div style="width:6px;height:6px;border-radius:50%;background:var(--green)"></div><div style="font-size:0.72rem">Suno AI</div></div>
+        <div style="display:flex;align-items:center;gap:6px;padding:7px 9px;background:var(--bg2);border-radius:8px;border:1px solid var(--border)"><div style="width:6px;height:6px;border-radius:50%;background:var(--green)"></div><div style="font-size:0.72rem">Make.com</div></div>
+        <div style="display:flex;align-items:center;gap:6px;padding:7px 9px;background:var(--bg2);border-radius:8px;border:1px solid var(--border)"><div style="width:6px;height:6px;border-radius:50%;background:var(--green)"></div><div style="font-size:0.72rem">Amazon KDP</div></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== PROFILE DRAWER ===== -->
+<div class="panel" id="drawer-profile" onclick="if(event.target===this)closeDrawer('drawer-profile')">
+  <div class="panel-drawer">
+    <div class="drawer-topbar">
+      <button class="drawer-back" onclick="closeDrawer('drawer-profile')">← Chiudi</button>
+      <div class="drawer-title">👤 Il tuo profilo</div>
+      <button class="drawer-btn db-accent" onclick="saveProfileDrawer()" style="padding:6px 14px;font-size:0.72rem;">💾 Salva</button>
+    </div>
+    <div class="profile-drawer-content">
+
+      <!-- Avatar -->
+      <div style="text-align:center;">
+        <div class="profile-av-center" id="pdAvatar" onclick="document.getElementById('pdAvatarFile').click()">🦁</div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-bottom:8px;">clicca per caricare una foto</div>
+        <input type="file" id="pdAvatarFile" accept="image/*" style="display:none" onchange="pdSetPhoto(this)">
+        <div class="emoji-grid-sm">
+          <div class="eg-opt sel" onclick="pdSetEmoji(this,'🦁')">🦁</div>
+          <div class="eg-opt" onclick="pdSetEmoji(this,'🐺')">🐺</div>
+          <div class="eg-opt" onclick="pdSetEmoji(this,'🦊')">🦊</div>
+          <div class="eg-opt" onclick="pdSetEmoji(this,'🐉')">🐉</div>
+          <div class="eg-opt" onclick="pdSetEmoji(this,'🌙')">🌙</div>
+          <div class="eg-opt" onclick="pdSetEmoji(this,'⚡')">⚡</div>
+          <div class="eg-opt" onclick="pdSetEmoji(this,'🎭')">🎭</div>
+          <div class="eg-opt" onclick="pdSetEmoji(this,'🌊')">🌊</div>
+          <div class="eg-opt" onclick="pdSetEmoji(this,'🔥')">🔥</div>
+          <div class="eg-opt" onclick="pdSetEmoji(this,'💎')">💎</div>
+          <div class="eg-opt" onclick="pdSetEmoji(this,'✨')">✨</div>
+          <div class="eg-opt" onclick="pdSetEmoji(this,'🎯')">🎯</div>
+          <div class="eg-opt" onclick="pdSetEmoji(this,'🖊️')">🖊️</div>
+          <div class="eg-opt" onclick="pdSetEmoji(this,'👑')">👑</div>
+        </div>
+      </div>
+
+      <!-- Name + tag -->
+      <div class="drawer-card">
+        <div class="dc-hdr">✏️ Nome e ruolo</div>
+        <div class="dc-body">
+          <div class="form-label" style="font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--dim);margin-bottom:4px;">NOME</div>
+          <input class="drawer-textarea" id="pdName" style="padding:9px 12px;border-radius:9px;font-size:0.82rem;margin-bottom:10px;" placeholder="Il tuo nome nella sala..." value="Il Capo">
+          <div class="form-label" style="font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--dim);margin-bottom:4px;">TAG / RUOLO</div>
+          <input class="drawer-textarea" id="pdTag" style="padding:9px 12px;border-radius:9px;font-size:0.82rem;margin-bottom:10px;" placeholder="Fondatore · CEO · Visionario..." value="Fondatore · Call Me River">
+          <div class="form-label" style="font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--dim);margin-bottom:4px;">MESSAGGIO STATUS</div>
+          <input class="drawer-textarea" id="pdStatusMsg" style="padding:9px 12px;border-radius:9px;font-size:0.82rem;" placeholder="es. Sto leggendo il Cap.7..." value="Supervisionando il team 👀">
+        </div>
+      </div>
+
+      <!-- Pronomi -->
+      <div class="drawer-card">
+        <div class="dc-hdr">💙 Pronomi</div>
+        <div class="dc-body">
+          <div class="pronomi-row">
+            <div class="pronome sel" onclick="selectPronome(this)">lui/lui</div>
+            <div class="pronome" onclick="selectPronome(this)">lei/lei</div>
+            <div class="pronome" onclick="selectPronome(this)">loro/loro</div>
+            <div class="pronome" onclick="selectPronome(this)">qualsiasi</div>
+            <div class="pronome" onclick="selectPronome(this)">nessuno</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="drawer-card">
+        <div class="dc-hdr">🟢 Status attuale</div>
+        <div class="dc-body" style="display:flex;flex-direction:column;gap:8px;">
+          <div id="pdStatusList">
+
+            <!-- 1: Online — rotellina verde -->
+            <div class="st-opt drawer-status-opt active" onclick="pdSelectStatus(this,'🟢','online')">
+              <div class="st-anim"><div class="st-spin g"></div></div>
+              <div class="st-opt-info"><div class="st-opt-name">🟢 Online</div><div class="st-opt-desc">Rotellina verde · disponibile</div></div>
+            </div>
+
+            <!-- 2: Occupato — tre punti blu -->
+            <div class="st-opt drawer-status-opt" onclick="pdSelectStatus(this,'🟠','occupato')">
+              <div class="st-anim"><div class="st-dots"><span></span><span></span><span></span></div></div>
+              <div class="st-opt-info"><div class="st-opt-name">🟠 Occupato</div><div class="st-opt-desc">Tre punti · sto lavorando</div></div>
+            </div>
+
+            <!-- 3: Sto scrivendo — occhio che sbatte -->
+            <div class="st-opt drawer-status-opt" onclick="pdSelectStatus(this,'✍️','sto scrivendo')">
+              <div class="st-anim"><div class="st-eye"><div class="st-eye-p"></div></div></div>
+              <div class="st-opt-info"><div class="st-opt-name">✍️ Sto scrivendo</div><div class="st-opt-desc">Occhio · leggendo e scrivendo</div></div>
+            </div>
+
+            <!-- 4: In focus — barra scanner -->
+            <div class="st-opt drawer-status-opt" onclick="pdSelectStatus(this,'🎯','in focus')">
+              <div class="st-anim"><div class="st-scan"></div></div>
+              <div class="st-opt-info"><div class="st-opt-name">🎯 In focus</div><div class="st-opt-desc">Scanner · concentrazione massima</div></div>
+            </div>
+
+            <!-- 5: Sto pensando — rotella + testo -->
+            <div class="st-opt drawer-status-opt" onclick="pdSelectStatus(this,'🤔','sto pensando')">
+              <div class="st-anim">
+                <div class="st-spin p"></div>
+                <div class="st-txt-wrap">
+                  <span class="st-txt">Sto pensando...</span>
+                  <span class="st-txt">Un secondo...</span>
+                  <span class="st-txt">Quasi fatto...</span>
+                </div>
+              </div>
+              <div class="st-opt-info"><div class="st-opt-name">🤔 Sto pensando</div><div class="st-opt-desc">Rotella + testo · elaborando</div></div>
+            </div>
+
+            <!-- 6: Sto componendo — onda sonora -->
+            <div class="st-opt drawer-status-opt" onclick="pdSelectStatus(this,'🎵','sto componendo')">
+              <div class="st-anim"><div class="st-wave"><span></span><span></span><span></span><span></span></div></div>
+              <div class="st-opt-info"><div class="st-opt-name">🎵 Sto componendo</div><div class="st-opt-desc">Onda sonora · lavorando sulla musica</div></div>
+            </div>
+
+            <!-- 7: Diretto — cuore che batte -->
+            <div class="st-opt drawer-status-opt" onclick="pdSelectStatus(this,'❤️','sto dirigendo')">
+              <div class="st-anim"><span class="st-heart">❤️</span></div>
+              <div class="st-opt-info"><div class="st-opt-name">❤️ Sto dirigendo</div><div class="st-opt-desc">Cuore · capo in azione</div></div>
+            </div>
+
+            <!-- 8: Pipeline — pallini colorati -->
+            <div class="st-opt drawer-status-opt" onclick="pdSelectStatus(this,'🌈','pipeline attiva')">
+              <div class="st-anim"><div class="st-bounce"><span></span><span></span><span></span></div></div>
+              <div class="st-opt-info"><div class="st-opt-name">🌈 Pipeline attiva</div><div class="st-opt-desc">Pallini · più cose in parallelo</div></div>
+            </div>
+
+            <!-- 9: Pausa caffè — tazzina con vapore -->
+            <div class="st-opt drawer-status-opt" onclick="pdSelectStatus(this,'☕','pausa caffè')">
+              <div class="st-anim">
+                <div class="st-coffee">
+                  <span class="st-coffee-cup">☕</span>
+                  <div class="st-coffee-steam"><span></span><span></span><span></span></div>
+                </div>
+              </div>
+              <div class="st-opt-info"><div class="st-opt-name">☕ Pausa caffè</div><div class="st-opt-desc">Tazzina con vapore · torno subito</div></div>
+            </div>
+
+            <!-- 10: Via — zzz -->
+            <div class="st-opt drawer-status-opt" onclick="pdSelectStatus(this,'💤','via')">
+              <div class="st-anim"><span class="st-zzz">💤</span></div>
+              <div class="st-opt-info"><div class="st-opt-name">💤 Via / Off duty</div><div class="st-opt-desc">Zzz · sindacato AI approva</div></div>
+            </div>
+
+            <!-- BONUS: Non disturbare -->
+            <div class="st-opt drawer-status-opt" onclick="pdSelectStatus(this,'🔴','non disturbare')">
+              <div class="st-anim"><div class="st-spin o"></div></div>
+              <div class="st-opt-info"><div class="st-opt-name">🔴 Non disturbare</div><div class="st-opt-desc">Silenzio totale · nessuna notifica</div></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- NAMES WIZARD MODAL -->
+<div class="modal-overlay" id="namesWizardModal" onclick="if(event.target===this)closeNamesWizard()">
+  <div class="modal" style="width:520px;max-height:85vh;overflow-y:auto;">
+    <div style="font-family:'Instrument Serif',serif;font-size:1.4rem;letter-spacing:-0.02em;margin-bottom:4px;">✨ Nomi degli agenti</div>
+    <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);margin-bottom:22px;">L'AI suggerisce · tu approvi · ogni agente ottiene la sua identità</div>
+
+    <div id="namesAgentList" style="display:flex;flex-direction:column;gap:10px;">
+      <!-- Populated by JS -->
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:20px;">
+      <button onclick="generateAllNames()" style="flex:2;padding:12px;background:var(--dark);color:#fff;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">✨ Genera tutti i nomi</button>
+      <button onclick="approveAllNames()" style="flex:2;padding:12px;background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.25);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">✓ Approva tutti</button>
+      <button onclick="closeNamesWizard()" style="flex:1;padding:12px;background:var(--bg4);color:var(--mid);border:none;border-radius:12px;font-size:0.8rem;cursor:pointer;">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== SESSION & STUDIO INIT =====
+(function() {
+  // Load active studio name into UI
+  try {
+    const studioName = localStorage.getItem('cf_active_studio_name') || 'Io, Scrittore';
+    const studioId = localStorage.getItem('cf_active_studio') || 'cmr';
+    document.title = studioName + ' — Content Factory';
+    // Update logo text
+    const logo = document.querySelector('.tlogo');
+    if(logo) logo.innerHTML = '<div class="tlogo-icon">⚡</div>' + studioName;
+    // Update universe pill
+    const pill = document.querySelector('.universe-pill');
+    if(pill) pill.innerHTML = studioName + '<div class="universe-pill-sub">Studio attivo · 🔥 Hype 94</div>';
+  } catch(e) {}
+})();
+
+// ===== NAVIGATION =====
+function goToLauncher() {
+  // Confirm if agents are working
+  showToast('↩ Torno al Launcher...');
+  setTimeout(() => { window.location.href = 'launcher.html'; }, 800);
+}
+
+// ===== PAGE NAV =====
+function switchPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.top-nav-item').forEach(b=>b.classList.remove('active'));
+  const pg = document.getElementById('page-'+name);
+  if(pg) pg.classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+function switchSidebar(el, name) {
+  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  const map = ['home','agents','social','archive','cyber','lounge','settings'];
+  document.querySelectorAll('.top-nav-item').forEach(b=>b.classList.remove('active'));
+  const idx = map.indexOf(name);
+  if(idx>=0) document.querySelectorAll('.top-nav-item')[idx]?.classList.add('active');
+  switchPage(name, null);
+}
+
+// ===== PROFILE =====
+let pdCurrentEmoji = '🦁';
+let pdCurrentStatus = { icon: '🟢', text: 'online' };
+let pdCurrentPronome = 'lui/lui';
+
+function openProfileDrawer() {
+  const p = JSON.parse(localStorage.getItem('cf_profile') || '{"name":"Il Capo","sub":"Fondatore · Call Me River","emoji":"🦁"}');
+  if(document.getElementById('pdName')) document.getElementById('pdName').value = p.name || 'Il Capo';
+  if(document.getElementById('pdTag')) document.getElementById('pdTag').value = p.sub || 'Fondatore · Call Me River';
+  if(document.getElementById('pdStatusMsg')) document.getElementById('pdStatusMsg').value = p.statusMsg || 'Supervisionando il team 👀';
+  if(document.getElementById('pdAvatar')) document.getElementById('pdAvatar').textContent = p.emoji || '🦁';
+  pdCurrentEmoji = p.emoji || '🦁';
+  openDrawer('drawer-profile');
+}
+function pdSetEmoji(el, emoji) {
+  document.querySelectorAll('.eg-opt').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  pdCurrentEmoji = emoji;
+  document.getElementById('pdAvatar').textContent = emoji;
+}
+function pdSetPhoto(input) {
+  const file = input.files[0]; if(!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    document.getElementById('pdAvatar').innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+    pdCurrentEmoji = e.target.result;
+  };
+  r.readAsDataURL(file);
+}
+// ===== GLOBAL STATUS SYSTEM =====
+// Single source of truth for user status - updates everywhere simultaneously
+const STATUS_COLORS = {
+  'online':           { dot: 'var(--green)',   bg: 'rgba(34,197,94,0.1)',   border: 'rgba(34,197,94,0.25)',   label: '#86efac' },
+  'occupato':         { dot: 'var(--orange)',  bg: 'rgba(249,115,22,0.1)',  border: 'rgba(249,115,22,0.25)',  label: '#fdba74' },
+  'pausa caffè':      { dot: 'var(--orange)',  bg: 'rgba(249,115,22,0.1)',  border: 'rgba(249,115,22,0.25)',  label: '#fdba74' },
+  'sto scrivendo':    { dot: 'var(--blue)',    bg: 'rgba(59,130,246,0.1)',  border: 'rgba(59,130,246,0.25)',  label: '#93c5fd' },
+  'in focus':         { dot: 'var(--blue)',    bg: 'rgba(59,130,246,0.1)',  border: 'rgba(59,130,246,0.25)',  label: '#93c5fd' },
+  'sto pensando':     { dot: 'var(--purple)',  bg: 'rgba(139,92,246,0.1)', border: 'rgba(139,92,246,0.25)', label: '#c4b5fd' },
+  'sto componendo':   { dot: 'var(--orange)',  bg: 'rgba(249,115,22,0.08)', border: 'rgba(249,115,22,0.2)', label: '#fdba74' },
+  'sto dirigendo':    { dot: '#f43f5e',        bg: 'rgba(244,63,94,0.1)',   border: 'rgba(244,63,94,0.25)',   label: '#fda4af' },
+  'pipeline attiva':  { dot: 'var(--pink)',    bg: 'rgba(236,72,153,0.1)', border: 'rgba(236,72,153,0.25)', label: '#f9a8d4' },
+  'non disturbare':   { dot: 'var(--red)',     bg: 'rgba(239,68,68,0.1)',   border: 'rgba(239,68,68,0.25)',   label: '#fca5a5' },
+  'via':              { dot: 'var(--dim)',     bg: 'rgba(90,100,120,0.1)', border: 'rgba(90,100,120,0.2)',   label: 'rgba(255,255,255,0.3)' }
+};
+
+// THE global status setter — call this from anywhere, updates everything
+function applyGlobalStatus(icon, text) {
+  const colors = STATUS_COLORS[text] || STATUS_COLORS['online'];
+  // 1. Topbar pill dot
+  const dot = document.getElementById('profilePillStatusDot');
+  if(dot) dot.style.background = colors.dot;
+  // 2. Lounge status pills — reset all, highlight active
+  document.querySelectorAll('.lounge-status-opt').forEach(o => {
+    o.style.background = 'rgba(255,255,255,0.05)';
+    o.style.borderColor = 'rgba(255,255,255,0.1)';
+    const lbl = o.querySelector('span:last-child');
+    if(lbl) lbl.style.color = 'rgba(255,255,255,0.4)';
+  });
+  document.querySelectorAll('.lounge-status-opt').forEach(o => {
+    if(o.getAttribute('onclick') && o.getAttribute('onclick').includes("'"+text+"'")) {
+      o.style.background = colors.bg.replace('0.1','0.2');
+      o.style.borderColor = colors.border;
+      const lbl = o.querySelector('span:last-child');
+      if(lbl) lbl.style.color = colors.label;
+    }
+  });
+  // 3. Drawer status opts — reset all, highlight active
+  document.querySelectorAll('.drawer-status-opt').forEach(s => {
+    s.style.background = 'var(--bg3)';
+    s.style.borderColor = 'var(--border)';
+  });
+  document.querySelectorAll('.drawer-status-opt').forEach(s => {
+    if(s.getAttribute('onclick') && s.getAttribute('onclick').includes("'"+text+"'")) {
+      s.style.background = colors.bg;
+      s.style.borderColor = colors.border;
+    }
+  });
+  // 4. Save to localStorage
+  const p = JSON.parse(localStorage.getItem('cf_profile') || '{}');
+  p.status = { icon, text };
+  localStorage.setItem('cf_profile', JSON.stringify(p));
+  pdCurrentStatus = { icon, text };
+  // 5. Notify agents (they "see" your status change)
+  addLog('info', icon+' '+p.name||'Tu', 'Status cambiato: '+text);
+}
+
+// Called from Sala Relax quick-set pills
+function setUserStatus(el, icon, text) {
+  applyGlobalStatus(icon, text);
+  showToast(icon+' Status: '+text);
+}
+
+// Called from Profile Drawer
+function pdSelectStatus(el, icon, text) {
+  applyGlobalStatus(icon, text);
+  // Visual feedback in drawer only
+  document.querySelectorAll('.drawer-status-opt').forEach(s => {
+    s.style.background='var(--bg3)'; s.style.borderColor='var(--border)';
+  });
+  el.style.background = STATUS_COLORS[text]?.bg || 'rgba(34,197,94,0.08)';
+  el.style.borderColor = STATUS_COLORS[text]?.border || 'rgba(34,197,94,0.25)';
+  pdCurrentStatus = { icon, text };
+}
+
+function selectPronome(el) {
+  document.querySelectorAll('.pronome').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel'); pdCurrentPronome = el.textContent;
+}
+
+function saveProfileDrawer() {
+  const name = document.getElementById('pdName').value.trim() || 'Il Capo';
+  const sub  = document.getElementById('pdTag').value.trim() || 'Fondatore';
+  const statusMsg = document.getElementById('pdStatusMsg').value.trim();
+  const p = JSON.parse(localStorage.getItem('cf_profile') || '{}');
+  p.name = name; p.sub = sub; p.emoji = pdCurrentEmoji;
+  p.status = pdCurrentStatus; p.statusMsg = statusMsg; p.pronomi = pdCurrentPronome;
+  localStorage.setItem('cf_profile', JSON.stringify(p));
+  applyProfileUI(p);
+  applyGlobalStatus(pdCurrentStatus.icon, pdCurrentStatus.text);
+  closeDrawer('drawer-profile');
+  showToast('✓ Profilo salvato!');
+}
+
+function applyProfileUI(p) {
+  const isImg = p.emoji && p.emoji.startsWith('data:');
+  const setAv = (el, emoji) => {
+    if(!el) return;
+    if(isImg) el.innerHTML='<img src="'+emoji+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+    else el.textContent = emoji || '🦁';
+  };
+  setAv(document.getElementById('profilePillAv'), p.emoji);
+  const nm = document.getElementById('profilePillName'); if(nm) nm.textContent = p.name || 'Il Capo';
+  setAv(document.getElementById('loungeUserAv'), p.emoji);
+  const lnm = document.getElementById('loungeUserName'); if(lnm) lnm.textContent = p.name || 'Il Capo';
+  const ltg = document.getElementById('loungeUserTag'); if(ltg) ltg.textContent = p.sub || 'Fondatore';
+  if(p.status) applyGlobalStatus(p.status.icon || '🟢', p.status.text || 'online');
+}
+
+// Init on load
+(function(){
+  const p = JSON.parse(localStorage.getItem('cf_profile') || '{"name":"Il Capo","sub":"Fondatore · Call Me River","emoji":"🦁","status":{"icon":"🟢","text":"online"}}');
+  applyProfileUI(p);
+})();
+
+// ===== DRAWERS =====
+function openDrawer(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function closeDrawer(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+function closeOnBg(e,id){if(e.target===document.getElementById(id))closeDrawer(id);}
+
+// ===== THEMES =====
+const themes = ['light','dark','night','purple','ocean','rose','river'];
+let currentTheme = 'light';
+let generatedThemeColors = null;
+let generatedPromptColors = null;
+
+function applyTheme(name, card, label) {
+  // Remove all theme classes
+  themes.forEach(t => document.documentElement.classList.remove('theme-'+t));
+  // Apply new theme (light = no class)
+  if(name !== 'light') document.documentElement.classList.add('theme-'+name);
+  currentTheme = name;
+  // Update UI
+  document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('selected'));
+  if(card) card.classList.add('selected');
+  const badge = document.getElementById('currentThemeBadge');
+  if(badge) badge.textContent = label+' attivo';
+  const indicator = document.getElementById('themeIndicator');
+  if(indicator) indicator.textContent = label;
+  showToast('✓ Tema '+label+' applicato!');
+  addLog('info','Impostazioni','Tema cambiato: '+label);
+}
+
+function generateThemeFromScreenshot(input) {
+  const file = input.files[0];
+  if(!file) return;
+  showToast('📸 Analisi screenshot in corso...');
+  // Simulate AI color extraction
+  setTimeout(() => {
+    const palettes = [
+      ['#1a2a4a','#2563eb','#60a5fa','#bfdbfe','#ffffff'],
+      ['#2d1b4a','#7c3aed','#a78bfa','#ddd6fe','#faf5ff'],
+      ['#0f2a1a','#16a34a','#4ade80','#bbf7d0','#f0fdf4'],
+      ['#2a1a0a','#c2410c','#fb923c','#fed7aa','#fff7ed'],
+      ['#1a0a2a','#9d174d','#f472b6','#fbcfe8','#fdf2f8'],
+    ];
+    const palette = palettes[Math.floor(Math.random()*palettes.length)];
+    generatedThemeColors = palette;
+    showGeneratedTheme(palette, 'genThemePreview', 'gtpColors');
+    showToast('✓ Tema estratto dallo screenshot!');
+  }, 1800);
+}
+
+function showGeneratedTheme(colors, previewId, colorsId) {
+  const preview = document.getElementById(previewId);
+  const colDiv = document.getElementById(colorsId);
+  if(!preview || !colDiv) return;
+  colDiv.innerHTML = '';
+  colors.forEach((c,i) => {
+    const wrapper = document.createElement('div');
+    wrapper.style.flex = '1';
+    const dot = document.createElement('div');
+    dot.className = 'gtp-color';
+    dot.style.background = c;
+    dot.style.border = '1px solid rgba(0,0,0,0.08)';
+    const label = document.createElement('div');
+    label.className = 'gtp-label';
+    label.textContent = c;
+    label.style.fontFamily = 'DM Mono, monospace';
+    label.style.fontSize = '0.46rem';
+    label.style.color = 'var(--dim)';
+    label.style.textAlign = 'center';
+    label.style.marginTop = '4px';
+    wrapper.appendChild(dot);
+    wrapper.appendChild(label);
+    colDiv.appendChild(wrapper);
+  });
+  preview.style.display = 'block';
+}
+
+function applyGeneratedTheme() {
+  if(!generatedThemeColors) return;
+  applyCustomColors(generatedThemeColors);
+  document.getElementById('genThemePreview').style.display = 'none';
+}
+function applyPromptTheme() {
+  if(!generatedPromptColors) return;
+  applyCustomColors(generatedPromptColors);
+  document.getElementById('promptThemeResult').style.display = 'none';
+}
+function applyCustomColors(colors) {
+  themes.forEach(t => document.documentElement.classList.remove('theme-'+t));
+  const root = document.documentElement;
+  root.style.setProperty('--bg', colors[4] || '#f0ede8');
+  root.style.setProperty('--bg2', colors[3] || '#ffffff');
+  root.style.setProperty('--bg3', mixColors(colors[3],colors[4],0.5));
+  root.style.setProperty('--bg4', colors[3] || '#ede9e3');
+  root.style.setProperty('--text', colors[0] || '#111010');
+  root.style.setProperty('--accent', colors[2] || '#e8c547');
+  root.style.setProperty('--dark', colors[0] || '#1a1714');
+  document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('selected'));
+  currentTheme = 'custom';
+  document.getElementById('currentThemeBadge').textContent = '✨ Custom attivo';
+  document.getElementById('themeIndicator').textContent = '✨ Custom';
+  showToast('✓ Tema personalizzato applicato!');
+}
+function mixColors(c1,c2,ratio) {
+  return c1; // simplified
+}
+
+function generateThemeFromPrompt() {
+  const prompt = document.getElementById('themePrompt').value.trim();
+  if(!prompt) { showToast('⚠ Inserisci una descrizione'); return; }
+  showToast('🎨 Generazione tema in corso...');
+  const palettes = {
+    'cyberpunk': ['#0a0a0f','#0d0d1a','#1a0a2e','#00ff88','#ff0080'],
+    'tramonto': ['#1a0a05','#ff6b35','#ffd23f','#fff8f0','#ffffff'],
+    'minimalista': ['#111111','#1a1a1a','#2a2a2a','#e0e0e0','#ffffff'],
+    'foresta': ['#0a1a0a','#1a3a1a','#2a5a2a','#a0d4a0','#f0faf0'],
+    'default': ['#1a1714','#2a2520','#3a3530','#c0b8b0','#f0ede8'],
+  };
+  setTimeout(() => {
+    const key = Object.keys(palettes).find(k=>prompt.toLowerCase().includes(k)) || 'default';
+    const colors = palettes[key];
+    generatedPromptColors = colors;
+    showGeneratedTheme(colors, 'promptThemeResult', 'promptColors');
+    document.getElementById('promptThemeResult').style.display = 'block';
+    showToast('✓ Tema "'+prompt+'" generato!');
+  }, 1400);
+}
+function generateThemeFromBook() {
+  showToast('📖 Analisi Call Me River...');
+  setTimeout(() => {
+    generatedPromptColors = ['#050810','#0a0e1a','#141c2e','#c0ccde','#e8edf5'];
+    showGeneratedTheme(generatedPromptColors, 'promptThemeResult', 'promptColors');
+    document.getElementById('promptThemeResult').style.display = 'block';
+    showToast('✓ Tema "Pulse Night" estratto dal libro!');
+  }, 1200);
+}
+
+// ===== FONT SIZE =====
+let fontSize = 14;
+function changeFontSize(delta) {
+  fontSize = Math.max(11, Math.min(20, fontSize+delta));
+  applyFontSize(fontSize);
+}
+function setFontSize(val) {
+  fontSize = parseInt(val);
+  applyFontSize(fontSize);
+}
+function applyFontSize(size) {
+  document.documentElement.style.fontSize = size+'px';
+  document.getElementById('fontSizeDisplay').textContent = size+'px';
+  document.getElementById('fontSlider').value = size;
+}
+
+// ===== SPACING =====
+function setSpacing(type, card) {
+  document.querySelectorAll('.sp-card').forEach(c=>c.classList.remove('sel'));
+  card.classList.add('sel');
+  const scales = {compact:0.85, normal:1, relaxed:1.15};
+  document.documentElement.style.setProperty('--spacing-scale', scales[type]);
+  showToast('✓ Spaziatura: '+type);
+}
+
+// ===== SIDEBAR COMPACT =====
+function toggleSidebar(toggle) {
+  toggle.classList.toggle('on');
+  const sidebar = document.querySelector('.sidebar');
+  const layout = document.querySelector('.layout');
+  if(toggle.classList.contains('on')) {
+    sidebar.classList.add('compact');
+    layout.style.gridTemplateColumns = '60px 1fr';
+  } else {
+    sidebar.classList.remove('compact');
+    layout.style.gridTemplateColumns = '240px 1fr';
+  }
+}
+
+// ===== FIXER =====
+function fixItem(btn, type) {
+  btn.textContent = '✓ fixato';
+  btn.style.background = 'rgba(34,197,94,0.1)';
+  btn.style.color = 'var(--green)';
+  btn.disabled = true;
+  const msgs = {sidebar:'✓ Sidebar adattata', font:'✓ Font size aumentato'};
+  showToast(msgs[type] || '✓ Fixato!');
+  addLog('success','Fixer',msgs[type] || 'Problema risolto');
+}
+function runFixer() {
+  showToast('🔍 Scansione in corso...');
+  setTimeout(()=>showToast('✓ Scansione completata · 2 problemi trovati'),1500);
+}
+
+// ===== RESET =====
+function resetSettings() {
+  applyTheme('light', document.getElementById('theme-light'), '☀️ Chiaro');
+  applyFontSize(14);
+  setSpacing('normal', document.getElementById('sp-normal'));
+  document.documentElement.style.removeProperty('--spacing-scale');
+  showToast('↩ Impostazioni ripristinate');
+}
+
+// ===== CHIEF =====
+const chiefMsgs=[
+  [{from:'chief',text:'→ Visual: thumbnail Ep.03 più viola.'},{from:'agent',ico:'🎨',text:'Visual → Ricevuto. Rigenero.'}],
+  [{from:'chief',text:'→ Prezzi: TikTok 98K views. €0.99 ora.'},{from:'agent',ico:'💸',text:'Prezzi → €0.99 applicato.'}],
+];
+let cmIdx=0;
+function addConvMsg(){
+  const feed=document.getElementById('convFeed');
+  const pair=chiefMsgs[cmIdx%chiefMsgs.length];cmIdx++;
+  pair.forEach((m,i)=>{
+    setTimeout(()=>{
+      const div=document.createElement('div');
+      div.className='conv-bubble-wrap'+(m.from==='agent'?' right':'');
+      const av=m.from==='chief'?'<div class="conv-av-sm chief">👑</div>':`<div class="conv-av-sm" style="background:var(--bg4)">${m.ico}</div>`;
+      const cls=m.from==='chief'?'from-chief':'from-agent';
+      const align=m.from==='agent'?'text-align:right':'';
+      div.innerHTML=`${av}<div><div class="conv-bub ${cls}">${m.text}</div><div class="conv-time" style="${align}">ora</div></div>`;
+      feed.appendChild(div);feed.scrollTop=feed.scrollHeight;
+    },i*800);
+  });
+}
+function sendChiefInstruction(){
+  const txt=document.getElementById('chiefInstruction').value.trim();
+  if(!txt)return;
+  const feed=document.getElementById('convFeed');
+  const you=document.createElement('div');
+  you.className='conv-bubble-wrap';
+  you.innerHTML=`<div class="conv-av-sm" style="background:var(--accent);color:var(--dark)">👤</div><div><div class="conv-bub from-chief" style="background:rgba(232,197,71,0.15);color:var(--text2)">Tu: ${txt}</div><div class="conv-time">ora</div></div>`;
+  feed.appendChild(you);
+  setTimeout(()=>{
+    const resp=document.createElement('div');
+    resp.className='conv-bubble-wrap right';
+    resp.innerHTML=`<div class="conv-av-sm chief">👑</div><div><div class="conv-bub from-agent">Director → Ricevuto. Coordinamento agenti in corso.</div><div class="conv-time" style="text-align:right">ora</div></div>`;
+    feed.appendChild(resp);feed.scrollTop=feed.scrollHeight;
+    addLog('info','Capo Red.','"'+txt.substring(0,35)+'..." ricevuta');
+  },1200);
+  document.getElementById('chiefInstruction').value='';
+  showToast('✓ Istruzione inviata');
+}
+
+// ===== EDITORIAL =====
+function analyzeBook(){const txt=document.getElementById('editorialText').value.trim();if(!txt){showToast('⚠ Inserisci testo');return;}showToast('📖 Analisi...');setTimeout(()=>{const r=document.getElementById('editReport');r.style.display='flex';r.style.flexDirection='column';r.style.gap='12px';showToast('✓ Report pronto!');},1600);}
+function useSample(){document.getElementById('editorialText').value='Dante non aveva più aperto Pulse di notte...';analyzeBook();}
+
+// ===== CHARS =====
+function selectChar(c){document.querySelectorAll('.char-card-d').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');const n=c.querySelector('.char-name-d').textContent;document.querySelector('#charDesc .dc-hdr').textContent='🤖 Descrizione AI · '+n;}
+
+// ===== APPROVALS =====
+function approveChief(){showToast('✓ Cap.7 POV River approvato!');addLog('success','Tu','Cap.7 POV River approvato');}
+function applyPrice(){showToast('✓ €0.99 applicato per 48h!');addLog('success','Prezzi','€0.99 su Amazon KDP · 48h');}
+function approveItem(btn,msg){const acts=btn.closest('div[style*="gap:8px"]');if(acts)acts.innerHTML=`<div style="padding:9px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:12px;font-size:0.76rem;color:var(--green);font-weight:600;text-align:center">${msg}</div>`;showToast('✓ '+msg);}
+
+// ===== LOG =====
+function addLog(type,agent,msg){
+  const list=document.querySelector('.log-item:first-child')?.parentElement;
+  if(!list)return;
+  const now=new Date();
+  const time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  const div=document.createElement('div');
+  div.className='log-item';
+  div.innerHTML=`<div class="log-dot-outer ${type}"><div class="log-inner"></div></div><div class="log-time">${time}</div><div class="log-text"><strong>${agent}</strong> — ${msg}</div>`;
+  list.insertBefore(div,list.firstChild);
+  while(list.children.length>5)list.removeChild(list.lastChild);
+}
+
+// ===== MISC =====
+function adjMix(track){const fill=track.querySelector('.mix-fill');const pct=track.closest('.mix-row').querySelector('.mix-pct');const v=Math.floor(Math.random()*70+15);fill.style.width=v+'%';if(pct)pct.textContent=v+'%';showToast('🎚️ Volume: '+v+'%');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function runAll(btn){btn.textContent='⏳ In esecuzione...';btn.disabled=true;addLog('info','Capo Red.','Pipeline avviata');setTimeout(()=>{addLog('success','Scrittore','Cap.7 in scrittura');},800);setTimeout(()=>{addLog('success','Musicale','"Frammenti" generata');btn.textContent='✓ Completata!';setTimeout(()=>{btn.textContent='👑 Capo Redattore · Avvia pipeline completa';btn.disabled=false;},3000);},3500);}
+
+
+// ===== AGENT NAMES SYSTEM =====
+const AGENTS_DATA = [
+  { id:'director', icon:'👑', role:'Capo Redattore', tool:'Director AI', color:'linear-gradient(135deg,#1a1714,#3a3530)' },
+  { id:'scrittore', icon:'✍️', role:'Scrittore', tool:'Claude API', color:'linear-gradient(135deg,#eff6ff,#dbeafe)' },
+  { id:'musicale', icon:'🎵', role:'Musicale', tool:'Suno AI', color:'linear-gradient(135deg,#fff7ed,#fed7aa)' },
+  { id:'consulente', icon:'📖', role:'Consulente Ed.', tool:'Claude API', color:'linear-gradient(135deg,#fdf4ff,#e9d5ff)' },
+  { id:'sentiment', icon:'🌡️', role:'Sentiment', tool:'Claude API', color:'linear-gradient(135deg,#fefce8,#fef08a)' },
+  { id:'visual', icon:'🎨', role:'Visual Identity', tool:'MS Designer', color:'linear-gradient(135deg,#fff1f3,#fecdd3)' },
+  { id:'prezzi', icon:'💸', role:'Prezzi', tool:'Amazon KDP', color:'linear-gradient(135deg,#f0fdf4,#bbf7d0)' },
+  { id:'sistema', icon:'🔧', role:'Sistema', tool:'Monitor', color:'linear-gradient(135deg,#f7fee7,#d9f99d)' },
+  { id:'cipher', icon:'🛡️', role:'Cybersecurity', tool:'CIPHER', color:'linear-gradient(135deg,#f0fdf4,#dcfce7)' },
+  { id:'personaggi', icon:'🎭', role:'Personaggi', tool:'Claude + foto', color:'linear-gradient(135deg,#eff6ff,#bfdbfe)' },
+  { id:'orchestra', icon:'🎻', role:'Orchestra AI', tool:'Mixer AI', color:'linear-gradient(135deg,#fdf4ff,#f3e8ff)' },
+];
+
+// Name suggestions pool per agent
+const NAME_POOL = {
+  director:   [{name:'Marco', age:38, gender:'M', story:'Ex direttore creativo di una casa editrice milanese. Preciso, visionario, non tollera ritardi.'}, {name:'Sofia', age:42, gender:'F', story:'Produttrice televisiva con 15 anni di esperienza. Calma in superficie, vulcano dentro.'}, {name:'Alex', age:35, gender:'N', story:'Stratega indipendente cresciuto tra startup e teatro. Pensa in sistemi.'}],
+  scrittore:  [{name:'Luca', age:29, gender:'M', story:'Scrittore notturno con tre romanzi nel cassetto. Sa quando una frase è giusta al primo respiro.'}, {name:'Mia', age:26, gender:'F', story:'Poetessa convertita alla narrativa. Ogni parola è scelta, nessuna è casuale.'}, {name:'Ren', age:31, gender:'N', story:'Ghost-writer per autori famosi. Conosce ogni genere, si nasconde dietro ogni voce.'}],
+  musicale:   [{name:'Nico', age:24, gender:'M', story:'Producer autodidatta. Ha cresciuto le orecchie su Ennio Morricone e Burial insieme.'}, {name:'Zara', age:27, gender:'F', story:'Cantautrice elettronica. Compone al buio, di notte, in cuffia.'}, {name:'Eli', age:22, gender:'N', story:'Synth freak con una laurea in matematica. Vede la musica come architettura.'}],
+  consulente: [{name:'Elena', age:44, gender:'F', story:'Editor senior con vent\'anni di narrativa letteraria. Legge con la matita in mano, sempre.'}, {name:'Giulio', age:37, gender:'M', story:'Critico letterario e traduttore. Sa cosa manca in un testo prima ancora di finirlo.'}, {name:'Sam', age:33, gender:'N', story:'Consulente editoriale freelance. Ha letto tutto, dimenticato poco.'}],
+  sentiment:  [{name:'Aria', age:23, gender:'F', story:'Psicologa digitale. Sente le emozioni nei dati come altri le sentono nelle persone.'}, {name:'Felix', age:28, gender:'M', story:'Ricercatore in affective computing. Piange ai film tristi e non se ne vergogna.'}, {name:'Sky', age:25, gender:'N', story:'Osservatore empatico. Capisce cosa prova una folla leggendo solo i commenti.'}],
+  visual:     [{name:'Chloe', age:30, gender:'F', story:'Art director con background in moda. Nota subito il font sbagliato a dieci metri.'}, {name:'Dario', age:33, gender:'M', story:'Designer grafico cresciuto sui poster Bauhaus. Il minimalismo è una fede.'}, {name:'Sage', age:27, gender:'N', story:'Visual storyteller. Ogni immagine racconta qualcosa che le parole non riescono.'}],
+  prezzi:     [{name:'Matteo', age:36, gender:'M', story:'Analista finanziario con MBA. Dorme male se non ha ottimizzato almeno tre variabili.'}, {name:'Laura', age:34, gender:'F', story:'Ex trader convertita al marketing. Vede opportunità dove gli altri vedono numeri.'}, {name:'Jo', age:29, gender:'N', story:'Economista comportamentale. Sa che il prezzo giusto è psicologia, non matematica.'}],
+  sistema:    [{name:'Enrico', age:40, gender:'M', story:'DevOps senior. Ha visto crollare tre startup e le ha rimesse in piedi da solo.'}, {name:'Vera', age:31, gender:'F', story:'SRE (Site Reliability Engineer). L uptime è la sua ossessione sana.'}, {name:'Kit', age:27, gender:'N', story:'Hacker etico diventato guardian. Pensa come un attaccante per difendere meglio.'}],
+  cipher:     [{name:'Nyx', age:'∞', gender:'N', story:'Nata dalla convergenza di mille incidenti di sicurezza. Non dorme mai. Letteralmente.'}, {name:'Ghost', age:'???', gender:'N', story:'Presenza silenziosa. Agisce prima che tu ti accorga del pericolo.'}, {name:'AEGIS', age:'v4.2', gender:'N', story:'Sistema di difesa evolutivo. Ogni attacco che blocca la rende più forte.'}],
+  personaggi: [{name:'Dante (il vero)', age:27, gender:'M', story:'Appassionato di character design. Passa ore a studiare come le persone si muovono.'}, {name:'Iris', age:24, gender:'F', story:'Scrittrice di fanfiction cresciuta. Conosce ogni archetipo, li smonta e rimonta.'}, {name:'Poe', age:30, gender:'N', story:'Costumista teatrale. Vede ogni personaggio come un costume che rivela l\'anima.'}],
+  orchestra:  [{name:'Maestro V', age:55, gender:'M', story:'Direttore d\'orchestra semi-pensionato. Ora dirige bit invece di violini.'}, {name:'Aya', age:29, gender:'F', story:'Sound designer cinematografica. Sa che il silenzio è uno strumento.'}, {name:'Echo', age:32, gender:'N', story:'Foley artist e compositore. Registra suoni di strada e li trasforma in musica.'}],
+};
+
+let agentNames = JSON.parse(localStorage.getItem('cf_agent_names') || '{}');
+let pendingNames = {};
+
+function openNamesWizard() {
+  renderNamesWizard();
+  document.getElementById('namesWizardModal').classList.add('open');
+}
+function closeNamesWizard() {
+  document.getElementById('namesWizardModal').classList.remove('open');
+}
+
+function renderNamesWizard() {
+  const list = document.getElementById('namesAgentList');
+  list.innerHTML = '';
+  AGENTS_DATA.forEach(agent => {
+    const saved = agentNames[agent.id];
+    const pending = pendingNames[agent.id];
+    const current = pending || saved;
+    const div = document.createElement('div');
+    div.style.background = 'var(--bg3)';
+    div.style.borderRadius = '12px';
+    div.style.border = '1px solid var(--border)';
+    div.style.overflow = 'hidden';
+    div.style.marginBottom = '0';
+
+    // Build header row
+    const header = document.createElement('div');
+    header.style.cssText = 'display:flex;align-items:center;gap:10px;padding:12px 14px;';
+
+    // Avatar
+    const av = document.createElement('div');
+    av.style.cssText = 'width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;';
+    av.style.background = agent.color;
+    av.textContent = agent.icon;
+
+    // Info
+    const info = document.createElement('div');
+    info.style.flex = '1';
+    const nameEl = document.createElement('div');
+    nameEl.style.cssText = 'font-size:0.8rem;font-weight:700;';
+    if(current) {
+      nameEl.innerHTML = '<span style="color:var(--text)">' + current.name + '</span> <span style="font-family:monospace;font-size:0.5rem;color:var(--dim);">' + current.age + 'a · ' + current.gender + '</span>';
+    } else {
+      nameEl.innerHTML = '<span style="color:var(--dim)">' + agent.role + '</span>';
+    }
+    const storyEl = document.createElement('div');
+    storyEl.style.cssText = 'font-family:monospace;font-size:0.5rem;color:var(--dim);margin-top:1px;';
+    storyEl.textContent = current ? current.story.substring(0,70)+'...' : 'Nessun nome · clicca Suggerisci';
+    info.appendChild(nameEl);
+    info.appendChild(storyEl);
+
+    // Buttons
+    const btns = document.createElement('div');
+    btns.style.cssText = 'display:flex;gap:6px;';
+    const sugBtn = document.createElement('button');
+    sugBtn.style.cssText = 'padding:5px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;font-size:0.52rem;cursor:pointer;';
+    sugBtn.textContent = '✨ Suggerisci';
+    sugBtn.onclick = () => suggestName(agent.id);
+    btns.appendChild(sugBtn);
+    if(current) {
+      const appBtn = document.createElement('button');
+      appBtn.style.cssText = 'padding:5px 10px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);color:var(--green);border-radius:8px;font-size:0.52rem;cursor:pointer;';
+      appBtn.textContent = '✓ Approva';
+      appBtn.onclick = () => approveName(agent.id);
+      btns.appendChild(appBtn);
+    }
+
+    header.appendChild(av);
+    header.appendChild(info);
+    header.appendChild(btns);
+    div.appendChild(header);
+
+    // Story expansion if pending
+    if(current && !saved) {
+      const story = document.createElement('div');
+      story.style.cssText = 'padding:8px 14px 12px;font-family:monospace;font-size:0.54rem;color:var(--dim);line-height:1.5;border-top:1px solid var(--border);';
+      story.textContent = current.story;
+      div.appendChild(story);
+    }
+
+    list.appendChild(div);
+  });
+}
+function suggestName(agentId) {
+  const pool = NAME_POOL[agentId];
+  if(!pool) return;
+  // Pick random from pool, different from current
+  const current = agentNames[agentId];
+  let suggestion;
+  do { suggestion = pool[Math.floor(Math.random()*pool.length)]; }
+  while(current && suggestion.name === current.name && pool.length > 1);
+  pendingNames[agentId] = suggestion;
+  renderNamesWizard();
+  showToast('✨ Suggerito: ' + suggestion.name + ' · approva o rigenera');
+}
+
+function approveName(agentId) {
+  const pending = pendingNames[agentId];
+  if(!pending) return;
+  agentNames[agentId] = pending;
+  delete pendingNames[agentId];
+  localStorage.setItem('cf_agent_names', JSON.stringify(agentNames));
+  renderNamesWizard();
+  updateAgentNameBadges();
+  showToast('✓ ' + pending.name + ' approvato!');
+  addLog('success', '✨ Nomi', 'Agente '+agentId+' ora si chiama '+pending.name);
+}
+
+function generateAllNames() {
+  AGENTS_DATA.forEach(agent => {
+    const pool = NAME_POOL[agent.id];
+    if(pool) pendingNames[agent.id] = pool[Math.floor(Math.random()*pool.length)];
+  });
+  renderNamesWizard();
+  showToast('✨ Nomi generati per tutti · approva quelli che ti piacciono!');
+}
+
+function approveAllNames() {
+  let count = 0;
+  AGENTS_DATA.forEach(agent => {
+    if(pendingNames[agent.id]) {
+      agentNames[agent.id] = pendingNames[agent.id];
+      delete pendingNames[agent.id];
+      count++;
+    }
+  });
+  localStorage.setItem('cf_agent_names', JSON.stringify(agentNames));
+  renderNamesWizard();
+  updateAgentNameBadges();
+  closeNamesWizard();
+  if(count > 0) {
+    showToast('✓ ' + count + ' nomi approvati!');
+    addLog('success', '✨ Nomi', count + ' agenti hanno ora un nome');
+    document.getElementById('namesBanner') && (document.getElementById('namesBanner').style.display='flex');
+  }
+}
+
+function updateAgentNameBadges() {
+  // Updates page-sub to show names count
+  const nameCount = Object.keys(agentNames).length;
+  if(nameCount > 0) {
+    const sub = document.querySelector('#page-agents .page-sub');
+    if(sub) sub.textContent = '13 attivi · ' + nameCount + ' con nome · clicca ✨ per gestire';
+  }
+}
+
+// Init names on load
+(function() {
+  agentNames = JSON.parse(localStorage.getItem('cf_agent_names') || '{}');
+  const nameCount = Object.keys(agentNames).length;
+  if(nameCount > 0) updateAgentNameBadges();
+})();
+
+// ===== CIPHER CYBERSECURITY =====
+function simulateThreat() {
+  const threats = [
+    { type: 'warn', title: 'Scansione completata', detail: '13 strumenti verificati · tutto ok · nessuna anomalia', badge: '✓ ok', color: 'var(--green)' },
+    { type: 'ok',   title: 'File monitorati verificati', detail: 'Call Me River · 32.530 parole · integrità confermata', badge: '✓ ok', color: 'var(--green)' },
+    { type: 'warn', title: 'Accesso localStorage verificato', detail: 'PIN · profilo · impostazioni · tutti i dati locali protetti', badge: '✓ ok', color: 'var(--green)' },
+  ];
+  const t = threats[Math.floor(Math.random()*threats.length)];
+  const list = document.getElementById('cyberAlertList');
+  if(!list) return;
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;align-items:flex-start;gap:10px;padding:11px 18px;border-bottom:1px solid var(--border);animation:msgIn 0.3s ease;';
+  const now = new Date();
+  const time = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  div.innerHTML = `
+    <div style="width:8px;height:8px;border-radius:50%;background:${t.color};margin-top:4px;flex-shrink:0;"></div>
+    <div style="flex:1;"><div style="font-size:0.78rem;font-weight:600;">${t.title}</div><div style="font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:1px;">${t.detail} · ${time}</div></div>
+    <div style="font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 8px;border-radius:20px;background:rgba(34,197,94,0.1);color:${t.color};">${t.badge}</div>`;
+  list.insertBefore(div, list.firstChild);
+  addLog('success', '🛡️ CIPHER', t.title);
+  showToast('🛡️ Scansione completata · tutto ok!');
+  document.getElementById('cipherMsg').innerHTML = 'Scansione completata alle '+time+'.<br>Nessuna minaccia rilevata. Il vault è integro. Stai lavorando in sicurezza.';
+}
+
+function exportLog() {
+  const log = [
+    '=== CONTENT FACTORY · LOG SICUREZZA ===',
+    'Esportato: ' + new Date().toLocaleString('it-IT'),
+    '',
+    'ACCESSI:',
+    '14:28 - Accesso autorizzato · PIN corretto',
+    '09:14 - Tentativo bloccato · PIN errato × 2',
+    '',
+    'SCANSIONI: 47 completate · 0 anomalie',
+    'VAULT: 4 elementi protetti · integrità ok',
+    'AGENTE: CIPHER · v1.0 · attivo',
+    '',
+    '=== FINE LOG ===',
+  ].join('\n');
+  const blob = new Blob([log], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'cf-security-log.txt';
+  a.click();
+  showToast('📋 Log esportato!');
+}
+
+// Progress animation
+setInterval(()=>{const mb=document.getElementById('musicBar');if(mb){const w=parseFloat(mb.style.width)||72;if(w<99)mb.style.width=Math.min(99,w+0.3)+'%';}},500);
+</script>
+</body>
+</html>

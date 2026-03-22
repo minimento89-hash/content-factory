@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Factory — Index</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f0ede8;--bg2:#fff;--bg3:#f7f5f2;--bg4:#ede9e3;
+  --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.14);
+  --text:#111;--dim:#9a948c;--mid:#6b6560;
+  --dark:#1a1714;--accent:#e8c547;--accent2:#d4b030;
+  --green:#22c55e;--blue:#3b82f6;--purple:#8b5cf6;
+  --orange:#f97316;--red:#ef4444;--cipher:#00e5a0;
+  --shadow:0 2px 16px rgba(0,0,0,0.06);
+  --shadow-lg:0 12px 48px rgba(0,0,0,0.11);
+  --radius:18px;--radius-sm:11px;
+}
+html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);}
+
+/* BG */
+.bg-glow{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 10% 10%,rgba(232,197,71,0.08),transparent 50%),radial-gradient(ellipse at 90% 90%,rgba(26,23,20,0.04),transparent 50%);}
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,0,0,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.02) 1px,transparent 1px);background-size:44px 44px;}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(240,237,232,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 32px;height:60px;gap:12px;}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1rem;letter-spacing:-0.02em;}
+.logo-icon{width:32px;height:32px;background:var(--dark);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;}
+.tsep{flex:1;}
+.start-btn{display:flex;align-items:center;gap:7px;padding:9px 20px;background:var(--dark);color:#fff;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+.start-btn:hover{background:#2a2520;box-shadow:var(--shadow-lg);}
+.version-badge{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--dim);background:var(--bg2);border:1px solid var(--border);padding:4px 10px;border-radius:20px;}
+
+/* BODY */
+.body{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:48px 28px 80px;}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:56px;}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:0.66rem;color:var(--dim);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;}
+.hero-title{font-family:'Instrument Serif',serif;font-size:3.2rem;letter-spacing:-0.04em;line-height:1.1;margin-bottom:14px;}
+.hero-title span{color:var(--accent2);}
+.hero-sub{font-size:0.92rem;color:var(--mid);max-width:520px;margin:0 auto 28px;line-height:1.65;}
+.hero-flow{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;}
+.flow-step{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:30px;font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--mid);box-shadow:var(--shadow);}
+.flow-arrow{color:var(--dim);font-size:0.8rem;}
+
+/* SECTION */
+.section-lbl{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--dim);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.section-lbl::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* FILE CARDS */
+.files-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:48px;}
+.file-card{background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;transition:all 0.25s;text-decoration:none;color:inherit;display:block;}
+.file-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--border2);}
+.file-card.primary{border-top:3px solid var(--accent);}
+.file-card.security{border-top:3px solid var(--cipher);}
+.file-card.lounge{border-top:3px solid var(--orange);}
+.file-card.utility{border-top:3px solid var(--blue);}
+.fc-header{padding:18px 20px 14px;display:flex;align-items:flex-start;gap:12px;}
+.fc-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.fc-info{flex:1;}
+.fc-filename{font-family:'DM Mono',monospace;font-size:0.66rem;color:var(--dim);margin-bottom:4px;}
+.fc-name{font-size:0.9rem;font-weight:700;margin-bottom:3px;}
+.fc-desc{font-size:0.76rem;color:var(--mid);line-height:1.5;}
+.fc-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.fc-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.fc-tag{font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 7px;border-radius:20px;background:var(--bg4);color:var(--dim);}
+.fc-open{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--mid);font-weight:600;}
+.fc-open:hover{color:var(--text);}
+
+/* FLOW DIAGRAM */
+.flow-diagram{background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:28px;margin-bottom:48px;}
+.flow-title{font-size:0.88rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.flow-nodes{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:nowrap;overflow-x:auto;}
+.flow-node{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;}
+.fn-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:2px solid var(--border);background:var(--bg3);transition:all 0.2s;cursor:pointer;text-decoration:none;}
+.fn-icon:hover{transform:scale(1.08);border-color:var(--border2);box-shadow:var(--shadow);}
+.fn-name{font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);text-align:center;max-width:80px;}
+.flow-connector{display:flex;flex-direction:column;align-items:center;gap:3px;padding:0 4px;}
+.fc-line{width:28px;height:2px;background:linear-gradient(90deg,var(--border2),var(--border2));border-radius:2px;}
+.fc-arrow{color:var(--dim);font-size:0.7rem;}
+.flow-branch{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px;}
+.fb-line{width:1px;height:20px;background:var(--border2);}
+
+/* STATS */
+.stats-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:48px;}
+.sm-card{background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--border);padding:16px;text-align:center;box-shadow:var(--shadow);}
+.sm-val{font-family:'Instrument Serif',serif;font-size:2rem;color:var(--text);line-height:1;margin-bottom:4px;}
+.sm-lbl{font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--dim);}
+
+/* CHECKLIST */
+.checklist{background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;margin-bottom:48px;}
+.cl-hdr{padding:16px 20px;border-bottom:1px solid var(--border);font-size:0.88rem;font-weight:700;}
+.cl-row{display:flex;align-items:flex-start;gap:10px;padding:11px 20px;border-bottom:1px solid var(--border);}
+.cl-row:last-child{border-bottom:none;}
+.cl-dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.55rem;flex-shrink:0;margin-top:1px;}
+.cl-dot.done{background:rgba(34,197,94,0.12);color:var(--green);}
+.cl-dot.soon{background:rgba(249,115,22,0.1);color:var(--orange);}
+.cl-text{font-size:0.78rem;color:var(--text);flex:1;}
+.cl-sub{font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:1px;}
+
+/* ANTIGRAVITY NOTE */
+.ag-note{background:linear-gradient(135deg,#0a0e1a,#1a0a2e);border-radius:var(--radius);padding:24px;color:#fff;margin-bottom:32px;position:relative;overflow:hidden;}
+.ag-note::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(139,92,246,0.15),transparent 60%);pointer-events:none;}
+.ag-eyebrow{font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(139,92,246,0.8);letter-spacing:0.1em;margin-bottom:8px;}
+.ag-title{font-family:'Instrument Serif',serif;font-size:1.3rem;letter-spacing:-0.02em;margin-bottom:6px;}
+.ag-text{font-family:'DM Mono',monospace;font-size:0.6rem;color:rgba(255,255,255,0.5);line-height:1.7;}
+.ag-text strong{color:rgba(255,255,255,0.85);}
+
+/* FOOTER */
+.footer{text-align:center;font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);padding-top:32px;border-top:1px solid var(--border);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;font-size:0.78rem;font-weight:500;padding:10px 20px;border-radius:30px;z-index:1000;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-lg);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="bg-grid"></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo"><div class="logo-icon">⚡</div>Content Factory</div>
+  <div class="tsep"></div>
+  <div class="version-badge">v9.0 · build 2026</div>
+  <a href="register.html" class="start-btn">▶ Inizia</a>
+</div>
+
+<div class="body">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Content Factory · Mappa del progetto</div>
+    <div class="hero-title">Tutto quello che<br>abbiamo <span>costruito insieme</span></div>
+    <div class="hero-sub">7 file HTML · 30+ funzionalità · 13 agenti AI · sistema completo pronto per Antigravity</div>
+    <div class="hero-flow">
+      <div class="flow-step">📝 register.html</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">🔐 login.html</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">🏠 launcher.html</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">⚡ content-factory-v9</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-mini">
+    <div class="sm-card"><div class="sm-val">7</div><div class="sm-lbl">📄 File HTML</div></div>
+    <div class="sm-card"><div class="sm-val">13</div><div class="sm-lbl">🤖 Agenti AI</div></div>
+    <div class="sm-card"><div class="sm-val">30+</div><div class="sm-lbl">✅ Funzionalità</div></div>
+    <div class="sm-card"><div class="sm-val" style="color:var(--green);">100%</div><div class="sm-lbl">🎯 Lista TODO</div></div>
+  </div>
+
+  <!-- FLOW -->
+  <div class="section-lbl">🔗 Flusso di navigazione</div>
+  <div class="flow-diagram">
+    <div class="flow-title">Come si collegano i file</div>
+    <div class="flow-nodes">
+      <div class="flow-node">
+        <a href="register.html" class="fn-icon" style="background:linear-gradient(135deg,#f0ede8,#fff);border-color:rgba(232,197,71,0.4);" title="Apri register.html">📝</a>
+        <div class="fn-name">register.html</div>
+      </div>
+      <div class="flow-connector"><div class="fc-line"></div><div class="fc-arrow">→</div></div>
+      <div class="flow-node">
+        <a href="login.html" class="fn-icon" style="background:linear-gradient(135deg,#f0ede8,#fff);" title="Apri login.html">🔐</a>
+        <div class="fn-name">login.html</div>
+      </div>
+      <div class="flow-connector"><div class="fc-line"></div><div class="fc-arrow">→</div></div>
+      <div class="flow-node">
+        <a href="launcher.html" class="fn-icon" style="background:linear-gradient(135deg,#f0ede8,#fff);" title="Apri launcher.html">🏠</a>
+        <div class="fn-name">launcher.html</div>
+      </div>
+      <div class="flow-connector"><div class="fc-line"></div><div class="fc-arrow">→</div></div>
+      <div class="flow-node">
+        <a href="content-factory-v9.html" class="fn-icon" style="background:linear-gradient(135deg,#0a0e1a,#1a0a2e);" title="Apri factory">⚡</a>
+        <div class="fn-name">factory v9</div>
+      </div>
+      <div class="flow-connector"><div class="fc-line"></div><div class="fc-arrow">↔</div></div>
+      <div class="flow-node">
+        <a href="agent-lounge-v2.html" class="fn-icon" style="background:linear-gradient(135deg,#fff7ed,#fed7aa);" title="Apri sala relax">☕</a>
+        <div class="fn-name">sala relax</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:linear-gradient(135deg,#050c10,#0a1a14);border-radius:10px;border:1px solid rgba(0,229,160,0.2);">
+        <span style="font-size:0.9rem;">🛡️</span>
+        <a href="cipher-access.html" style="font-family:'DM Mono',monospace;font-size:0.58rem;color:#00e5a0;text-decoration:none;font-weight:600;">cipher-access.html — solo OWNER →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILES -->
+  <div class="section-lbl">📁 Tutti i file</div>
+  <div class="files-grid">
+
+    <a href="register.html" class="file-card primary">
+      <div class="fc-header">
+        <div class="fc-icon" style="background:linear-gradient(135deg,#fffbeb,#fef3c7)">📝</div>
+        <div class="fc-info">
+          <div class="fc-filename">register.html</div>
+          <div class="fc-name">Registrazione</div>
+          <div class="fc-desc">3 step guidati: profilo con emoji/foto, email, PIN a 6 cifre con conferma. Primo accesso.</div>
+        </div>
+      </div>
+      <div class="fc-footer">
+        <div class="fc-tags"><span class="fc-tag">Step 1</span><span class="fc-tag">Email</span><span class="fc-tag">PIN</span><span class="fc-tag">Profilo</span></div>
+        <div class="fc-open">Apri →</div>
+      </div>
+    </a>
+
+    <a href="login.html" class="file-card primary">
+      <div class="fc-header">
+        <div class="fc-icon" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7)">🔐</div>
+        <div class="fc-info">
+          <div class="fc-filename">login.html</div>
+          <div class="fc-name">Login PIN</div>
+          <div class="fc-desc">Tastierino numerico, blocco dopo 3 tentativi, conto alla rovescia 30s. Stile Crextio chiaro.</div>
+        </div>
+      </div>
+      <div class="fc-footer">
+        <div class="fc-tags"><span class="fc-tag">PIN 6 cifre</span><span class="fc-tag">Blocco</span><span class="fc-tag">Cambio PIN</span></div>
+        <div class="fc-open">Apri →</div>
+      </div>
+    </a>
+
+    <a href="launcher.html" class="file-card primary">
+      <div class="fc-header">
+        <div class="fc-icon" style="background:linear-gradient(135deg,#eff6ff,#dbeafe)">🏠</div>
+        <div class="fc-info">
+          <div class="fc-filename">launcher.html</div>
+          <div class="fc-name">Launcher Studi</div>
+          <div class="fc-desc">Card degli studi (Io Scrittore, Io Apps...), wizard creazione nuovo studio con scelta agenti, log globale attività.</div>
+        </div>
+      </div>
+      <div class="fc-footer">
+        <div class="fc-tags"><span class="fc-tag">Multi-studio</span><span class="fc-tag">Wizard</span><span class="fc-tag">Log</span></div>
+        <div class="fc-open">Apri →</div>
+      </div>
+    </a>
+
+    <a href="content-factory-v9.html" class="file-card primary">
+      <div class="fc-header">
+        <div class="fc-icon" style="background:linear-gradient(135deg,#0a0e1a,#1a0a2e)">⚡</div>
+        <div class="fc-info">
+          <div class="fc-filename">content-factory-v9.html</div>
+          <div class="fc-name">Content Factory</div>
+          <div class="fc-desc">Dashboard principale. 8 pagine, 13 agenti, Capo Redattore, pipeline, sentimento, prezzi, visual, cybersecurity, sala relax, impostazioni temi.</div>
+        </div>
+      </div>
+      <div class="fc-footer">
+        <div class="fc-tags"><span class="fc-tag">154KB</span><span class="fc-tag">8 pagine</span><span class="fc-tag">13 agenti</span><span class="fc-tag">Principale</span></div>
+        <div class="fc-open">Apri →</div>
+      </div>
+    </a>
+
+    <a href="cipher-access.html" class="file-card security">
+      <div class="fc-header">
+        <div class="fc-icon" style="background:linear-gradient(135deg,#050c10,#0a1a14)">🛡️</div>
+        <div class="fc-info">
+          <div class="fc-filename">cipher-access.html</div>
+          <div class="fc-name">CIPHER · Gestione Accessi</div>
+          <div class="fc-desc">Solo OWNER. Ruoli (Owner/Admin/Viewer/Guest), generatore codici ospite con durata custom, kick immediato, notifiche email, log accessi.</div>
+        </div>
+      </div>
+      <div class="fc-footer">
+        <div class="fc-tags"><span class="fc-tag">Solo Owner</span><span class="fc-tag">Ruoli</span><span class="fc-tag">Kick</span><span class="fc-tag">Notifiche</span></div>
+        <div class="fc-open">Apri →</div>
+      </div>
+    </a>
+
+    <a href="agent-lounge-v2.html" class="file-card lounge">
+      <div class="fc-header">
+        <div class="fc-icon" style="background:linear-gradient(135deg,#fff7ed,#fed7aa)">☕</div>
+        <div class="fc-info">
+          <div class="fc-filename">agent-lounge-v2.html</div>
+          <div class="fc-name">Sala Relax Agenti</div>
+          <div class="fc-desc">Chat con gli agenti in pausa. Status animati autonomi, reazioni ai messaggi, invio foto, profilo personale, Claude come ospite speciale.</div>
+        </div>
+      </div>
+      <div class="fc-footer">
+        <div class="fc-tags"><span class="fc-tag">Chat AI</span><span class="fc-tag">Reazioni</span><span class="fc-tag">Foto</span><span class="fc-tag">Claude ospite</span></div>
+        <div class="fc-open">Apri →</div>
+      </div>
+    </a>
+
+    <a href="agent-status-showcase.html" class="file-card utility">
+      <div class="fc-header">
+        <div class="fc-icon" style="background:linear-gradient(135deg,#eff6ff,#dbeafe)">✨</div>
+        <div class="fc-info">
+          <div class="fc-filename">agent-status-showcase.html</div>
+          <div class="fc-name">Showcase Status</div>
+          <div class="fc-desc">10 stili di animazione status agenti. Rotellina, occhio, onda sonora, caffè con vapore, pallini, cuore. Selezione interattiva.</div>
+        </div>
+      </div>
+      <div class="fc-footer">
+        <div class="fc-tags"><span class="fc-tag">Animazioni</span><span class="fc-tag">Reference</span><span class="fc-tag">10 stili</span></div>
+        <div class="fc-open">Apri →</div>
+      </div>
+    </a>
+
+    <!-- Index itself -->
+    <div class="file-card utility" style="cursor:default;opacity:0.6;">
+      <div class="fc-header">
+        <div class="fc-icon" style="background:linear-gradient(135deg,#f7fee7,#d9f99d)">📋</div>
+        <div class="fc-info">
+          <div class="fc-filename">index.html</div>
+          <div class="fc-name">Questa pagina</div>
+          <div class="fc-desc">Mappa del progetto, flusso di navigazione, stato funzionalità. Punto di partenza per Antigravity.</div>
+        </div>
+      </div>
+      <div class="fc-footer">
+        <div class="fc-tags"><span class="fc-tag">Sei qui</span><span class="fc-tag">Mappa</span></div>
+        <div class="fc-open" style="opacity:0.4;">— sei qui</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="section-lbl">✅ Stato funzionalità</div>
+  <div class="checklist">
+    <div class="cl-hdr">Cosa funziona · cosa è da completare con Antigravity</div>
+
+    <div class="cl-row"><div class="cl-dot done">✓</div><div><div class="cl-text">Login PIN con blocco tentativi</div><div class="cl-sub">Funziona in localStorage · nessun server necessario</div></div></div>
+    <div class="cl-row"><div class="cl-dot done">✓</div><div><div class="cl-text">Registrazione profilo + email</div><div class="cl-sub">Salva in localStorage · email non inviata realmente</div></div></div>
+    <div class="cl-row"><div class="cl-dot done">✓</div><div><div class="cl-text">Launcher multi-studio + wizard</div><div class="cl-sub">Crea studi, salva in localStorage</div></div></div>
+    <div class="cl-row"><div class="cl-dot done">✓</div><div><div class="cl-text">Dashboard 8 pagine + 13 agenti</div><div class="cl-sub">UI completa · dati simulati</div></div></div>
+    <div class="cl-row"><div class="cl-dot done">✓</div><div><div class="cl-text">Sistema ruoli + codici ospite + kick</div><div class="cl-sub">Logica completa in localStorage</div></div></div>
+    <div class="cl-row"><div class="cl-dot done">✓</div><div><div class="cl-text">Temi, font, status animati, profilo</div><div class="cl-sub">100% funzionante client-side</div></div></div>
+    <div class="cl-row"><div class="cl-dot done">✓</div><div><div class="cl-text">Sala Relax · chat con agenti AI</div><div class="cl-sub">Risposte simulate · da collegare a Claude API</div></div></div>
+    <div class="cl-row"><div class="cl-dot soon">⏳</div><div><div class="cl-text">Email reali (notifiche, recupero PIN)</div><div class="cl-sub">Antigravity → Node.js + Nodemailer o SendGrid</div></div></div>
+    <div class="cl-row"><div class="cl-dot soon">⏳</div><div><div class="cl-text">API Claude reale per gli agenti</div><div class="cl-sub">Antigravity → Claude API key + backend</div></div></div>
+    <div class="cl-row"><div class="cl-dot soon">⏳</div><div><div class="cl-text">Make.com automazioni reali</div><div class="cl-sub">Antigravity → webhook + trigger</div></div></div>
+    <div class="cl-row"><div class="cl-dot soon">⏳</div><div><div class="cl-text">Suno AI · ElevenLabs · Runway ML</div><div class="cl-sub">Antigravity → API calls reali</div></div></div>
+    <div class="cl-row"><div class="cl-dot soon">⏳</div><div><div class="cl-text">Agente Titoli · Copertine · Newsletter</div><div class="cl-sub">Da progettare con Claude · costruire con Antigravity</div></div></div>
+  </div>
+
+  <!-- ANTIGRAVITY NOTE -->
+  <div class="section-lbl">🤖 Per Antigravity</div>
+  <div class="ag-note">
+    <div class="ag-eyebrow">HANDOFF NOTE · Content Factory v9</div>
+    <div class="ag-title">Caro Antigravity 👋</div>
+    <div class="ag-text">
+      Questo progetto è stato costruito interamente con <strong>HTML + CSS + JS puro</strong>, nessun framework.<br><br>
+      <strong>Cosa fare subito:</strong><br>
+      1. Metti tutti i file nella stessa cartella e apri <strong>index.html</strong><br>
+      2. Il flusso è: register → login → launcher → content-factory-v9<br>
+      3. Tutti i dati sono in <strong>localStorage</strong> — nessun server ancora<br><br>
+      <strong>Cosa aggiungere:</strong><br>
+      · Server Node.js per email reali (recupero PIN, notifiche ospiti)<br>
+      · Claude API key per agenti reali nella Sala Relax<br>
+      · Make.com webhook per pipeline automazioni<br>
+      · Suno AI + ElevenLabs + Runway ML per media<br><br>
+      <strong>File più importante:</strong> content-factory-v9.html (154KB · 2200+ righe)<br>
+      <strong>File sicurezza:</strong> cipher-access.html (solo OWNER, role check in JS)<br>
+      <strong>Tutto il JS è stato validato con Node.js prima del rilascio.</strong>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Costruito con ❤️ da Claude + Il Capo · Content Factory v9 · 2026<br>
+    <span style="opacity:0.5;">Tutti i file sono HTML puro · nessuna dipendenza esterna tranne Google Fonts</span>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Check if all files are present by trying to fetch them
+const files = ['register.html','login.html','launcher.html','content-factory-v9.html','cipher-access.html','agent-lounge-v2.html','agent-status-showcase.html'];
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// Welcome message based on login state
+window.addEventListener('load', () => {
+  const registered = localStorage.getItem('cf_registered');
+  const profile = JSON.parse(localStorage.getItem('cf_profile') || '{}');
+  if(registered && profile.name) {
+    showToast('👋 Bentornato ' + profile.name + '! Clicca su un file per aprirlo.');
+  }
+});
+</script>
+</body>
+</html>

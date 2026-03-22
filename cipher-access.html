@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIPHER — Gestione Accessi</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f0ede8;--bg2:#fff;--bg3:#f7f5f2;--bg4:#ede9e3;
+  --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.14);
+  --text:#111;--dim:#9a948c;--mid:#6b6560;
+  --dark:#1a1714;--accent:#e8c547;--accent2:#d4b030;
+  --green:#22c55e;--red:#ef4444;--blue:#3b82f6;
+  --orange:#f97316;--purple:#8b5cf6;
+  --cipher:#00e5a0;--cipher-bg:rgba(0,229,160,0.08);--cipher-b:rgba(0,229,160,0.25);
+  --shadow:0 2px 16px rgba(0,0,0,0.06);
+  --shadow-lg:0 12px 48px rgba(0,0,0,0.11);
+  --radius:18px;--radius-sm:11px;
+}
+html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);}
+
+/* ACCESS DENIED SCREEN */
+.access-denied{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.ad-icon{font-size:3rem;}
+.ad-title{font-family:'Instrument Serif',serif;font-size:1.6rem;letter-spacing:-0.02em;color:var(--red);}
+.ad-sub{font-family:'DM Mono',monospace;font-size:0.64rem;color:var(--dim);text-align:center;line-height:1.7;}
+.ad-btn{padding:11px 22px;background:var(--dark);color:#fff;border:none;border-radius:12px;font-size:0.82rem;font-weight:700;cursor:pointer;margin-top:8px;}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(8,11,16,0.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,229,160,0.15);display:flex;align-items:center;padding:0 28px;height:58px;gap:12px;}
+.tlogo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:0.95rem;letter-spacing:-0.02em;color:#fff;}
+.tlogo-icon{width:30px;height:30px;background:var(--cipher-bg);border:1px solid var(--cipher-b);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;position:relative;}
+.tlogo-icon::after{content:'';position:absolute;inset:-3px;border-radius:12px;border:1.5px solid transparent;border-top-color:var(--cipher);animation:spin 2s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tsep{flex:1;}
+.owner-badge{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--cipher);background:var(--cipher-bg);border:1px solid var(--cipher-b);padding:5px 12px;border-radius:20px;}
+.ob-dot{width:5px;height:5px;border-radius:50%;background:var(--cipher);animation:pulse 2s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.back-btn{display:flex;align-items:center;gap:6px;padding:7px 13px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;font-size:0.76rem;font-weight:500;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.2s;}
+.back-btn:hover{background:rgba(255,255,255,0.1);color:#fff;}
+
+/* BODY */
+.body{max-width:1000px;margin:0 auto;padding:36px 28px 60px;}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:32px;}
+.page-title{font-family:'Instrument Serif',serif;font-size:2.2rem;letter-spacing:-0.03em;color:var(--text);margin-bottom:4px;}
+.page-sub{font-family:'DM Mono',monospace;font-size:0.64rem;color:var(--dim);}
+
+/* CARDS */
+.card{background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px;}
+.card-dark{background:#0a0f0d;border:1px solid var(--cipher-b);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,229,160,0.08);overflow:hidden;margin-bottom:16px;position:relative;}
+.card-dark::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(0,229,160,0.06),transparent 60%);pointer-events:none;}
+.card-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.card-hdr-dark{padding:16px 20px;border-bottom:1px solid rgba(0,229,160,0.12);display:flex;align-items:center;gap:8px;}
+.card-title{font-size:0.86rem;font-weight:700;flex:1;color:var(--text);}
+.card-title-dark{font-size:0.86rem;font-weight:700;flex:1;color:#fff;}
+.card-body{padding:16px 20px;}
+.card-tag{font-family:'DM Mono',monospace;font-size:0.56rem;padding:3px 9px;border-radius:20px;background:var(--bg4);color:var(--dim);}
+.card-tag.live{background:var(--cipher-bg);color:var(--cipher);display:flex;align-items:center;gap:4px;}
+.card-tag.live::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--cipher);animation:pulse 1.5s ease infinite;}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.stat-mini{background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--border);padding:16px;box-shadow:var(--shadow);}
+.stat-mini.cipher{background:#0a0f0d;border-color:var(--cipher-b);}
+.sm-label{font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--dim);margin-bottom:6px;}
+.stat-mini.cipher .sm-label{color:rgba(0,229,160,0.5);}
+.sm-val{font-family:'Instrument Serif',serif;font-size:1.8rem;color:var(--text);line-height:1;}
+.stat-mini.cipher .sm-val{color:var(--cipher);}
+.sm-change{font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--green);margin-top:4px;}
+
+/* ROLES */
+.roles-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:16px;}
+.role-card{background:var(--bg3);border-radius:var(--radius-sm);border:2px solid var(--border);padding:16px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.role-card:hover{box-shadow:var(--shadow);}
+.role-card.selected{border-color:var(--dark);}
+.role-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--radius-sm) var(--radius-sm) 0 0;}
+.role-owner::before{background:linear-gradient(90deg,#f59e0b,#f97316);}
+.role-admin::before{background:linear-gradient(90deg,var(--purple),#a855f7);}
+.role-viewer::before{background:linear-gradient(90deg,var(--blue),#60a5fa);}
+.role-guest::before{background:linear-gradient(90deg,var(--green),#4ade80);}
+.role-icon{font-size:1.6rem;margin-bottom:8px;}
+.role-name{font-size:0.86rem;font-weight:800;margin-bottom:4px;}
+.role-desc{font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--dim);line-height:1.6;margin-bottom:10px;}
+.role-perms{display:flex;flex-direction:column;gap:4px;}
+.perm-row{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:0.52rem;}
+.perm-yes{color:var(--green);}
+.perm-no{color:var(--red);}
+
+/* USER LIST */
+.user-row{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border);transition:background 0.2s;}
+.user-row:last-child{border-bottom:none;}
+.user-row:hover{background:var(--bg3);}
+.user-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;border:2px solid var(--border);}
+.user-info{flex:1;}
+.user-name{font-size:0.8rem;font-weight:600;}
+.user-email{font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:1px;}
+.user-role-badge{font-family:'DM Mono',monospace;font-size:0.52rem;padding:3px 9px;border-radius:20px;flex-shrink:0;}
+.rb-owner{background:rgba(245,158,11,0.12);color:#d97706;}
+.rb-admin{background:rgba(139,92,246,0.1);color:var(--purple);}
+.rb-viewer{background:rgba(59,130,246,0.1);color:var(--blue);}
+.rb-guest{background:rgba(34,197,94,0.1);color:var(--green);}
+.rb-expired{background:rgba(239,68,68,0.08);color:var(--red);}
+.user-actions{display:flex;gap:6px;}
+.ua-btn{padding:5px 10px;border-radius:8px;font-family:'DM Mono',monospace;font-size:0.52rem;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--mid);transition:all 0.2s;}
+.ua-btn:hover{background:var(--bg4);color:var(--text);}
+.ua-btn.danger{border-color:rgba(239,68,68,0.2);color:var(--red);}
+.ua-btn.danger:hover{background:rgba(239,68,68,0.06);}
+.ua-time{font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-right:8px;flex-shrink:0;}
+
+/* GUEST GENERATOR */
+.gen-section{padding:20px;}
+.gen-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.flabel{font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--dim);letter-spacing:0.06em;margin-bottom:5px;display:block;}
+.finput{width:100%;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;padding:10px 13px;font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--text);outline:none;transition:border-color 0.2s;}
+.finput:focus{border-color:var(--dark);}
+.finput::placeholder{color:var(--dim);}
+select.finput{cursor:pointer;}
+
+/* Duration picker */
+.duration-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px;}
+.dur-opt{padding:9px 6px;border-radius:9px;background:var(--bg3);border:1.5px solid var(--border);text-align:center;cursor:pointer;transition:all 0.2s;}
+.dur-opt:hover{border-color:var(--border2);}
+.dur-opt.sel{background:var(--dark);border-color:var(--dark);color:#fff;}
+.dur-icon{font-size:1.1rem;margin-bottom:3px;}
+.dur-name{font-family:'DM Mono',monospace;font-size:0.5rem;color:inherit;}
+.dur-opt:not(.sel) .dur-name{color:var(--dim);}
+
+/* Permissions toggle */
+.perms-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.perm-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg3);border-radius:9px;border:1px solid var(--border);}
+.pt-label{font-size:0.76rem;font-weight:500;}
+.pt-sub{font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);margin-top:1px;}
+.toggle{width:36px;height:20px;background:var(--bg4);border-radius:20px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;background:#fff;border-radius:50%;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.toggle.on{background:var(--green);}
+.toggle.on::after{left:19px;}
+.toggle.locked{background:rgba(239,68,68,0.2);cursor:not-allowed;}
+.toggle.locked::after{left:3px;}
+
+/* Generated code */
+.code-box{display:none;background:#0a0f0d;border:1px solid var(--cipher-b);border-radius:var(--radius-sm);padding:18px;margin-top:14px;}
+.code-box.show{display:block;}
+.code-label{font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--cipher);letter-spacing:0.08em;margin-bottom:10px;}
+.code-value{font-family:'DM Mono',monospace;font-size:1.4rem;color:#fff;letter-spacing:0.2em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.code-copy{padding:5px 12px;background:var(--cipher-bg);border:1px solid var(--cipher-b);color:var(--cipher);border-radius:8px;font-family:'DM Mono',monospace;font-size:0.54rem;cursor:pointer;transition:all 0.2s;}
+.code-copy:hover{background:rgba(0,229,160,0.15);}
+.code-details{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;}
+.cd-item{text-align:center;}
+.cd-val{font-family:'DM Mono',monospace;font-size:0.68rem;color:rgba(255,255,255,0.8);font-weight:600;}
+.cd-label{font-family:'DM Mono',monospace;font-size:0.5rem;color:rgba(255,255,255,0.3);margin-top:2px;}
+.code-actions{display:flex;gap:8px;margin-top:14px;}
+.ca-btn{flex:1;padding:10px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.ca-btn.send{background:var(--cipher);color:#000;}
+.ca-btn.send:hover{background:#00ffb3;}
+.ca-btn.copy{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.12);}
+.ca-btn.copy:hover{background:rgba(255,255,255,0.12);color:#fff;}
+
+/* Alert log */
+.alert-row{display:flex;align-items:flex-start;gap:10px;padding:11px 20px;border-bottom:1px solid var(--border);animation:aIn 0.3s ease;}
+@keyframes aIn{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:translateX(0)}}
+.alert-row:last-child{border-bottom:none;}
+.alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.ad-green{background:var(--green);}
+.ad-orange{background:var(--orange);animation:pulse 1s infinite;}
+.ad-red{background:var(--red);}
+.ad-blue{background:var(--blue);}
+.alert-info{flex:1;}
+.alert-title{font-size:0.78rem;font-weight:600;}
+.alert-detail{font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:1px;}
+.alert-badge{font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 8px;border-radius:20px;flex-shrink:0;}
+.ab-ok{background:rgba(34,197,94,0.1);color:var(--green);}
+.ab-warn{background:rgba(249,115,22,0.1);color:var(--orange);}
+.ab-block{background:rgba(239,68,68,0.1);color:var(--red);}
+.ab-info{background:rgba(59,130,246,0.1);color:var(--blue);}
+.alert-time{font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);flex-shrink:0;}
+
+/* Notification settings */
+.notif-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.notif-row:last-child{border-bottom:none;}
+.nr-label{font-size:0.8rem;font-weight:500;}
+.nr-sub{font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:1px;}
+
+/* Main btn */
+.main-btn{width:100%;padding:13px;background:var(--dark);color:#fff;border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:0.84rem;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.main-btn:hover{background:#2a2520;box-shadow:var(--shadow-lg);}
+.main-btn.cipher-btn{background:#0a1a14;color:var(--cipher);border:1px solid var(--cipher-b);}
+.main-btn.cipher-btn:hover{background:#0e2219;}
+
+/* Email preview */
+.email-preview{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-top:12px;display:none;}
+.email-preview.show{display:block;}
+.ep-subject{font-size:0.82rem;font-weight:700;margin-bottom:8px;}
+.ep-body{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--mid);line-height:1.7;white-space:pre-line;}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;font-size:0.78rem;font-weight:500;padding:10px 20px;border-radius:30px;z-index:1000;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-lg);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Countdown */
+.countdown{font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--orange);background:rgba(249,115,22,0.08);padding:2px 8px;border-radius:20px;margin-left:6px;animation:pulse 2s ease infinite;}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+</style>
+</head>
+<body>
+
+<!-- ACCESS DENIED (shown if not owner) -->
+<div class="access-denied" id="accessDenied" style="display:none;">
+  <div class="ad-icon">🔒</div>
+  <div class="ad-title">Accesso negato</div>
+  <div class="ad-sub">Questa sezione è riservata al proprietario dell'account.<br>Solo <strong>OWNER</strong> può gestire accessi e sicurezza.</div>
+  <button class="ad-btn" onclick="window.location.href='content-factory-v9.html'">← Torna all'app</button>
+</div>
+
+<!-- MAIN CONTENT (shown only to owner) -->
+<div id="mainContent">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tlogo">
+      <div class="tlogo-icon">🛡️</div>
+      CIPHER · Gestione Accessi
+    </div>
+    <div class="tsep"></div>
+    <div class="owner-badge"><div class="ob-dot"></div>OWNER · accesso completo</div>
+    <button class="back-btn" onclick="window.location.href='content-factory-v9.html'">← Torna all'app</button>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- Visitor banner (shown when guest is active) -->
+    <div id="visitorBanner" style="display:none;background:linear-gradient(135deg,#0a1a2e,#0e2040);border:1px solid rgba(56,189,248,0.25);border-radius:var(--radius);padding:14px 20px;margin-bottom:16px;display:none;align-items:center;gap:12px;">
+      <div style="font-size:1.2rem;">👁️</div>
+      <div style="flex:1;">
+        <div style="font-size:0.84rem;font-weight:700;color:#fff;" id="visitorBannerName">Un ospite sta visitando</div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.54rem;color:rgba(255,255,255,0.4);" id="visitorBannerDetail">Accesso guest attivo</div>
+      </div>
+      <div id="visitorTimer" class="countdown">⏱ 23:47</div>
+      <button onclick="revokeActive()" style="padding:6px 12px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:var(--red);border-radius:8px;font-family:'DM Mono',monospace;font-size:0.54rem;cursor:pointer;">✕ Revoca</button>
+    </div>
+
+    <div class="page-header">
+      <div class="page-title">🛡️ Gestione Accessi</div>
+      <div class="page-sub">Controlla chi entra nel tuo studio · ruoli · codici ospite · notifiche</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-mini cipher">
+        <div class="sm-label">🛡️ Stato</div>
+        <div class="sm-val" style="font-size:1.2rem;margin-top:4px;">SICURO</div>
+        <div class="sm-change">✓ Nessuna minaccia</div>
+      </div>
+      <div class="stat-mini">
+        <div class="sm-label">👥 Utenti attivi</div>
+        <div class="sm-val" id="statUsers">1</div>
+        <div class="sm-change">Solo tu · owner</div>
+      </div>
+      <div class="stat-mini">
+        <div class="sm-label">🔑 Codici ospite</div>
+        <div class="sm-val" id="statCodes">0</div>
+        <div class="sm-change" id="statCodesChange">Nessuno attivo</div>
+      </div>
+      <div class="stat-mini">
+        <div class="sm-label">⚠️ Tentativi bloccati</div>
+        <div class="sm-val" id="statBlocked">2</div>
+        <div class="sm-change" style="color:var(--green);">↓ Tutti bloccati</div>
+      </div>
+    </div>
+
+    <!-- ROLES OVERVIEW -->
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title">🎭 Ruoli disponibili</div>
+        <span class="card-tag">4 livelli</span>
+      </div>
+      <div class="roles-grid">
+        <div class="role-card role-owner">
+          <div class="role-icon">👑</div>
+          <div class="role-name">OWNER</div>
+          <div class="role-desc">Solo tu. Accesso totale e irrevocabile. Gestisce tutti gli altri ruoli.</div>
+          <div class="role-perms">
+            <div class="perm-row"><span class="perm-yes">✓</span> Tutto, sempre</div>
+            <div class="perm-row"><span class="perm-yes">✓</span> Cambia PIN ed email</div>
+            <div class="perm-row"><span class="perm-yes">✓</span> Gestisce accessi</div>
+          </div>
+        </div>
+        <div class="role-card role-admin">
+          <div class="role-icon">🔑</div>
+          <div class="role-name">ADMIN</div>
+          <div class="role-desc">Collaboratore fidato. Può fare quasi tutto tranne toccare la sicurezza.</div>
+          <div class="role-perms">
+            <div class="perm-row"><span class="perm-yes">✓</span> Approva contenuti</div>
+            <div class="perm-row"><span class="perm-yes">✓</span> Gestisce agenti</div>
+            <div class="perm-row"><span class="perm-no">✗</span> Cambia PIN/email</div>
+            <div class="perm-row"><span class="perm-no">✗</span> Gestione accessi</div>
+          </div>
+        </div>
+        <div class="role-card role-viewer">
+          <div class="role-icon">👁️</div>
+          <div class="role-name">VIEWER</div>
+          <div class="role-desc">Può guardare tutto. Cambia tema e chatta in Sala Relax. Non modifica niente di importante.</div>
+          <div class="role-perms">
+            <div class="perm-row"><span class="perm-yes">✓</span> Visualizza tutto</div>
+            <div class="perm-row"><span class="perm-yes">✓</span> Tema e impostazioni grafiche</div>
+            <div class="perm-row"><span class="perm-yes">✓</span> Sala Relax · chat</div>
+            <div class="perm-row"><span class="perm-no">✗</span> Approva · modifica · elimina</div>
+          </div>
+        </div>
+        <div class="role-card role-guest">
+          <div class="role-icon">⏱️</div>
+          <div class="role-name">GUEST</div>
+          <div class="role-desc">Accesso temporaneo con codice. Tu decidi durata e permessi specifici.</div>
+          <div class="role-perms">
+            <div class="perm-row"><span class="perm-yes">✓</span> Durata personalizzata</div>
+            <div class="perm-row"><span class="perm-yes">✓</span> Permessi custom</div>
+            <div class="perm-row"><span class="perm-yes">✓</span> Revocabile in qualsiasi momento</div>
+            <div class="perm-row"><span class="perm-no">✗</span> Nessun accesso permanente</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title">👥 Utenti e accessi attivi</div>
+        <button onclick="showAddUser()" style="padding:6px 12px;background:var(--dark);color:#fff;border:none;border-radius:8px;font-family:'DM Mono',monospace;font-size:0.56rem;cursor:pointer;">+ Aggiungi</button>
+      </div>
+      <div id="userList">
+        <!-- Owner row (always present) -->
+        <div class="user-row">
+          <div class="user-av" style="background:linear-gradient(135deg,#f59e0b,#f97316);font-size:1.1rem;" id="ownerAv">👑</div>
+          <div class="user-info">
+            <div class="user-name" id="ownerName">Il Capo</div>
+            <div class="user-email" id="ownerEmail">•••@•••.com · proprietario</div>
+          </div>
+          <span class="user-role-badge rb-owner">👑 OWNER</span>
+          <div class="ua-time">sempre attivo</div>
+        </div>
+      </div>
+      <div style="padding:12px 20px;border-top:1px solid var(--border);">
+        <div style="font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--dim);">
+          Per aggiungere un ADMIN permanente · usa il generatore sotto e imposta durata "Permanente"
+        </div>
+      </div>
+    </div>
+
+    <!-- GUEST CODE GENERATOR -->
+    <div class="card-dark">
+      <div class="card-hdr-dark">
+        <div class="card-title-dark">⚡ Genera codice ospite</div>
+        <span style="font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--cipher);background:var(--cipher-bg);border:1px solid var(--cipher-b);padding:3px 9px;border-radius:20px;">CIPHER</span>
+      </div>
+      <div class="gen-section">
+
+        <div class="gen-row">
+          <div>
+            <label class="flabel">NOME OSPITE (opzionale)</label>
+            <input class="finput" id="guestName" placeholder="es. Marco, La mia amica Giulia...">
+          </div>
+          <div>
+            <label class="flabel">RUOLO DA ASSEGNARE</label>
+            <select class="finput" id="guestRole" onchange="updatePermissions()">
+              <option value="viewer">👁️ Viewer — solo visualizzazione</option>
+              <option value="admin">🔑 Admin — quasi tutto</option>
+              <option value="custom">⚙️ Custom — scegli tu i permessi</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Duration -->
+        <label class="flabel">DURATA ACCESSO</label>
+        <div class="duration-grid" id="durGrid">
+          <div class="dur-opt" onclick="selectDur(this,'10m','10 min')"><div class="dur-icon">⚡</div><div class="dur-name">10 min</div></div>
+          <div class="dur-opt" onclick="selectDur(this,'30m','30 min')"><div class="dur-icon">⏱️</div><div class="dur-name">30 min</div></div>
+          <div class="dur-opt sel" onclick="selectDur(this,'1h','1 ora')"><div class="dur-icon">🕐</div><div class="dur-name">1 ora</div></div>
+          <div class="dur-opt" onclick="selectDur(this,'24h','24 ore')"><div class="dur-icon">📅</div><div class="dur-name">24 ore</div></div>
+          <div class="dur-opt" onclick="selectDur(this,'7d','7 giorni')"><div class="dur-icon">📆</div><div class="dur-name">7 giorni</div></div>
+          <div class="dur-opt" onclick="selectDur(this,'30d','30 giorni')"><div class="dur-icon">🗓️</div><div class="dur-name">30 giorni</div></div>
+          <div class="dur-opt" onclick="selectDur(this,'perm','Permanente')"><div class="dur-icon">♾️</div><div class="dur-name">Permanente</div></div>
+          <div class="dur-opt" onclick="openCustomDur(this)"><div class="dur-icon">✏️</div><div class="dur-name">Custom</div></div>
+        </div>
+
+        <!-- Custom duration input (hidden by default) -->
+        <div id="customDurInput" style="display:none;margin-bottom:14px;">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="finput" id="customDurVal" type="number" min="1" placeholder="es. 3" style="width:100px;">
+            <select class="finput" id="customDurUnit" style="flex:1;">
+              <option value="min">Minuti</option>
+              <option value="h">Ore</option>
+              <option value="d">Giorni</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Permissions (shown for custom role) -->
+        <div id="customPerms" style="display:none;">
+          <label class="flabel" style="margin-bottom:8px;">PERMESSI SPECIFICI</label>
+          <div class="perms-grid">
+            <div class="perm-toggle">
+              <div><div class="pt-label">👁️ Visualizza tutto</div><div class="pt-sub">Dashboard, agenti, archivio</div></div>
+              <div class="toggle on locked" title="Sempre attivo per gli ospiti"></div>
+            </div>
+            <div class="perm-toggle">
+              <div><div class="pt-label">🎨 Cambia tema</div><div class="pt-sub">Impostazioni grafiche</div></div>
+              <div class="toggle on" id="perm-theme" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="perm-toggle">
+              <div><div class="pt-label">☕ Sala Relax</div><div class="pt-sub">Chat con gli agenti</div></div>
+              <div class="toggle on" id="perm-lounge" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="perm-toggle">
+              <div><div class="pt-label">✅ Approva contenuti</div><div class="pt-sub">Capitoli, video, PDF</div></div>
+              <div class="toggle" id="perm-approve" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="perm-toggle">
+              <div><div class="pt-label">🤖 Gestisci agenti</div><div class="pt-sub">Avvia e modifica agenti</div></div>
+              <div class="toggle" id="perm-agents" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="perm-toggle">
+              <div><div class="pt-label">📊 Vedi statistiche</div><div class="pt-sub">Vendite, views, hype</div></div>
+              <div class="toggle on" id="perm-stats" onclick="this.classList.toggle('on')"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Note -->
+        <div>
+          <label class="flabel">NOTA PERSONALE (opzionale)</label>
+          <input class="finput" id="guestNote" placeholder="es. Link per la demo con Marco · non condividere oltre">
+        </div>
+
+        <button class="main-btn cipher-btn" onclick="generateCode()" style="margin-top:16px;">
+          ⚡ Genera codice accesso CIPHER
+        </button>
+
+        <!-- Generated code -->
+        <div class="code-box" id="codeBox">
+          <div class="code-label">✓ CODICE GENERATO — VALIDO FINO AL <span id="codeExpiry">—</span></div>
+          <div class="code-value">
+            <span id="codeValue">—</span>
+            <button class="code-copy" onclick="copyCode()">📋 Copia</button>
+          </div>
+          <div class="code-details">
+            <div class="cd-item"><div class="cd-val" id="codeRole">—</div><div class="cd-label">RUOLO</div></div>
+            <div class="cd-item"><div class="cd-val" id="codeDur">—</div><div class="cd-label">DURATA</div></div>
+            <div class="cd-item"><div class="cd-val" id="codeFor">—</div><div class="cd-label">PER</div></div>
+          </div>
+
+          <!-- Email preview -->
+          <div class="email-preview show" id="emailPreview">
+            <div class="ep-subject" id="epSubject">📧 Anteprima email da inviare all'ospite</div>
+            <div class="ep-body" id="epBody">—</div>
+          </div>
+
+          <div class="code-actions">
+            <button class="ca-btn send" onclick="sendCodeEmail()">📧 Invia email all'ospite</button>
+            <button class="ca-btn copy" onclick="copyFullLink()">🔗 Copia link completo</button>
+            <button class="ca-btn copy" onclick="activateCode()" style="background:rgba(0,229,160,0.1);color:var(--cipher);border-color:var(--cipher-b);">✓ Attiva subito</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERT LOG -->
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title">🔔 Log accessi e alert</div>
+        <span class="card-tag live">live</span>
+      </div>
+      <div id="alertLog">
+        <div class="alert-row">
+          <div class="alert-dot ad-green"></div>
+          <div class="alert-info"><div class="alert-title">Accesso owner autorizzato</div><div class="alert-detail">Il Capo · PIN corretto · CIPHER ha verificato l'identità</div></div>
+          <span class="alert-badge ab-ok">✓ ok</span>
+          <div class="alert-time">adesso</div>
+        </div>
+        <div class="alert-row">
+          <div class="alert-dot ad-orange"></div>
+          <div class="alert-info"><div class="alert-title">Tentativo accesso bloccato</div><div class="alert-detail">PIN errato × 2 · dispositivo locale · blocco 30s applicato</div></div>
+          <span class="alert-badge ab-warn">⚠ bloccato</span>
+          <div class="alert-time">09:14</div>
+        </div>
+        <div class="alert-row">
+          <div class="alert-dot ad-green"></div>
+          <div class="alert-info"><div class="alert-title">Scansione sistema completata</div><div class="alert-detail">13 strumenti · 0 anomalie · vault integro</div></div>
+          <span class="alert-badge ab-ok">✓ ok</span>
+          <div class="alert-time">ieri</div>
+        </div>
+      </div>
+      <div style="padding:12px 20px;border-top:1px solid var(--border);">
+        <button onclick="runScan()" style="padding:8px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:9px;font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--mid);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='var(--bg4)'" onmouseout="this.style.background='var(--bg3)'">🔍 Avvia scansione manuale</button>
+      </div>
+    </div>
+
+    <!-- NOTIFICATION SETTINGS -->
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">📧 Impostazioni notifiche</div></div>
+      <div class="card-body">
+        <div class="notif-row">
+          <div><div class="nr-label">📧 Accesso ospite</div><div class="nr-sub">Ti mando una mail quando qualcuno entra con un codice guest</div></div>
+          <div class="toggle on" id="notif-guest" onclick="this.classList.toggle('on');saveNotifSettings()"></div>
+        </div>
+        <div class="notif-row">
+          <div><div class="nr-label">🚨 Tentativo non autorizzato</div><div class="nr-sub">PIN errato 3+ volte · accesso bloccato</div></div>
+          <div class="toggle on" id="notif-block" onclick="this.classList.toggle('on');saveNotifSettings()"></div>
+        </div>
+        <div class="notif-row">
+          <div><div class="nr-label">🔔 Banner in app</div><div class="nr-sub">Mostra un banner visivo quando un ospite è attivo</div></div>
+          <div class="toggle on" id="notif-banner" onclick="this.classList.toggle('on');saveNotifSettings()"></div>
+        </div>
+        <div class="notif-row">
+          <div><div class="nr-label">⏰ Codice in scadenza</div><div class="nr-sub">Avviso 15 minuti prima che un codice guest scada</div></div>
+          <div class="toggle on" id="notif-expiry" onclick="this.classList.toggle('on');saveNotifSettings()"></div>
+        </div>
+        <div class="notif-row" style="border-bottom:none;">
+          <div><div class="nr-label">📊 Report settimanale</div><div class="nr-sub">Riepilogo accessi ogni lunedì mattina</div></div>
+          <div class="toggle" id="notif-weekly" onclick="this.classList.toggle('on');saveNotifSettings()"></div>
+        </div>
+        <div style="margin-top:14px;">
+          <label class="flabel">EMAIL NOTIFICHE</label>
+          <div style="display:flex;gap:8px;">
+            <input class="finput" id="notifEmail" style="flex:1;" placeholder="la tua email..." value="">
+            <button onclick="saveNotifEmail()" style="padding:10px 16px;background:var(--dark);color:#fff;border:none;border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;cursor:pointer;">💾 Salva</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== ACCESS CHECK =====
+// Only OWNER can see this page
+(function() {
+  const role = localStorage.getItem('cf_user_role') || 'owner';
+  if(role !== 'owner') {
+    document.getElementById('accessDenied').style.display = 'flex';
+    document.getElementById('mainContent').style.display = 'none';
+    return;
+  }
+  // Load owner profile
+  const p = JSON.parse(localStorage.getItem('cf_profile') || '{}');
+  if(p.name) {
+    document.getElementById('ownerName').textContent = p.name;
+    const av = document.getElementById('ownerAv');
+    if(p.emoji && !p.emoji.startsWith('data:')) av.textContent = p.emoji;
+  }
+  const email = localStorage.getItem('cf_email') || '';
+  if(email) {
+    const masked = email.replace(/(.{2}).*(@.*)/, '$1•••$2');
+    document.getElementById('ownerEmail').textContent = masked + ' · proprietario';
+    document.getElementById('notifEmail').value = email;
+  }
+  loadUsers();
+  loadAlerts();
+})();
+
+// ===== STATE =====
+var selectedDur = { key: '1h', label: '1 ora' };
+var generatedCode = null;
+var activeGuests = JSON.parse(localStorage.getItem('cf_guests') || '[]');
+
+// ===== DURATION =====
+function selectDur(el, key, label) {
+  document.querySelectorAll('.dur-opt').forEach(d => d.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedDur = { key, label };
+  document.getElementById('customDurInput').style.display = 'none';
+}
+function openCustomDur(el) {
+  document.querySelectorAll('.dur-opt').forEach(d => d.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('customDurInput').style.display = 'block';
+  selectedDur = { key: 'custom', label: 'personalizzata' };
+}
+
+// ===== ROLE CHANGE =====
+function updatePermissions() {
+  const role = document.getElementById('guestRole').value;
+  const permsDiv = document.getElementById('customPerms');
+  permsDiv.style.display = role === 'custom' ? 'block' : 'none';
+
+  if(role === 'admin') {
+    ['theme','lounge','approve','agents','stats'].forEach(p => {
+      document.getElementById('perm-'+p) && document.getElementById('perm-'+p).classList.add('on');
+    });
+  } else if(role === 'viewer') {
+    ['approve','agents'].forEach(p => {
+      document.getElementById('perm-'+p) && document.getElementById('perm-'+p).classList.remove('on');
+    });
+    ['theme','lounge','stats'].forEach(p => {
+      document.getElementById('perm-'+p) && document.getElementById('perm-'+p).classList.add('on');
+    });
+  }
+}
+
+// ===== CODE GENERATOR =====
+function generateCode() {
+  const name = document.getElementById('guestName').value.trim() || 'Ospite';
+  const role = document.getElementById('guestRole').value;
+  const note = document.getElementById('guestNote').value.trim();
+
+  // Get duration
+  let durMs = 3600000; // 1h default
+  let durLabel = selectedDur.label;
+  if(selectedDur.key === '10m')  durMs = 600000;
+  else if(selectedDur.key === '30m') durMs = 1800000;
+  else if(selectedDur.key === '1h')  durMs = 3600000;
+  else if(selectedDur.key === '24h') durMs = 86400000;
+  else if(selectedDur.key === '7d')  durMs = 604800000;
+  else if(selectedDur.key === '30d') durMs = 2592000000;
+  else if(selectedDur.key === 'perm') durMs = -1;
+  else if(selectedDur.key === 'custom') {
+    const val = parseInt(document.getElementById('customDurVal').value) || 1;
+    const unit = document.getElementById('customDurUnit').value;
+    const mult = { min: 60000, h: 3600000, d: 86400000 };
+    durMs = val * (mult[unit] || 3600000);
+    durLabel = val + ' ' + unit;
+  }
+
+  // Generate code
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for(let i=0;i<3;i++) {
+    for(let j=0;j<3;j++) code += chars[Math.floor(Math.random()*chars.length)];
+    if(i<2) code += '-';
+  }
+
+  const expiry = durMs === -1 ? null : new Date(Date.now() + durMs);
+  const expiryStr = durMs === -1 ? 'Mai (permanente)' : expiry.toLocaleString('it-IT');
+
+  generatedCode = { code, name, role, durMs, durLabel, expiry: expiry?.getTime() || null, note, created: Date.now() };
+
+  // Show code box
+  document.getElementById('codeValue').textContent = code;
+  document.getElementById('codeExpiry').textContent = expiryStr;
+  document.getElementById('codeRole').textContent = role.toUpperCase();
+  document.getElementById('codeDur').textContent = durLabel;
+  document.getElementById('codeFor').textContent = name;
+  document.getElementById('codeBox').classList.add('show');
+
+  // Email preview
+  const ownerName = JSON.parse(localStorage.getItem('cf_profile')||'{}').name || 'Il Capo';
+  const emailBody = `Ciao ${name},\n\n${ownerName} ti ha invitato a visitare il suo Content Factory.\n\nIl tuo codice di accesso è:\n\n  ${code}\n\nRuolo: ${role.toUpperCase()}\nValido: ${expiryStr}\n\nCome accedere:\n1. Apri il file login.html\n2. Inserisci il codice ospite quando richiesto\n3. Buona visita!\n\n${note ? 'Nota: '+note+'\n\n' : ''}— Inviato da CIPHER · Content Factory Security`;
+
+  document.getElementById('epSubject').textContent = '📧 Oggetto: Accesso a Content Factory · codice ' + code;
+  document.getElementById('epBody').textContent = emailBody;
+
+  showToast('✓ Codice ' + code + ' generato!');
+  addAlert('info', 'Codice generato per ' + name, 'Ruolo: '+role+' · Durata: '+durLabel, 'ab-info');
+}
+
+function copyCode() {
+  if(!generatedCode) return;
+  navigator.clipboard.writeText(generatedCode.code).then(() => showToast('📋 Codice copiato!'));
+}
+
+function copyFullLink() {
+  if(!generatedCode) return;
+  const link = window.location.href.replace('cipher-access.html', 'login.html') + '?guest=' + generatedCode.code;
+  navigator.clipboard.writeText(link).then(() => showToast('🔗 Link copiato!'));
+}
+
+function sendCodeEmail() {
+  if(!generatedCode) return;
+  const email = localStorage.getItem('cf_email') || '';
+  showToast('📧 Email inviata! (simulato · Antigravity la invierà per davvero)');
+  addAlert('ok', 'Email codice inviata', 'Codice: '+generatedCode.code+' per '+generatedCode.name, 'ab-ok');
+}
+
+function activateCode() {
+  if(!generatedCode) return;
+  activeGuests.push(generatedCode);
+  localStorage.setItem('cf_guests', JSON.stringify(activeGuests));
+  // Add to user list
+  addUserRow(generatedCode);
+  // Show visitor banner
+  showVisitorBanner(generatedCode);
+  // Update stats
+  updateStats();
+  showToast('✓ Codice attivato! ' + generatedCode.name + ' può ora accedere');
+  addAlert('ok', generatedCode.name + ' · accesso attivato', 'Codice: '+generatedCode.code+' · '+generatedCode.durLabel, 'ab-ok');
+  document.getElementById('codeBox').classList.remove('show');
+  generatedCode = null;
+}
+
+// ===== USER LIST =====
+function loadUsers() {
+  activeGuests.forEach(g => addUserRow(g));
+  updateStats();
+}
+
+function addUserRow(guest) {
+  const list = document.getElementById('userList');
+  const row = document.createElement('div');
+  row.className = 'user-row';
+  row.id = 'user-'+guest.code;
+  const roleLabels = { viewer:'👁️ VIEWER', admin:'🔑 ADMIN', custom:'⚙️ CUSTOM' };
+  const roleClasses = { viewer:'rb-viewer', admin:'rb-admin', custom:'rb-guest' };
+  const expired = guest.expiry && Date.now() > guest.expiry;
+  const timeLeft = guest.expiry ? getTimeLeft(guest.expiry) : '♾️ Permanente';
+
+  row.innerHTML = `
+    <div class="user-av" style="background:var(--bg4);font-size:0.8rem;">👤</div>
+    <div class="user-info">
+      <div class="user-name">${guest.name}</div>
+      <div class="user-email">Codice: <strong>${guest.code}</strong> · ${guest.role} · <span style="color:${expired?'var(--red)':'var(--green)'}">${expired?'SCADUTO':timeLeft}</span></div>
+    </div>
+    <span class="user-role-badge ${expired ? 'rb-expired' : roleClasses[guest.role]||'rb-guest'}">${expired ? '⏰ SCADUTO' : roleLabels[guest.role]||'GUEST'}</span>
+    <div class="user-actions">
+      <button class="ua-btn" onclick="editGuestDuration('${guest.code}')" title="Modifica durata">✏️</button>
+      <button class="ua-btn danger" onclick="kickGuest('${guest.code}','${guest.name}')" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.25);color:var(--red);font-weight:700;" title="Kick immediato">🦶 Kick</button>
+      <button class="ua-btn danger" onclick="revokeGuest('${guest.code}')" title="Elimina accesso">🗑️</button>
+    </div>`;
+  list.appendChild(row);
+
+  // Start live countdown if not expired
+  if(guest.expiry && !expired) {
+    startCountdown(guest.code, guest.expiry);
+  }
+}
+
+function kickGuest(code, name) {
+  // Confirm before kicking
+  const confirmKick = confirm('🦶 Vuoi davvero kickare ' + name + ' immediatamente?\n\nIl loro codice verrà invalidato all\'istante.');
+  if(!confirmKick) return;
+
+  // Invalidate code immediately
+  activeGuests = activeGuests.filter(g => g.code !== code);
+  localStorage.setItem('cf_guests', JSON.stringify(activeGuests));
+
+  // Visual feedback — flash row red before removing
+  const row = document.getElementById('user-'+code);
+  if(row) {
+    row.style.background = 'rgba(239,68,68,0.08)';
+    row.style.transition = 'all 0.3s';
+    row.style.opacity = '0.5';
+    setTimeout(() => row.remove(), 400);
+  }
+
+  // Hide visitor banner
+  document.getElementById('visitorBanner').style.display = 'none';
+  updateStats();
+  showToast('🦶 ' + name + ' è stato kickato! Codice invalidato.');
+  addAlert('block', name + ' · kick immediato', 'Codice ' + code + ' invalidato · accesso terminato', 'ab-block');
+}
+
+function editGuestDuration(code) {
+  const guest = activeGuests.find(g => g.code === code);
+  if(!guest) return;
+
+  // Simple prompt for now — in v10 will be a proper modal
+  const options = [
+    '1 - 10 minuti',
+    '2 - 30 minuti',
+    '3 - 1 ora',
+    '4 - 24 ore',
+    '5 - 7 giorni',
+    '6 - Permanente',
+  ];
+  const choice = prompt('✏️ Modifica durata per ' + guest.name + '\n\n' + options.join('\n') + '\n\nInserisci il numero:');
+  if(!choice) return;
+
+  const durs = { '1':600000, '2':1800000, '3':3600000, '4':86400000, '5':604800000, '6':-1 };
+  const labels = { '1':'10 minuti', '2':'30 minuti', '3':'1 ora', '4':'24 ore', '5':'7 giorni', '6':'Permanente' };
+  const durMs = durs[choice.trim()];
+  if(!durMs) { showToast('⚠ Scelta non valida'); return; }
+
+  guest.expiry = durMs === -1 ? null : Date.now() + durMs;
+  guest.durLabel = labels[choice.trim()];
+  localStorage.setItem('cf_guests', JSON.stringify(activeGuests));
+
+  // Refresh user list
+  const row = document.getElementById('user-'+code);
+  if(row) row.remove();
+  addUserRow(guest);
+  showToast('✓ Durata aggiornata: ' + labels[choice.trim()]);
+  addAlert('info', 'Durata modificata per ' + guest.name, 'Nuova durata: '+labels[choice.trim()], 'ab-info');
+}
+
+function startCountdown(code, expiry) {
+  const update = () => {
+    const row = document.getElementById('user-'+code);
+    if(!row) return; // Row removed, stop
+    const left = expiry - Date.now();
+    if(left <= 0) {
+      // Expired — mark row
+      const emailEl = row.querySelector('.user-email');
+      if(emailEl) {
+        const span = emailEl.querySelector('span');
+        if(span) { span.style.color='var(--red)'; span.textContent='SCADUTO'; }
+      }
+      const badge = row.querySelector('.user-role-badge');
+      if(badge) { badge.className='user-role-badge rb-expired'; badge.textContent='⏰ SCADUTO'; }
+      showToast('⏰ Accesso scaduto per questo ospite');
+      return;
+    }
+    // Update time display
+    const emailEl = row.querySelector('.user-email');
+    if(emailEl) {
+      const span = emailEl.querySelector('span');
+      if(span) span.textContent = getTimeLeft(expiry);
+    }
+    setTimeout(update, 30000); // update every 30s
+  };
+  setTimeout(update, 30000);
+}
+
+function revokeGuest(code) {
+  activeGuests = activeGuests.filter(g => g.code !== code);
+  localStorage.setItem('cf_guests', JSON.stringify(activeGuests));
+  const row = document.getElementById('user-'+code);
+  if(row) row.remove();
+  updateStats();
+  document.getElementById('visitorBanner').style.display = 'none';
+  showToast('✓ Accesso revocato');
+  addAlert('warn', 'Accesso revocato', 'Codice '+code+' disattivato', 'ab-warn');
+}
+
+function revokeActive() {
+  if(activeGuests.length > 0) {
+    revokeGuest(activeGuests[activeGuests.length-1].code);
+  }
+}
+
+// ===== VISITOR BANNER =====
+function showVisitorBanner(guest) {
+  const banner = document.getElementById('visitorBanner');
+  banner.style.display = 'flex';
+  document.getElementById('visitorBannerName').textContent = guest.name + ' sta visitando il tuo studio';
+  document.getElementById('visitorBannerDetail').textContent = 'Ruolo: '+guest.role+' · Codice: '+guest.code;
+  if(guest.expiry) {
+    updateBannerTimer(guest.expiry);
+    setInterval(() => updateBannerTimer(guest.expiry), 60000);
+  }
+}
+
+function updateBannerTimer(expiry) {
+  const left = expiry - Date.now();
+  if(left <= 0) { document.getElementById('visitorBanner').style.display='none'; return; }
+  const mins = Math.floor(left/60000);
+  const hrs = Math.floor(mins/60);
+  const display = hrs > 0 ? hrs+'h '+( mins%60)+'m' : mins+'m';
+  document.getElementById('visitorTimer').textContent = '⏱ '+display;
+}
+
+// ===== STATS =====
+function updateStats() {
+  const active = activeGuests.filter(g => !g.expiry || Date.now() < g.expiry);
+  document.getElementById('statUsers').textContent = 1 + active.length;
+  document.getElementById('statCodes').textContent = active.length;
+  document.getElementById('statCodesChange').textContent = active.length > 0 ? active.length+' attivi ora' : 'Nessuno attivo';
+}
+
+// ===== ALERT LOG =====
+function loadAlerts() {
+  const alerts = JSON.parse(localStorage.getItem('cf_access_log') || '[]');
+  alerts.slice(-5).forEach(a => addAlert(a.type, a.title, a.detail, a.badge, false));
+}
+
+function addAlert(type, title, detail, badgeClass, save=true) {
+  const list = document.getElementById('alertLog');
+  const now = new Date();
+  const time = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  const dotClass = {ok:'ad-green', warn:'ad-orange', block:'ad-red', info:'ad-blue'}[type] || 'ad-green';
+  const div = document.createElement('div');
+  div.className = 'alert-row';
+  div.innerHTML = `<div class="alert-dot ${dotClass}"></div><div class="alert-info"><div class="alert-title">${title}</div><div class="alert-detail">${detail}</div></div><span class="alert-badge ${badgeClass}">${badgeClass.includes('ok')?'✓ ok':badgeClass.includes('warn')?'⚠ attenzione':badgeClass.includes('block')?'✗ bloccato':'ℹ info'}</span><div class="alert-time">${time}</div>`;
+  list.insertBefore(div, list.firstChild);
+  while(list.children.length > 10) list.removeChild(list.lastChild);
+  if(save) {
+    const log = JSON.parse(localStorage.getItem('cf_access_log') || '[]');
+    log.push({ type, title, detail, badge: badgeClass, time });
+    if(log.length > 50) log.splice(0, log.length-50);
+    localStorage.setItem('cf_access_log', JSON.stringify(log));
+  }
+}
+
+// ===== NOTIFICATIONS =====
+function saveNotifSettings() {
+  const settings = {
+    guest: document.getElementById('notif-guest').classList.contains('on'),
+    block: document.getElementById('notif-block').classList.contains('on'),
+    banner: document.getElementById('notif-banner').classList.contains('on'),
+    expiry: document.getElementById('notif-expiry').classList.contains('on'),
+    weekly: document.getElementById('notif-weekly').classList.contains('on'),
+  };
+  localStorage.setItem('cf_notif_settings', JSON.stringify(settings));
+  showToast('✓ Preferenze notifiche salvate');
+}
+function saveNotifEmail() {
+  const email = document.getElementById('notifEmail').value.trim();
+  if(!email || !email.includes('@')) { showToast('⚠ Inserisci un email valida'); return; }
+  localStorage.setItem('cf_notif_email', email);
+  showToast('✓ Email notifiche: ' + email);
+}
+
+// ===== SCAN =====
+function runScan() {
+  showToast('🔍 Scansione in corso...');
+  setTimeout(() => {
+    addAlert('ok', 'Scansione completata', '13 strumenti verificati · 0 anomalie · vault integro', 'ab-ok');
+    showToast('✅ Tutto ok · nessuna minaccia');
+  }, 1800);
+}
+
+function showAddUser() {
+  showToast('💡 Usa il generatore sotto per creare un accesso ospite!');
+  document.querySelector('.gen-section').scrollIntoView({behavior:'smooth'});
+}
+
+// ===== UTILS =====
+function getTimeLeft(expiry) {
+  const left = expiry - Date.now();
+  if(left <= 0) return 'scaduto';
+  const mins = Math.floor(left/60000);
+  const hrs = Math.floor(mins/60);
+  const days = Math.floor(hrs/24);
+  if(days > 0) return days+'g '+( hrs%24)+'h';
+  if(hrs > 0) return hrs+'h '+(mins%60)+'m';
+  return mins+'m';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// Load notif settings
+(function() {
+  const s = JSON.parse(localStorage.getItem('cf_notif_settings') || '{}');
+  if(s.weekly === true) document.getElementById('notif-weekly').classList.add('on');
+  const ne = localStorage.getItem('cf_notif_email') || localStorage.getItem('cf_email') || '';
+  if(ne) document.getElementById('notifEmail').value = ne;
+})();
+</script>
+</body>
+</html>

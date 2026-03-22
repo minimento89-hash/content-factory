@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Factory — Launcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f0ede8;--bg2:#fff;--bg3:#f7f5f2;--bg4:#ede9e3;
+  --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.13);
+  --text:#111;--dim:#9a948c;--mid:#6b6560;
+  --dark:#1a1714;--accent:#e8c547;--accent2:#d4b030;
+  --green:#22c55e;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;--orange:#f97316;
+  --radius:22px;--radius-sm:13px;
+  --shadow:0 2px 16px rgba(0,0,0,0.06);
+  --shadow-lg:0 12px 48px rgba(0,0,0,0.11);
+}
+html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(240,237,232,0.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 32px;height:62px;gap:12px;}
+.tlogo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:0.95rem;letter-spacing:-0.02em;}
+.tlogo-icon{width:32px;height:32px;background:var(--dark);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
+.tsep{flex:1;}
+.tuser{display:flex;align-items:center;gap:9px;padding:7px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;cursor:pointer;transition:all 0.2s;box-shadow:var(--shadow);}
+.tuser:hover{background:var(--bg4);}
+.tuser-av{width:28px;height:28px;border-radius:50%;background:var(--dark);display:flex;align-items:center;justify-content:center;font-size:0.75rem;border:2px solid var(--accent);}
+.tuser-name{font-size:0.8rem;font-weight:600;}
+.tuser-status{display:flex;align-items:center;gap:5px;}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+.status-txt{font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);}
+.tlogout{display:flex;align-items:center;gap:6px;padding:7px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;font-size:0.76rem;font-weight:500;color:var(--mid);cursor:pointer;transition:all 0.2s;box-shadow:var(--shadow);}
+.tlogout:hover{background:rgba(239,68,68,0.07);color:var(--red);border-color:rgba(239,68,68,0.18);}
+
+/* BODY */
+.body{max-width:1080px;margin:0 auto;padding:48px 32px 80px;}
+.greeting{font-family:'Instrument Serif',serif;font-size:2.6rem;letter-spacing:-0.03em;margin-bottom:6px;}
+.greeting-sub{font-family:'DM Mono',monospace;font-size:0.66rem;color:var(--dim);margin-bottom:44px;}
+
+/* SECTION LABEL */
+.section-lbl{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--dim);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;}
+
+/* FACTORIES GRID */
+.factories{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:44px;}
+
+/* FACTORY CARD */
+.fc{background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:all 0.25s;position:relative;}
+.fc:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);border-color:var(--border2);}
+.fc:active{transform:translateY(-2px);}
+
+.fc-banner{height:130px;position:relative;display:flex;align-items:flex-end;padding:16px 18px;}
+.fc-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 20%,rgba(0,0,0,0.55) 100%);}
+.fc-bigicon{position:absolute;top:50%;left:50%;transform:translate(-50%,-65%);font-size:2.8rem;z-index:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.25));}
+.fc-title{position:relative;z-index:1;font-size:1rem;font-weight:800;color:#fff;letter-spacing:-0.02em;}
+.fc-hype{position:absolute;top:12px;right:12px;z-index:2;font-family:'DM Mono',monospace;font-size:0.56rem;padding:3px 10px;border-radius:20px;backdrop-filter:blur(8px);}
+.fc-hype.hot{background:rgba(236,72,153,0.28);color:#f9a8d4;border:1px solid rgba(236,72,153,0.3);}
+.fc-hype.warm{background:rgba(56,189,248,0.22);color:#7dd3fc;border:1px solid rgba(56,189,248,0.25);}
+.fc-hype.new{background:rgba(34,197,94,0.2);color:#86efac;border:1px solid rgba(34,197,94,0.25);}
+
+.fc-body{padding:16px 18px 18px;}
+.fc-desc{font-size:0.77rem;color:var(--mid);line-height:1.55;margin-bottom:12px;}
+.fc-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;}
+.chip{font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 8px;border-radius:20px;background:var(--bg4);color:var(--dim);}
+
+/* Stats row inside card */
+.fc-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);margin:0 -18px;padding:0 18px;}
+.fc-stat{padding:10px 0;text-align:center;border-right:1px solid var(--border);}
+.fc-stat:last-child{border-right:none;}
+.fc-stat-val{font-family:'Instrument Serif',serif;font-size:1.15rem;color:var(--text);line-height:1;}
+.fc-stat-lbl{font-family:'DM Mono',monospace;font-size:0.46rem;color:var(--dim);margin-top:2px;}
+
+.fc-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:11px;margin-top:14px;background:var(--dark);color:#fff;border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.fc-btn:hover{background:#2a2520;}
+
+/* NEW card */
+.fc-new{background:var(--bg2);border-radius:var(--radius);border:2px dashed var(--border2);box-shadow:none;overflow:hidden;cursor:pointer;transition:all 0.25s;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:340px;gap:10px;}
+.fc-new:hover{border-color:var(--dark);background:var(--bg3);transform:translateY(-3px);}
+.fc-new-icon{font-size:2.5rem;opacity:0.25;}
+.fc-new-title{font-size:0.9rem;font-weight:700;color:var(--mid);}
+.fc-new-sub{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);text-align:center;line-height:1.5;}
+
+/* RECENT ACTIVITY */
+.recent-card{background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;margin-bottom:44px;}
+.recent-hdr{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.recent-title{font-size:0.86rem;font-weight:700;}
+.recent-sub{font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--dim);}
+.ra-row{display:flex;align-items:center;gap:12px;padding:12px 22px;border-bottom:1px solid var(--border);transition:background 0.15s;cursor:pointer;}
+.ra-row:last-child{border-bottom:none;}
+.ra-row:hover{background:var(--bg3);}
+.ra-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0;}
+.ra-info{flex:1;}
+.ra-name{font-size:0.78rem;font-weight:600;}
+.ra-detail{font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:1px;}
+.ra-time{font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);}
+.ra-badge{font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 8px;border-radius:20px;margin-right:12px;}
+.ra-badge.done{background:rgba(34,197,94,0.1);color:var(--green);}
+.ra-badge.run{background:rgba(59,130,246,0.1);color:var(--blue);}
+.ra-badge.wait{background:var(--bg4);color:var(--dim);}
+
+/* QUICK LINKS */
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:44px;}
+.ql-card{background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--border);box-shadow:var(--shadow);padding:16px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.ql-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.ql-icon{font-size:1.6rem;margin-bottom:8px;}
+.ql-title{font-size:0.76rem;font-weight:700;margin-bottom:2px;}
+.ql-sub{font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);}
+
+/* WIZARD MODAL */
+.modal-bg{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.22);backdrop-filter:blur(7px);align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.wizard{background:var(--bg2);border-radius:26px;padding:34px;width:500px;box-shadow:var(--shadow-lg);animation:modalIn 0.3s cubic-bezier(0.4,0,0.2,1);}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.wiz-title{font-family:'Instrument Serif',serif;font-size:1.5rem;letter-spacing:-0.02em;margin-bottom:4px;}
+.wiz-sub{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);margin-bottom:26px;}
+
+/* Type selector */
+.wiz-types{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
+.wtype{padding:16px 10px;border-radius:14px;background:var(--bg3);border:2px solid var(--border);cursor:pointer;text-align:center;transition:all 0.2s;}
+.wtype:hover{border-color:var(--border2);}
+.wtype.sel{border-color:var(--dark);background:var(--bg2);box-shadow:var(--shadow);}
+.wtype-icon{font-size:1.8rem;margin-bottom:7px;}
+.wtype-name{font-size:0.78rem;font-weight:700;margin-bottom:2px;}
+.wtype-desc{font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);line-height:1.4;}
+
+/* Agent picker */
+.agents-pool{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:var(--bg3);border-radius:12px;border:1px solid var(--border);}
+.agent-chip{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;background:var(--bg2);border:1.5px solid var(--border);font-size:0.72rem;font-weight:500;cursor:pointer;transition:all 0.15s;user-select:none;}
+.agent-chip:hover{border-color:var(--border2);}
+.agent-chip.sel{background:var(--dark);color:#fff;border-color:var(--dark);}
+
+/* Form */
+.flabel{font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--dim);letter-spacing:0.06em;margin-bottom:5px;display:block;}
+.finput{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:0.84rem;color:var(--text);outline:none;transition:border-color 0.2s;margin-bottom:14px;}
+.finput:focus{border-color:var(--border2);}
+.finput::placeholder{color:var(--dim);}
+
+/* Color picker */
+.color-picks{display:flex;gap:8px;margin-bottom:18px;}
+.cpick{width:32px;height:32px;border-radius:9px;cursor:pointer;border:3px solid transparent;transition:all 0.15s;}
+.cpick:hover{transform:scale(1.1);}
+.cpick.sel{border-color:var(--dark);box-shadow:0 0 0 2px rgba(0,0,0,0.1);}
+
+.wiz-actions{display:flex;gap:9px;margin-top:4px;}
+.wbtn{flex:1;padding:12px;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.wbtn.dark{background:var(--dark);color:#fff;}
+.wbtn.dark:hover{background:#2a2520;}
+.wbtn.light{background:var(--bg4);color:var(--mid);}
+
+/* Toast */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;font-size:0.78rem;font-weight:500;padding:10px 20px;border-radius:30px;z-index:1000;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-lg);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Confirm delete modal */
+.confirm-modal{background:var(--bg2);border-radius:22px;padding:28px;width:360px;box-shadow:var(--shadow-lg);}
+.cm-icon{font-size:2.2rem;text-align:center;margin-bottom:10px;}
+.cm-title{font-family:'Instrument Serif',serif;font-size:1.2rem;text-align:center;margin-bottom:6px;}
+.cm-sub{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);text-align:center;margin-bottom:22px;line-height:1.6;}
+.cm-actions{display:flex;gap:8px;}
+.cmbtn{flex:1;padding:11px;border:none;border-radius:11px;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.cmbtn.danger{background:var(--red);color:#fff;}
+.cmbtn.safe{background:var(--bg4);color:var(--mid);}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+</style>
+</head>
+<body>
+
+<!-- WIZARD MODAL -->
+<div class="modal-bg" id="wizardModal" onclick="closeWizardBg(event)">
+  <div class="wizard">
+    <div class="wiz-title">Nuovo Studio</div>
+    <div class="wiz-sub">Scegli il tipo, dagli un nome e seleziona gli agenti</div>
+
+    <!-- Step 1: Type -->
+    <div class="flabel">TIPO DI STUDIO</div>
+    <div class="wiz-types" id="wizTypes">
+      <div class="wtype sel" onclick="selectType(this,'📖','Scrittore','Libri, narrativa, universi')">
+        <div class="wtype-icon">📖</div>
+        <div class="wtype-name">Scrittore</div>
+        <div class="wtype-desc">Libri, narrativa, universi narrativi</div>
+      </div>
+      <div class="wtype" onclick="selectType(this,'📱','App','App, tool, automazioni')">
+        <div class="wtype-icon">📱</div>
+        <div class="wtype-name">App</div>
+        <div class="wtype-desc">App, tool, automazioni digitali</div>
+      </div>
+      <div class="wtype" onclick="selectType(this,'🎮','Giochi','Giochi 2D, concept, meccaniche')">
+        <div class="wtype-icon">🎮</div>
+        <div class="wtype-name">Giochi 2D</div>
+        <div class="wtype-desc">Giochi 2D, concept, meccaniche</div>
+      </div>
+      <div class="wtype" onclick="selectType(this,'🎬','Video','Serie, corti, reels, doc')">
+        <div class="wtype-icon">🎬</div>
+        <div class="wtype-name">Video</div>
+        <div class="wtype-desc">Serie, corti, reels, documentari</div>
+      </div>
+      <div class="wtype" onclick="selectType(this,'🎵','Musica','Album, EP, podcast audio')">
+        <div class="wtype-icon">🎵</div>
+        <div class="wtype-name">Musica</div>
+        <div class="wtype-desc">Album, EP, podcast audio</div>
+      </div>
+      <div class="wtype" onclick="selectType(this,'✦','Custom','Costruisci da zero')">
+        <div class="wtype-icon">✦</div>
+        <div class="wtype-name">Custom</div>
+        <div class="wtype-desc">Costruisci il tuo studio da zero</div>
+      </div>
+    </div>
+
+    <!-- Step 2: Name + color -->
+    <div class="flabel">NOME DELLO STUDIO</div>
+    <input class="finput" id="wizName" placeholder="es. Io, Giochi 2D · Call Me River 2 · The App...">
+
+    <div class="flabel">COLORE TEMA</div>
+    <div class="color-picks">
+      <div class="cpick sel" style="background:#1a1714;" onclick="selectColor(this,'#1a1714')"></div>
+      <div class="cpick" style="background:#1e3a5f;" onclick="selectColor(this,'#1e3a5f')"></div>
+      <div class="cpick" style="background:#1a1a3e;" onclick="selectColor(this,'#1a1a3e')"></div>
+      <div class="cpick" style="background:#1a2e1a;" onclick="selectColor(this,'#1a2e1a')"></div>
+      <div class="cpick" style="background:#3a1a1a;" onclick="selectColor(this,'#3a1a1a')"></div>
+      <div class="cpick" style="background:#2a1a3a;" onclick="selectColor(this,'#2a1a3a')"></div>
+      <div class="cpick" style="background:#1a2a2a;" onclick="selectColor(this,'#1a2a2a')"></div>
+    </div>
+
+    <!-- Step 3: Agents -->
+    <div class="flabel">AGENTI DA INCLUDERE <span style="color:var(--dim);font-weight:400">(clicca per selezionare)</span></div>
+    <div class="agents-pool" id="agentsPool">
+      <div class="agent-chip sel" onclick="toggleAgent(this)">👑 Director</div>
+      <div class="agent-chip sel" onclick="toggleAgent(this)">✍️ Scrittore</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">🎵 Musicale</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">🎻 Orchestra</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">🧠 Cervello</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">📖 Consulente</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">🌡️ Sentiment</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">💸 Prezzi</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">🎨 Visual</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">🔧 Sistema</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">⚖️ Legale</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">🛡️ Cybersecurity</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">💻 Dev</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">🎮 Game Design</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">🌍 Traduttore</div>
+      <div class="agent-chip" onclick="toggleAgent(this)">📱 Social</div>
+    </div>
+
+    <div class="wiz-actions">
+      <button class="wbtn dark" onclick="createFactory()">✦ Crea studio</button>
+      <button class="wbtn light" onclick="closeWizard()">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-bg" id="confirmModal" onclick="closeWizardBg(event)">
+  <div class="confirm-modal">
+    <div class="cm-icon">🗑️</div>
+    <div class="cm-title">Elimina studio?</div>
+    <div class="cm-sub" id="confirmText">Vuoi davvero eliminare questo studio?<br>Tutti i dati andranno persi.</div>
+    <div class="cm-actions">
+      <button class="cmbtn danger" onclick="confirmDelete()">🗑️ Elimina</button>
+      <button class="cmbtn safe" onclick="document.getElementById('confirmModal').classList.remove('open')">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tlogo">
+    <div class="tlogo-icon">⚡</div>
+    Content Factory
+  </div>
+  <div class="tsep"></div>
+  <div class="tuser" onclick="showToast('Profilo · prossimamente!')">
+    <div class="tuser-av" id="topAv">🦁</div>
+    <div>
+      <div class="tuser-name" id="topName">Il Capo</div>
+      <div class="tuser-status">
+        <div class="status-dot"></div>
+        <div class="status-txt" id="topStatusTxt">online</div>
+      </div>
+    </div>
+  </div>
+  <div class="tlogout" onclick="logout()">🔐 Esci</div>
+</div>
+
+<!-- BODY -->
+<div class="body">
+
+  <div class="greeting" id="greetingTxt">Buongiorno 👋</div>
+  <div class="greeting-sub" id="greetingSub">Scegli il tuo studio · o creane uno nuovo</div>
+
+  <!-- Quick links -->
+  <div class="section-lbl">Accesso rapido</div>
+  <div class="quick-grid">
+    <div class="ql-card" onclick="showToast('Apertura Sala Relax...')">
+      <div class="ql-icon">☕</div>
+      <div class="ql-title">Sala Relax</div>
+      <div class="ql-sub">Gli agenti ti aspettano</div>
+    </div>
+    <div class="ql-card" onclick="showToast('Apertura Impostazioni...')">
+      <div class="ql-icon">⚙️</div>
+      <div class="ql-title">Impostazioni</div>
+      <div class="ql-sub">Temi · profilo · sicurezza</div>
+    </div>
+    <div class="ql-card" onclick="showToast('Apertura Log globale...')">
+      <div class="ql-icon">📋</div>
+      <div class="ql-title">Log globale</div>
+      <div class="ql-sub">Attività di tutti gli studi</div>
+    </div>
+    <div class="ql-card" onclick="showToast('Apertura Statistiche...')">
+      <div class="ql-icon">📊</div>
+      <div class="ql-title">Statistiche</div>
+      <div class="ql-sub">Guadagni · views · hype</div>
+    </div>
+  </div>
+
+  <!-- Studios -->
+  <div class="section-lbl">I tuoi studi</div>
+  <div class="factories" id="factoriesGrid">
+
+    <!-- CARD: Io Scrittore -->
+    <div class="fc" id="fc-cmr">
+      <div class="fc-banner" style="background:linear-gradient(135deg,#0a0e1a,#1a0a2e,#0e1a2e);">
+        <div class="fc-bigicon">📖</div>
+        <div class="fc-hype hot">🔥 94</div>
+        <div class="fc-title">Io, Scrittore</div>
+      </div>
+      <div class="fc-body">
+        <div class="fc-desc">Libri, serie video, musica AI, podcast. L'universo Call Me River e tutto quello che verrà.</div>
+        <div class="fc-chips">
+          <span class="chip">👑 Director</span>
+          <span class="chip">✍️ Scrittore</span>
+          <span class="chip">🎵 Musicale</span>
+          <span class="chip">+10 agenti</span>
+        </div>
+        <div class="fc-stats">
+          <div class="fc-stat"><div class="fc-stat-val">13</div><div class="fc-stat-lbl">🤖 Agenti</div></div>
+          <div class="fc-stat"><div class="fc-stat-val">€31</div><div class="fc-stat-lbl">💰 Earn</div></div>
+          <div class="fc-stat"><div class="fc-stat-val">110K</div><div class="fc-stat-lbl">👁 Views</div></div>
+        </div>
+        <div style="display:flex;gap:7px;margin-top:14px">
+          <button class="fc-btn" style="flex:3" onclick="openFactory('cmr',event)">▶ Apri studio</button>
+          <button class="fc-btn" style="flex:1;background:rgba(239,68,68,0.08);color:var(--red);" onclick="askDeleteStatic('cmr','Io, Scrittore',event)">🗑️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD: Io Apps -->
+    <div class="fc" id="fc-apps">
+      <div class="fc-banner" style="background:linear-gradient(135deg,#0a1a28,#0e2840,#061828);">
+        <div class="fc-bigicon">📱</div>
+        <div class="fc-hype warm">⚡ 62</div>
+        <div class="fc-title">Io, Apps</div>
+      </div>
+      <div class="fc-body">
+        <div class="fc-desc">Sviluppo app, automazioni, strumenti digitali. Un team dedicato al mondo tech.</div>
+        <div class="fc-chips">
+          <span class="chip">🧠 Cervello</span>
+          <span class="chip">💻 Dev</span>
+          <span class="chip">🎨 UI/UX</span>
+          <span class="chip">+5 agenti</span>
+        </div>
+        <div class="fc-stats">
+          <div class="fc-stat"><div class="fc-stat-val">8</div><div class="fc-stat-lbl">🤖 Agenti</div></div>
+          <div class="fc-stat"><div class="fc-stat-val">3</div><div class="fc-stat-lbl">📱 App</div></div>
+          <div class="fc-stat"><div class="fc-stat-val">—</div><div class="fc-stat-lbl">💰 Earn</div></div>
+        </div>
+        <div style="display:flex;gap:7px;margin-top:14px">
+          <button class="fc-btn" style="flex:3" onclick="openFactory('apps',event)">▶ Apri studio</button>
+          <button class="fc-btn" style="flex:1;background:rgba(239,68,68,0.08);color:var(--red);" onclick="askDeleteStatic('apps','Io, Apps',event)">🗑️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEW -->
+    <div class="fc-new" id="newCard" onclick="openWizard()">
+      <div class="fc-new-icon">✦</div>
+      <div class="fc-new-title">Nuovo studio</div>
+      <div class="fc-new-sub">Scegli il tipo, seleziona gli agenti<br>e inizia a creare</div>
+    </div>
+
+  </div>
+
+  <!-- Recent activity -->
+  <div class="section-lbl">Attività recente</div>
+  <div class="recent-card">
+    <div class="recent-hdr">
+      <div class="recent-title">📋 Log globale</div>
+      <div class="recent-sub">tutti gli studi · aggiornato ora</div>
+    </div>
+    <div class="ra-row">
+      <div class="ra-ico" style="background:linear-gradient(135deg,#0a0e1a,#1a0a2e)">📖</div>
+      <div class="ra-info"><div class="ra-name">Io, Scrittore — Cap.7 POV River approvato</div><div class="ra-detail">Agente Scrittore · Claude API</div></div>
+      <div class="ra-badge done">✓ fatto</div>
+      <div class="ra-time">10:42</div>
+    </div>
+    <div class="ra-row">
+      <div class="ra-ico" style="background:linear-gradient(135deg,#0a0e1a,#1a0a2e)">🎵</div>
+      <div class="ra-info"><div class="ra-name">Io, Scrittore — "Pulse Night" generata · 3:42</div><div class="ra-detail">Agente Musicale · Suno AI</div></div>
+      <div class="ra-badge done">✓ fatto</div>
+      <div class="ra-time">10:30</div>
+    </div>
+    <div class="ra-row">
+      <div class="ra-ico" style="background:linear-gradient(135deg,#0a1a28,#0e2840)">💻</div>
+      <div class="ra-info"><div class="ra-name">Io, Apps — Nuovo modulo automazione avviato</div><div class="ra-detail">Agente Dev · Make.com</div></div>
+      <div class="ra-badge run">● attivo</div>
+      <div class="ra-time">09:15</div>
+    </div>
+    <div class="ra-row">
+      <div class="ra-ico" style="background:var(--bg3)">🔧</div>
+      <div class="ra-info"><div class="ra-name">Sistema — Runway ML sostituito con Kling AI</div><div class="ra-detail">Agente Sistema · switch automatico</div></div>
+      <div class="ra-badge done">✓ fatto</div>
+      <div class="ra-time">ieri</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Load profile
+const profile = JSON.parse(localStorage.getItem('cf_profile')||'{"name":"Il Capo","sub":"Fondatore · Call Me River","emoji":"🦁","status":"online"}');
+document.getElementById('topAv').textContent = profile.emoji || '🦁';
+document.getElementById('topName').textContent = profile.name || 'Il Capo';
+document.getElementById('topStatusTxt').textContent = profile.status || 'online';
+
+// Greeting based on time
+const h = new Date().getHours();
+const greet = h < 12 ? 'Buongiorno' : h < 18 ? 'Buon pomeriggio' : 'Buonasera';
+document.getElementById('greetingTxt').textContent = greet + ' ' + (profile.name || 'Il Capo') + ' 👋';
+document.getElementById('greetingSub').textContent = 'Hai ' + getFactoryCount() + ' studi attivi · scegli dove lavorare oggi';
+
+function getFactoryCount() {
+  const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
+  const hiddenStatic = JSON.parse(localStorage.getItem('cf_deleted_static') || '[]');
+  return (2 - hiddenStatic.length) + saved.length;
+}
+
+// Load saved factories — also hide deleted static ones
+function loadSavedFactories() {
+  // Hide static cards that were deleted
+  const hiddenStatic = JSON.parse(localStorage.getItem('cf_deleted_static') || '[]');
+  if(hiddenStatic.includes('cmr'))  { const c = document.getElementById('fc-cmr');  if(c) c.remove(); }
+  if(hiddenStatic.includes('apps')) { const c = document.getElementById('fc-apps'); if(c) c.remove(); }
+  // Load user-created factories
+  const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
+  saved.forEach(f => renderFactoryCard(f));
+}
+
+// ===== WIZARD =====
+let selectedType = { icon: '📖', name: 'Scrittore', color: '#1a1714' };
+let selectedColor = '#1a1714';
+let deleteTarget = null;
+
+function openWizard() { document.getElementById('wizardModal').classList.add('open'); }
+function closeWizard() { document.getElementById('wizardModal').classList.remove('open'); }
+function closeWizardBg(e) {
+  if(e.target === document.getElementById('wizardModal')) closeWizard();
+  if(e.target === document.getElementById('confirmModal')) document.getElementById('confirmModal').classList.remove('open');
+}
+
+function selectType(el, icon, name, desc) {
+  document.querySelectorAll('.wtype').forEach(t => t.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedType = { icon, name, color: selectedColor };
+  document.getElementById('wizName').placeholder = 'es. Io, ' + name + ' · Il mio progetto...';
+}
+function selectColor(el, color) {
+  document.querySelectorAll('.cpick').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedColor = color;
+  selectedType.color = color;
+}
+function toggleAgent(el) { el.classList.toggle('sel'); }
+
+function createFactory() {
+  const name = document.getElementById('wizName').value.trim();
+  if(!name) { showToast('⚠ Dai un nome allo studio!'); return; }
+  const agents = Array.from(document.querySelectorAll('.agent-chip.sel')).map(c => c.textContent);
+  const id = 'fc-' + Date.now();
+  const factory = {
+    id, name,
+    icon: selectedType.icon,
+    type: selectedType.name,
+    color: selectedColor,
+    agents,
+    hype: Math.floor(Math.random()*30 + 10),
+    created: new Date().toLocaleDateString('it-IT')
+  };
+  // Save
+  const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
+  saved.push(factory);
+  localStorage.setItem('cf_factories', JSON.stringify(saved));
+  // Render
+  renderFactoryCard(factory);
+  closeWizard();
+  showToast('✓ Studio "' + name + '" creato!');
+  // Update greeting
+  document.getElementById('greetingSub').textContent = 'Hai ' + getFactoryCount() + ' studi attivi · scegli dove lavorare oggi';
+}
+
+function renderFactoryCard(f) {
+  const grid = document.getElementById('factoriesGrid');
+  const newCard = document.getElementById('newCard');
+  const agentChips = f.agents.slice(0,3).map(a => `<span class="chip">${a}</span>`).join('');
+  const extra = f.agents.length > 3 ? `<span class="chip">+${f.agents.length-3}</span>` : '';
+
+  const card = document.createElement('div');
+  card.className = 'fc';
+  card.id = f.id;
+  card.innerHTML = `
+    <div class="fc-banner" style="background:linear-gradient(135deg,${f.color},${f.color}aa,${f.color}66);">
+      <div class="fc-bigicon">${f.icon}</div>
+      <div class="fc-hype new">✦ nuovo</div>
+      <div class="fc-title">${f.name}</div>
+    </div>
+    <div class="fc-body">
+      <div class="fc-desc" style="color:var(--dim);font-style:italic">Gli agenti stanno analizzando il progetto...</div>
+      <div class="fc-chips">${agentChips}${extra}</div>
+      <div class="fc-stats">
+        <div class="fc-stat"><div class="fc-stat-val">${f.agents.length}</div><div class="fc-stat-lbl">🤖 Agenti</div></div>
+        <div class="fc-stat"><div class="fc-stat-val">—</div><div class="fc-stat-lbl">📦 Progetti</div></div>
+        <div class="fc-stat"><div class="fc-stat-val">—</div><div class="fc-stat-lbl">💰 Earn</div></div>
+      </div>
+      <div style="display:flex;gap:7px;margin-top:14px">
+        <button class="fc-btn" style="flex:3" onclick="openFactory('${f.id}',event)">▶ Apri studio</button>
+        <button class="fc-btn" style="flex:1;background:rgba(239,68,68,0.08);color:var(--red);" onclick="askDelete('${f.id}','${f.name}',event)">🗑️</button>
+      </div>
+    </div>`;
+  grid.insertBefore(card, newCard);
+}
+
+// Delete — user-created studios
+function askDelete(id, name, e) {
+  e.stopPropagation();
+  deleteTarget = { id, isStatic: false };
+  document.getElementById('confirmText').innerHTML = `Vuoi eliminare <strong>"${name}"</strong>?<br>Tutti i dati andranno persi.`;
+  document.getElementById('confirmModal').classList.add('open');
+}
+// Delete — static pre-built studios (Io, Scrittore / Io, Apps)
+function askDeleteStatic(id, name, e) {
+  e.stopPropagation();
+  deleteTarget = { id, isStatic: true };
+  document.getElementById('confirmText').innerHTML = `Vuoi eliminare <strong>"${name}"</strong>?<br>Questo studio predefinito verrà rimosso dal launcher.`;
+  document.getElementById('confirmModal').classList.add('open');
+}
+function confirmDelete() {
+  if(!deleteTarget) return;
+  const { id, isStatic } = deleteTarget;
+  const card = document.getElementById(isStatic ? 'fc-' + id : id);
+  if(card) { card.style.transform = 'scale(0.95)'; card.style.opacity = '0'; card.style.transition = 'all 0.25s'; setTimeout(()=>card.remove(), 250); }
+  if(isStatic) {
+    // Remember deleted static studios
+    const hidden = JSON.parse(localStorage.getItem('cf_deleted_static') || '[]');
+    if(!hidden.includes(id)) hidden.push(id);
+    localStorage.setItem('cf_deleted_static', JSON.stringify(hidden));
+  } else {
+    const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]').filter(f => f.id !== id);
+    localStorage.setItem('cf_factories', JSON.stringify(saved));
+  }
+  document.getElementById('confirmModal').classList.remove('open');
+  showToast('🗑️ Studio eliminato');
+  deleteTarget = null;
+  setTimeout(()=>{ document.getElementById('greetingSub').textContent = 'Hai ' + getFactoryCount() + ' studi attivi · scegli dove lavorare oggi'; }, 300);
+}
+
+// Open factory — maps studio IDs to their HTML files
+const FACTORY_FILES = {
+  cmr:  'content-factory-v9.html',
+  apps: 'content-factory-v9.html',  // future: content-factory-apps.html
+};
+
+function openFactory(id, e) {
+  if(e) e.stopPropagation();
+  const names = { cmr: 'Io, Scrittore', apps: 'Io, Apps' };
+  const name = names[id] || id;
+
+  // Save which studio is active so the factory knows
+  localStorage.setItem('cf_active_studio', id);
+  localStorage.setItem('cf_active_studio_name', name);
+
+  showToast('▶ Apertura ' + name + '...');
+
+  // Visual feedback then open
+  const card = document.getElementById('fc-' + id);
+  if(card) {
+    card.style.transform = 'scale(0.97)';
+    card.style.transition = 'transform 0.15s';
+  }
+
+  const file = FACTORY_FILES[id] || 'content-factory-v9.html';
+  setTimeout(() => { window.location.href = file; }, 600);
+}
+
+// Logout
+function logout() {
+  sessionStorage.removeItem('cf_logged');
+  showToast('🔐 Uscita...');
+  setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// Init
+loadSavedFactories();
+</script>
+</body>
+</html>
