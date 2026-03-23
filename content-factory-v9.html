@@ -2785,9 +2785,12 @@ function renderAgentsByCategory() {
       if (!agent.manualOn) {
         statusHTML = `<div class="st-anim"><div class="ar-decorator glow-red" style="width:8px;height:8px;"></div></div>`;
       } else {
+        const colorMap = { pink:'pk', green:'g', orange:'o', purple:'p', blue:'' };
+        const cShort = colorMap[agent.color] || '';
+        
         switch(agent.status) {
           case 'run':
-            statusHTML = `<div class="st-anim"><div class="ar-gear">⚙️</div></div>`;
+            statusHTML = `<div class="st-anim"><div class="st-spin ${cShort}"></div></div>`;
             break;
           case 'wait':
             statusHTML = `<div class="st-anim"><div class="st-dots"><span></span><span></span><span></span></div></div>`;
