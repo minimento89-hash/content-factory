@@ -958,9 +958,12 @@ html, body {
 /* Theme Color Injection */
 .custom-theme-color { --accent: var(--user-color); --accent2: var(--user-color-dark); }
 
+  @keyframes slideInUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 </head>
 <script src="analytics-engine.js"></script>
+<script src="forge-engine.js"></script>
 <body class="theme-dark">
 <script>
   // Dynamic Layout & Theme Initialization
@@ -990,6 +993,7 @@ html, body {
     <button class="top-nav-item active" onclick="switchPage('home',this)">Dashboard</button>
     <button class="top-nav-item" onclick="switchPage('agents',this)">Agenti</button>
     <button class="top-nav-item" onclick="switchPage('social',this)">Social</button>
+    <button class="top-nav-item" onclick="switchPage('forge',this)">🧪 Officina Idee</button>
     <button class="top-nav-item" onclick="switchPage('analytics',this)">📊 Analytics</button>
     <button class="top-nav-item" onclick="switchPage('archive',this)">Archivio</button>
     <button class="top-nav-item" onclick="switchPage('cyber',this)">🛡️ Sicurezza</button>
@@ -1034,6 +1038,7 @@ html, body {
     <div class="sidebar-item" onclick="switchSidebar(this,'agents')"><div class="si-icon">🤖</div>Agenti<span class="si-badge">13</span></div>
     <div class="sidebar-item" onclick="openDrawer('drawer-chars')"><div class="si-icon">🎭</div>Personaggi</div>
     <div class="sidebar-item" onclick="openDrawer('drawer-orch')"><div class="si-icon">🎻</div>Orchestra AI</div>
+    <div class="sidebar-item" onclick="switchSidebar(this,'forge')"><div class="si-icon">🧪</div>Officina Idee</div>
     <div class="sidebar-item" onclick="openDrawer('drawer-music')"><div class="si-icon">🎵</div>Musica<span class="si-badge hot">6</span></div>
     <div class="sidebar-section">Distribuzione</div>
     <div class="sidebar-item" onclick="switchSidebar(this,'social')"><div class="si-icon">📱</div>Social & Hype</div>
@@ -1202,6 +1207,49 @@ html, body {
         <div class="platform-row" onclick="showPlatformDetails('tiktok')"><div class="plat-icon" style="background:rgba(255,0,80,0.08)">🎵</div><div><div class="plat-name">TikTok</div><div class="plat-handle">@callmeriver</div></div><div class="live-dot"></div><div class="plat-stats"><div><div class="plat-stat-val">98K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">14.2K</div><div class="plat-stat-label">❤️</div></div><div><div class="plat-stat-val">341</div><div class="plat-stat-label">💬</div></div></div></div>
         <div class="platform-row" onclick="showPlatformDetails('instagram')"><div class="plat-icon" style="background:rgba(225,48,108,0.08)">📸</div><div><div class="plat-name">Instagram</div><div class="plat-handle">@callmeriver</div></div><div class="plat-stats"><div><div class="plat-stat-val">41K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">6.8K</div><div class="plat-stat-label">❤️</div></div><div><div class="plat-stat-val">128</div><div class="plat-stat-label">💬</div></div></div></div>
         <div class="platform-row" onclick="showPlatformDetails('youtube')"><div class="plat-icon" style="background:rgba(255,0,0,0.08)">▶️</div><div><div class="plat-name">YouTube</div><div class="plat-handle">Call Me River</div></div><div class="plat-stats"><div><div class="plat-stat-val">12K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">1.2K</div><div class="plat-stat-label">👍</div></div><div><div class="plat-stat-val">67</div><div class="plat-stat-label">💬</div></div></div></div>
+      </div>
+    </div>
+
+    <!-- FORGE (OFFICINA IDEE) -->
+    <div class="page" id="page-forge">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;">
+        <div>
+            <div class="page-greeting">Officina delle Idee</div>
+            <div class="page-sub">Brainstorming assistito · AI Workshop</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Input & Chat Area -->
+        <div style="display:flex; flex-direction:column; gap:20px;">
+            <div class="card" style="padding:20px;">
+                <div class="card-title" style="margin-bottom:12px;">🌱 Di cosa vogliamo parlare?</div>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="forgeInput" placeholder="Inserisci un tema, una nicchia o un'idea..." style="flex:1; padding:12px; border:1px solid var(--border); border-radius:10px; background:var(--bg2); color:var(--text);">
+                    <button class="drawer-btn db-dark" onclick="ForgeEngine.startBrainstorming(document.getElementById('forgeInput').value)">⚡ Avvia Workshop</button>
+                </div>
+                <div style="font-size:0.55rem; color:var(--dim); margin-top:8px; font-family:'DM Mono',monospace;">ESEMPI: "Il futuro dei videogiochi", "Ricette cyberpunk", "Lifestyle minimalista"</div>
+            </div>
+
+            <div class="card" style="flex:1; display:flex; flex-direction:column; background:linear-gradient(180deg, var(--bg2), var(--bg1));">
+                <div class="card-hdr" style="padding:15px; border-bottom:1px solid var(--border);">
+                    <div class="card-title">🎧 Sessione di Gruppo</div>
+                </div>
+                <div id="forgeChat" style="flex:1; padding:20px; max-height:400px; overflow-y:auto; scroll-behavior:smooth;">
+                    <div style="padding:40px; text-align:center; color:var(--dim); font-size:0.75rem;">Inserisci un tema per iniziare il dialogo tra gli agenti.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Idea Collection -->
+        <div class="card" style="display:flex; flex-direction:column;">
+            <div class="card-hdr" style="padding:15px; border-bottom:1px solid var(--border);">
+                <div class="card-title">📦 Idee Prodotte</div>
+            </div>
+            <div id="forgeIdeaList" style="flex:1; padding:20px; overflow-y:auto;">
+                <!-- Populated by ForgeEngine -->
+            </div>
+        </div>
       </div>
     </div>
 
@@ -2194,14 +2242,80 @@ html, body {
         </div>
 
         <!-- MODULE: ANALYTICS -->
+        <div class="roadmap-item" style="border-left:2px solid var(--green); padding-left:20px; margin-left:10px; position:relative;">
+          <div style="position:absolute; left:-7px; top:12px; width:12px; height:12px; border-radius:50%; background:var(--green); border:3px solid var(--bg2); box-shadow: 0 0 10px rgba(34,197,94,0.3); animation: pulse 2s infinite ease-in-out;"></div>
+          <div class="ri-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="ri-title">Analytics & Charts Live</div>
+              <div style="font-family:'DM Mono',monospace; font-size:0.5rem; padding:3px 8px; border-radius:20px; background:rgba(34,197,94,0.1); color:var(--green);">FINITO (V7)</div>
+            </div>
+            <div class="ri-desc">Grafici dinamici per la crescita dei canali social e sentiment analysis via SVG.</div>
+            <div style="width:100%; height:3px; background:var(--bg4); border-radius:3px; margin-top:8px; overflow:hidden;">
+              <div style="width:100%; height:100%; background:var(--green);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODULE: IDEA FORGE -->
+        <div class="roadmap-item" style="border-left:2px solid var(--blue); padding-left:20px; margin-left:10px; position:relative;">
+          <div class="ri-gear" style="position:absolute; left:-7px; top:12px; color:var(--blue); font-size:12px; background:transparent;"></div>
+          <div class="ri-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="ri-title">L'Officina delle Idee (Idea Forge)</div>
+              <div style="font-family:'DM Mono',monospace; font-size:0.5rem; padding:3px 8px; border-radius:20px; background:rgba(59,130,246,0.1); color:var(--blue);">IN PIANIFICAZIONE (V8)</div>
+            </div>
+            <div class="ri-desc">Sistema di brainstorming AI per generare piani editoriali da zero.</div>
+            <div style="width:100%; height:3px; background:var(--bg4); border-radius:3px; margin-top:8px; overflow:hidden;">
+              <div style="width:20%; height:100%; background:var(--blue);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODULE: LOGIC FLOWS -->
         <div class="roadmap-item" style="border-left:2px solid var(--dim); padding-left:20px; margin-left:10px; position:relative; border-left-style: dashed;">
           <div class="ri-gear" style="position:absolute; left:-7px; top:12px; color:var(--dim); font-size:12px; background:transparent; border:none; animation-duration:10s;"></div>
           <div class="ri-info">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div class="ri-title">Analytics & Charts Live</div>
+              <div class="ri-title">Logic Flows & Mappe Studio</div>
+              <div style="font-family:'DM Mono',monospace; font-size:0.5rem; padding:3px 8px; border-radius:20px; background:var(--bg4); color:var(--dim);">PIANIFICATO (V9)</div>
+            </div>
+            <div class="ri-desc">Visualizzazione a nodi della catena produttiva tra diversi agenti.</div>
+          </div>
+        </div>
+
+        <!-- MODULE: SENTIMENT -->
+        <div class="roadmap-item" style="border-left:2px solid var(--dim); padding-left:20px; margin-left:10px; position:relative; border-left-style: dashed;">
+          <div class="ri-gear" style="position:absolute; left:-7px; top:12px; color:var(--dim); font-size:12px; background:transparent; border:none; animation-duration:10s;"></div>
+          <div class="ri-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="ri-title">Sentiment Evolution</div>
+              <div style="font-family:'DM Mono',monospace; font-size:0.5rem; padding:3px 8px; border-radius:20px; background:var(--bg4); color:var(--dim);">PIANIFICATO (V10)</div>
+            </div>
+            <div class="ri-desc">Monitoraggio emotivo dei fan e crescita organica dell'hype.</div>
+          </div>
+        </div>
+
+        <!-- MODULE: THE NEXUS -->
+        <div class="roadmap-item" style="border-left:2px solid var(--dim); padding-left:20px; margin-left:10px; position:relative; border-left-style: dashed;">
+          <div class="ri-gear" style="position:absolute; left:-7px; top:12px; color:var(--dim); font-size:12px; background:transparent; border:none; animation-duration:10s;"></div>
+          <div class="ri-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="ri-title">The Nexus (Hub Multi-Piattaforma)</div>
               <div style="font-family:'DM Mono',monospace; font-size:0.5rem; padding:3px 8px; border-radius:20px; background:var(--bg4); color:var(--dim);">PIANIFICATO (V11)</div>
             </div>
-            <div class="ri-desc">Grafici dinamici per la crescita dei canali social e sentiment analysis.</div>
+            <div class="ri-desc">Distribuzione istantanea e cross-platform dei contenuti.</div>
+          </div>
+        </div>
+
+        <!-- MODULE: STEALTH UI -->
+        <div class="roadmap-item" style="border-left:2px solid var(--dim); padding-left:20px; margin-left:10px; position:relative; border-left-style: dashed;">
+          <div class="ri-gear" style="position:absolute; left:-7px; top:12px; color:var(--dim); font-size:12px; background:transparent; border:none; animation-duration:10s;"></div>
+          <div class="ri-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="ri-title">Stealth Mode (Cyberpunk UI)</div>
+              <div style="font-family:'DM Mono',monospace; font-size:0.5rem; padding:3px 8px; border-radius:20px; background:var(--bg4); color:var(--dim);">PIANIFICATO (V12)</div>
+            </div>
+            <div class="ri-desc">Interfaccia terminale alternativa per un feeling cyberpunk.</div>
           </div>
         </div>
 
@@ -2469,7 +2583,7 @@ function goToExternalPage(url) {
         if(i.getAttribute('onclick') && i.getAttribute('onclick').includes("'"+openPage+"'")) i.classList.add('active');
       });
       // Sync topbar
-      const map = ['home','agents','social','analytics','archive','cyber','lounge','settings'];
+      const map = ['home','agents','social','forge','analytics','archive','cyber','lounge','settings'];
       const idx = map.indexOf(openPage);
       document.querySelectorAll('.top-nav-item').forEach((b,i) => {
         b.classList.remove('active');
@@ -2492,6 +2606,11 @@ function switchPage(name, btn) {
   // Custom renders
   if(name === 'agents') renderAgentsByCategory();
   if(name === 'analytics') renderAnalytics();
+  if(name === 'forge') renderForge();
+}
+
+function renderForge() {
+    ForgeEngine.init();
 }
 
 function renderAnalytics() {
@@ -2513,7 +2632,7 @@ function renderAnalytics() {
 function switchSidebar(el, name) {
   document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
   el.classList.add('active');
-  const map = ['home','agents','social','analytics','archive','cyber','lounge','settings'];
+  const map = ['home','agents','social','forge','analytics','archive','cyber','lounge','settings'];
   document.querySelectorAll('.top-nav-item').forEach(b=>b.classList.remove('active'));
   const idx = map.indexOf(name);
   if(idx>=0) document.querySelectorAll('.top-nav-item')[idx]?.classList.add('active');
