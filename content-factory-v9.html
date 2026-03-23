@@ -1824,65 +1824,98 @@ html, body {
   <div class="panel-drawer">
     <div class="drawer-topbar">
       <button class="drawer-back" onclick="closeDrawer('drawer-roadmap')">← Chiudi</button>
-      <div class="drawer-title">🚀 Roadmap Content Factory</div>
+      <div class="drawer-title">🚀 Roadmap Tecnologica V9</div>
     </div>
     <div class="drawer-content">
-      <div style="background:linear-gradient(135deg,var(--dark),#2a2520); padding:25px; border-radius:18px; color:#fff; position:relative; overflow:hidden;">
-        <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; opacity:0.6; margin-bottom:10px;">Completamento Globale</div>
-        <div style="font-family:'Instrument Serif',serif; font-size:3.2rem; line-height:1;">87%</div>
-        <div style="width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:10px; margin-top:15px; overflow:hidden;">
-          <div style="width:87%; height:100%; background:var(--accent); border-radius:10px; box-shadow:0 0 15px var(--accent);"></div>
+      <div style="background:linear-gradient(135deg,var(--dark),#1a1714); padding:30px; border-radius:24px; color:#fff; position:relative; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.2);">
+        <div style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.15em; opacity:0.6; margin-bottom:8px;">Avanzamento Globale App</div>
+        <div style="display:flex; align-items:flex-end; gap:10px;">
+          <div style="font-family:'Instrument Serif',serif; font-size:4rem; line-height:0.9;">87</div>
+          <div style="font-size:1.5rem; color:var(--accent); font-weight:800; margin-bottom:10px;">%</div>
         </div>
+        <div style="width:100%; height:8px; background:rgba(255,255,255,0.08); border-radius:10px; margin-top:20px; overflow:hidden;">
+          <div style="width:87%; height:100%; background:linear-gradient(90deg, var(--accent), var(--green)); border-radius:10px; box-shadow:0 0 20px var(--accent);"></div>
+        </div>
+        <div style="margin-top:15px; font-family:'DM Mono',monospace; font-size:0.55rem; color:rgba(255,255,255,0.4);">Prossima Milestone: Live Analytics (V10)</div>
       </div>
 
-      <div class="drawer-card">
-        <div class="dc-hdr">🏁 Milestone Raggiunte</div>
-        <div class="dc-body" style="padding:0 20px;">
-          <div class="roadmap-item">
-            <div class="ri-check done">✓</div>
-            <div class="ri-info">
-              <div class="ri-title">Sistema Agenti V9<span class="ri-pct-tag">100%</span></div>
-              <div class="ri-desc">Multi-threading simulato, categorie, nomi e identità assegnate.</div>
+      <div style="display:flex; flex-direction:column; gap:0; padding:10px 0;">
+        
+        <!-- MODULE: AGENT CORE -->
+        <div class="roadmap-item" style="border-left:2px solid var(--green); padding-left:20px; margin-left:10px; position:relative;">
+          <div style="position:absolute; left:-7px; top:12px; width:12px; height:12px; border-radius:50%; background:var(--green); border:3px solid var(--bg2);"></div>
+          <div class="ri-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="ri-title">Sistema Agenti & Multi-thread</div>
+              <div style="font-family:'DM Mono',monospace; font-size:0.5rem; padding:3px 8px; border-radius:20px; background:rgba(34,197,94,0.1); color:var(--green);">FINITO (100%)</div>
             </div>
-          </div>
-          <div class="roadmap-item">
-            <div class="ri-check done">✓</div>
-            <div class="ri-info">
-              <div class="ri-title">Media Factory Suite<span class="ri-pct-tag">100%</span></div>
-              <div class="ri-desc">Orchestra Player, Visualizer Modale, Kindle Reader con TTS.</div>
-            </div>
-          </div>
-          <div class="roadmap-item">
-            <div class="ri-check done">✓</div>
-            <div class="ri-info">
-              <div class="ri-title">Social & Approva Feed<span class="ri-pct-tag">100%</span></div>
-              <div class="ri-desc">Pipeline di feedback "Approve/Refine" integrata.</div>
+            <div class="ri-desc">Implementazione lifecycle degli agenti, stati (spin/dots/wave), identità e categorie.</div>
+            <div style="width:100%; height:3px; background:var(--bg4); border-radius:3px; margin-top:8px; overflow:hidden;">
+              <div style="width:100%; height:100%; background:var(--green);"></div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="drawer-card" style="border-left:4px solid var(--purple);">
-        <div class="dc-hdr">🚀 Prossimi Passi (In corso)</div>
-        <div class="dc-body" style="padding:0 20px;">
-          <div class="roadmap-item">
-            <div class="ri-check todo" style="border-color:var(--purple); color:var(--purple);">●</div>
-            <div class="ri-info">
-              <div class="ri-title">Critique Ecosystem<span class="ri-pct-tag">75%</span></div>
-              <div class="ri-desc">Agenti Beta Reader e Critici per feedback oggettivo pre-lancio.</div>
+        <!-- MODULE: MEDIA FACTORY -->
+        <div class="roadmap-item" style="border-left:2px solid var(--green); padding-left:20px; margin-left:10px; position:relative;">
+          <div style="position:absolute; left:-7px; top:12px; width:12px; height:12px; border-radius:50%; background:var(--green); border:3px solid var(--bg2);"></div>
+          <div class="ri-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="ri-title">Media Factory Suite</div>
+              <div style="font-family:'DM Mono',monospace; font-size:0.5rem; padding:3px 8px; border-radius:20px; background:rgba(34,197,94,0.1); color:var(--green);">FINITO (100%)</div>
             </div>
-          </div>
-          <div class="roadmap-item">
-            <div class="ri-check todo">○</div>
-            <div class="ri-info">
-              <div class="ri-title">Analytics Avanzate<span class="ri-pct-tag">10%</span></div>
-              <div class="ri-desc">Grafici di crescita reali basati sulle performance social.</div>
+            <div class="ri-desc">Orchestra Player, Kindle Reader con TTS, Visualizzatore universale media.</div>
+            <div style="width:100%; height:3px; background:var(--bg4); border-radius:3px; margin-top:8px; overflow:hidden;">
+              <div style="width:100%; height:100%; background:var(--green);"></div>
             </div>
           </div>
         </div>
+
+        <!-- MODULE: CRITIQUE -->
+        <div class="roadmap-item" style="border-left:2px solid var(--blue); padding-left:20px; margin-left:10px; position:relative;">
+          <div style="position:absolute; left:-7px; top:12px; width:12px; height:12px; border-radius:50%; background:var(--blue); border:3px solid var(--bg2);"></div>
+          <div class="ri-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="ri-title">Ecosistema Critique (Beta Reader)</div>
+              <div style="font-family:'DM Mono',monospace; font-size:0.5rem; padding:3px 8px; border-radius:20px; background:rgba(59,130,246,0.1); color:var(--blue);">IN CORSO (95%)</div>
+            </div>
+            <div class="ri-desc">Integrazione feedback oggettivo dagli agenti. Integrazione drawer critica.</div>
+            <div style="width:100%; height:3px; background:var(--bg4); border-radius:3px; margin-top:8px; overflow:hidden;">
+              <div style="width:95%; height:100%; background:var(--blue);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODULE: SOCIAL -->
+        <div class="roadmap-item" style="border-left:2px solid var(--blue); padding-left:20px; margin-left:10px; position:relative;">
+          <div style="position:absolute; left:-7px; top:12px; width:12px; height:12px; border-radius:50%; background:var(--blue); border:3px solid var(--bg2);"></div>
+          <div class="ri-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="ri-title">Social Approval & Refine</div>
+              <div style="font-family:'DM Mono',monospace; font-size:0.5rem; padding:3px 8px; border-radius:20px; background:rgba(59,130,246,0.1); color:var(--blue);">IN CORSO (80%)</div>
+            </div>
+            <div class="ri-desc">Pipeline di revisione con feedback loop verso l'agente produttore.</div>
+            <div style="width:100%; height:3px; background:var(--bg4); border-radius:3px; margin-top:8px; overflow:hidden;">
+              <div style="width:80%; height:100%; background:var(--blue);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODULE: ANALYTICS -->
+        <div class="roadmap-item" style="border-left:2px solid var(--dim); padding-left:20px; margin-left:10px; position:relative; border-left-style: dashed;">
+          <div style="position:absolute; left:-7px; top:12px; width:12px; height:12px; border-radius:50%; background:var(--bg4); border:3px solid var(--bg2);"></div>
+          <div class="ri-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="ri-title">Analytics & Charts Live</div>
+              <div style="font-family:'DM Mono',monospace; font-size:0.5rem; padding:3px 8px; border-radius:20px; background:var(--bg4); color:var(--dim);">PIANIFICATO</div>
+            </div>
+            <div class="ri-desc">Grafici dinamici per la crescita dei canali social e sentiment analysis.</div>
+          </div>
+        </div>
+
       </div>
 
-      <button class="drawer-btn db-dark" style="width:100%; margin-top:20px; background:var(--accent); color:var(--dark);" onclick="showToast('🚀 Road to 100%!')">Supporta Sviluppo</button>
+      <button class="drawer-btn db-dark" style="width:100%; margin-top:20px; background:var(--accent); color:var(--dark);" onclick="closeDrawer('drawer-roadmap')">Capito, avanti tutta! 🚀</button>
     </div>
   </div>
 </div>
