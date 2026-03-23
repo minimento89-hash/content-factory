@@ -5,6 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Content Factory — Launcher</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- FIREBASE SDK (v11.0.2) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, mergeExternalConfig } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+  // TODO: REPLACE WITH YOUR ACTUAL FIREBASE CONFIG
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  try {
+    const app = initializeApp(firebaseConfig);
+    window.db = getFirestore(app);
+    window.fs = { doc, setDoc, getDoc, collection };
+    console.log("🔥 Firebase Initialized in Launcher");
+  } catch (e) {
+    console.error("Firebase Init Error:", e);
+  }
+</script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -164,6 +189,28 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
 
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+
+/* SEASONAL FX */
+.seasonal-fx{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;}
+.particle{position:absolute;top:-50px;animation:fall linear forwards;}
+@keyframes fall{
+  0%{transform:translateY(0) rotate(0deg);opacity:0;}
+  10%{opacity:1;}
+  90%{opacity:1;}
+  100%{transform:translateY(110vh) rotate(360deg);opacity:0;}
+}
+
+/* Seasonal variations */
+.season-autumn{--accent:#d97706;--accent2:#b45309;}
+.season-winter{--accent:#3b82f6;--accent2:#2563eb;}
+.season-spring{--accent:#ec4899;--accent2:#db2777;}
+
+/* WEATHER WIDGET */
+.weather-widget{display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;box-shadow:var(--shadow);font-family:'DM Mono',monospace;}
+.ww-icon{font-size:1.1rem;}
+.ww-info{display:flex;flex-direction:column;line-height:1.1;}
+.ww-temp{font-size:0.75rem;font-weight:700;color:var(--text);}
+.ww-cond{font-size:0.48rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.04em;}
 </style>
 </head>
 <body>
@@ -272,6 +319,16 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
     Content Factory
   </div>
   <div class="tsep"></div>
+  
+  <!-- Weather Widget -->
+  <div class="weather-widget">
+    <div class="ww-icon" id="weatherIcon">☀️</div>
+    <div class="ww-info">
+      <div class="ww-temp" id="weatherTemp">--°</div>
+      <div class="ww-cond" id="weatherCond">Caricamento...</div>
+    </div>
+  </div>
+
   <div class="tuser" onclick="showToast('Profilo · prossimamente!')">
     <div class="tuser-av" id="topAv">🦁</div>
     <div>
@@ -282,8 +339,7 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
       </div>
     </div>
   </div>
-  <a href="index.html" style="display:flex;align-items:center;gap:5px;padding:7px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;font-size:0.74rem;font-weight:500;color:var(--mid);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--bg4)'" onmouseout="this.style.background='var(--bg2)'">🗺️ Indice</a>
-<div class="tlogout" onclick="logout()">🔐 Esci</div>
+  <div class="tlogout" onclick="logout()">🔐 Esci</div>
 </div>
 
 <!-- BODY -->
@@ -295,25 +351,25 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
   <!-- Quick links -->
   <div class="section-lbl">Accesso rapido</div>
   <div class="quick-grid">
-    <div class="ql-card" onclick="openFactoryPage('lounge')">
+    <div class="ql-card" onclick="goToPage('agent-lounge-v2.html')">
       <div class="ql-icon">☕</div>
       <div class="ql-title">Sala Relax</div>
       <div class="ql-sub">Gli agenti ti aspettano</div>
     </div>
-    <div class="ql-card" onclick="openFactoryPage('settings')">
+    <div class="ql-card" onclick="goToFactory('settings')">
       <div class="ql-icon">⚙️</div>
       <div class="ql-title">Impostazioni</div>
-      <div class="ql-sub">Temi · profilo · sicurezza</div>
+      <div class="ql-sub">Temi · profilo · API keys</div>
     </div>
-    <div class="ql-card" onclick="openFactoryPage('home')">
+    <div class="ql-card" onclick="goToFactory('home')">
       <div class="ql-icon">📋</div>
       <div class="ql-title">Log globale</div>
       <div class="ql-sub">Attività di tutti gli studi</div>
     </div>
-    <div class="ql-card" onclick="openFactoryPage('social')">
+    <div class="ql-card" onclick="goToFactory('social')">
       <div class="ql-icon">📊</div>
       <div class="ql-title">Statistiche</div>
-      <div class="ql-sub">Guadagni · views · hype</div>
+      <div class="ql-sub">Social · views · hype</div>
     </div>
   </div>
 
@@ -433,10 +489,45 @@ function getFactoryCount() {
   return 2 + saved.length;
 }
 
-// Load saved factories
-function loadSavedFactories() {
+// Load saved factories from LocalStorage & Firebase
+async function loadSavedFactories() {
+  // 1. Local Load
   const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
   saved.forEach(f => renderFactoryCard(f));
+
+  // 2. Cloud Load
+  if (window.db && window.fs) {
+    try {
+      const userRef = window.fs.doc(window.db, "users", "default_user");
+      const snap = await window.fs.getDoc(userRef);
+      if (snap.exists() && snap.data().factories) {
+        const cloudFactories = snap.data().factories;
+        // Merge or replace (here we replace for simplicity since it's a launcher)
+        localStorage.setItem('cf_factories', JSON.stringify(cloudFactories));
+        
+        // Refresh UI if cloud data is different/newer
+        const grid = document.getElementById('factoriesGrid');
+        // Clear dynamically added cards (keep Io Scrittore, Io Apps, and New Card)
+        const staticIds = ['fc-cmr', 'fc-apps', 'newCard'];
+        Array.from(grid.children).forEach(child => {
+          if (!staticIds.includes(child.id)) child.remove();
+        });
+        cloudFactories.forEach(f => renderFactoryCard(f));
+        console.log("☁ Studi caricati da Firebase");
+      }
+    } catch (e) { console.error("Cloud Load Error:", e); }
+  }
+}
+
+async function syncFactoriesToCloud() {
+  if (window.db && window.fs) {
+    try {
+      const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
+      const userRef = window.fs.doc(window.db, "users", "default_user");
+      await window.fs.setDoc(userRef, { factories: saved }, { merge: true });
+      console.log("☁ Cloud Sync: Studi aggiornati");
+    } catch (e) { console.error("Cloud Sync Error:", e); }
+  }
 }
 
 // ===== WIZARD =====
@@ -479,10 +570,14 @@ function createFactory() {
     hype: Math.floor(Math.random()*30 + 10),
     created: new Date().toLocaleDateString('it-IT')
   };
-  // Save
+  // Save locally
   const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
   saved.push(factory);
   localStorage.setItem('cf_factories', JSON.stringify(saved));
+  
+  // Save to Cloud
+  syncFactoriesToCloud();
+
   // Render
   renderFactoryCard(factory);
   closeWizard();
@@ -535,19 +630,14 @@ function confirmDelete() {
   if(card) card.remove();
   const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]').filter(f => f.id !== deleteTarget);
   localStorage.setItem('cf_factories', JSON.stringify(saved));
+  
+  // Sync Cloud
+  syncFactoriesToCloud();
+
   document.getElementById('confirmModal').classList.remove('open');
   showToast('🗑️ Studio eliminato');
   deleteTarget = null;
   document.getElementById('greetingSub').textContent = 'Hai ' + getFactoryCount() + ' studi attivi · scegli dove lavorare oggi';
-}
-
-// Open factory on specific page
-function openFactoryPage(page) {
-  localStorage.setItem('cf_active_studio', 'cmr');
-  localStorage.setItem('cf_active_studio_name', 'Io, Scrittore');
-  localStorage.setItem('cf_open_page', page);
-  showToast('Apertura...');
-  setTimeout(() => { window.location.href = 'content-factory-v9.html'; }, 400);
 }
 
 // Open factory — maps studio IDs to their HTML files
@@ -578,6 +668,19 @@ function openFactory(id, e) {
   setTimeout(() => { window.location.href = file; }, 600);
 }
 
+// Navigate to a standalone page
+function goToPage(url) {
+  showToast('▶ Apertura...');
+  setTimeout(() => { window.location.href = url; }, 400);
+}
+
+// Navigate to content-factory-v9 opening a specific page
+function goToFactory(pageName) {
+  localStorage.setItem('cf_open_page', pageName);
+  showToast('▶ Apertura...');
+  setTimeout(() => { window.location.href = 'content-factory-v9.html'; }, 400);
+}
+
 // Logout
 function logout() {
   sessionStorage.removeItem('cf_logged');
@@ -595,5 +698,6 @@ function showToast(msg) {
 // Init
 loadSavedFactories();
 </script>
+<script src="weather-engine.js"></script>
 </body>
 </html>

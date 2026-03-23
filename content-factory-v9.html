@@ -4,6 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Content Factory — Settings</title>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+  import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+  // Placeholder Config - User should replace this
+  const firebaseConfig = {
+    apiKey: "PLACEHOLDER_API_KEY",
+    authDomain: "content-factory-demo.firebaseapp.com",
+    projectId: "content-factory-demo",
+    storageBucket: "content-factory-demo.firebasestorage.app",
+    messagingSenderId: "PLACEHOLDER_SENDER_ID",
+    appId: "PLACEHOLDER_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Expose to window for global access
+  window.db = db;
+  window.fs = { doc, setDoc, getDoc, updateDoc, onSnapshot, collection };
+  console.log("🔥 Firebase Initialized");
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -426,6 +449,89 @@ html, body {
 .am-bar { height:3px; background:rgba(0,0,0,0.06); border-radius:3px; overflow:hidden; }
 .am-fill { height:100%; border-radius:3px; transition:width 1s; }
 
+/* CATEGORIZED AGENT DASHBOARD */
+.agent-cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; }
+.agent-cat-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  overflow: hidden; display: flex; flex-direction: column;
+  transition: transform 0.3s ease;
+}
+.agent-cat-card:hover { transform: translateY(-4px); }
+
+.ac-hdr {
+  padding: 20px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(255, 255, 255, 0.03);
+}
+.ac-title { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+.ac-count { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: #fff; background: rgba(255,255,255,0.1); padding: 3px 10px; border-radius: 12px; }
+
+.agent-list { display: flex; flex-direction: column; }
+.agent-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
+  background: transparent;
+}
+.agent-row:last-child { border-bottom: none; }
+.agent-row:hover { background: rgba(255, 255, 255, 0.04); }
+.agent-row.off { opacity: 0.4; filter: grayscale(0.8); }
+
+.ar-left { display: flex; align-items: center; gap: 14px; }
+.ar-decorator { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; position: relative; }
+.ar-decorator::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; background: inherit; opacity: 0.4; filter: blur(6px); }
+
+.ar-icon { font-size: 1.2rem; width: 24px; text-align: center; }
+.ar-info { display: flex; flex-direction: column; }
+.ar-name { font-size: 0.9rem; font-weight: 700; color: #fff; }
+.ar-role { font-family: 'DM Mono', monospace; font-size: 0.54rem; color: rgba(255,255,255,0.4); margin-top: 1px; }
+
+.ar-right { display: flex; align-items: center; gap: 16px; }
+.ar-status-wrap { width: 12px; height: 12px; border-radius: 50%; position: relative; }
+.status-indicator { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 12px inherit; }
+
+.ar-toggle {
+  width: 42px; height: 22px; border-radius: 11px;
+  background: rgba(255, 255, 255, 0.1);
+  position: relative; transition: all 0.3s;
+  cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.ar-toggle::after {
+  content: '✓'; position: absolute; left: 3px; top: 3px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); color: transparent;
+  display: flex; align-items: center; justify-content: center; font-size: 0.6rem;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.ar-toggle.on { background: #10b981; border-color: rgba(16, 185, 129, 0.4); }
+.ar-toggle.on::after { left: 23px; background: #fff; color: #10b981; box-shadow: 0 0 10px rgba(255,255,255,0.4); }
+.ar-toggle:hover { transform: scale(1.05); border-color: rgba(255,255,255,0.3); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* MODAL & OVERLAY FIX */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+.modal-overlay.open { display: flex; opacity: 1; }
+.modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-lg); position: relative; transform: translateY(20px); transition: transform 0.3s; }
+.modal-overlay.open .modal { transform: translateY(0); }
+
+/* GLOW EFFECTS */
+.glow-pink { background: var(--pink); box-shadow: 0 0 8px var(--pink); }
+.glow-green { background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse-glow 2s infinite; }
+.glow-red { background: var(--red); box-shadow: 0 0 8px var(--red); }
+.glow-yellow { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; animation: pulse-glow 1.5s infinite; }
+.glow-blue { background: var(--blue); box-shadow: 0 0 8px var(--blue); }
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
 /* RUN BTN */
 .run-btn { width:100%; padding:15px; background:var(--dark); color:var(--bg); border:none; border-radius:var(--radius); font-family:'DM Sans',sans-serif; font-size:0.86rem; font-weight:700; cursor:pointer; transition:all 0.3s; display:flex; align-items:center; justify-content:center; gap:8px; }
 .run-btn:hover { box-shadow:var(--shadow-lg); }
@@ -525,33 +631,31 @@ html, body {
 .modal { background:var(--bg2);border-radius:24px;padding:32px;max-width:92vw;box-shadow:var(--shadow-lg);animation:modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
 @keyframes modalIn { from{opacity:0;transform:scale(0.95) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
 
-
-
-/* ACCORDION */
-.accordion { background:var(--bg2); border-radius:var(--radius); border:1px solid var(--border); box-shadow:var(--shadow); overflow:hidden; margin-bottom:12px; }
-.accordion-hdr { display:flex; align-items:center; justify-content:space-between; padding:15px 20px; cursor:pointer; user-select:none; transition:background 0.2s; }
-.accordion-hdr:hover { background:var(--bg3); }
-.accordion-title { font-size:0.86rem; font-weight:700; display:flex; align-items:center; gap:8px; }
-.accordion-arrow { font-size:0.8rem; color:var(--dim); transition:transform 0.3s; }
-.accordion-body { display:none; padding:0 20px 18px; border-top:1px solid var(--border); }
-.accordion-body.open { display:block; }
-.accordion-arrow.open { transform:rotate(180deg); }
-
-/* THEME GRID extended */
-.theme-grid-full { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding-top:16px; }
-.theme-section-label { font-family:'DM Mono',monospace; font-size:0.56rem; color:var(--dim); letter-spacing:0.08em; text-transform:uppercase; margin:14px 0 8px; }
-
-/* LAYOUT OPTIONS */
-.layout-opt { cursor:pointer; border-radius:10px; border:2px solid var(--border); background:var(--bg2); overflow:hidden; transition:all 0.2s; }
-.layout-opt:hover { border-color:var(--border2); transform:translateY(-2px); box-shadow:var(--shadow); }
-.layout-opt.sel { border-color:var(--dark); box-shadow:var(--shadow); }
-.lo-preview { padding:8px; background:var(--bg3); border-bottom:1px solid var(--border); height:60px; display:flex; flex-direction:column; justify-content:space-between; }
-.lo-name { font-size:0.72rem; font-weight:700; padding:6px 8px 2px; }
-.lo-desc { font-family:'DM Mono',monospace; font-size:0.5rem; color:var(--dim); padding:0 8px 7px; line-height:1.4; }
-
 /* SCROLLBAR */
 ::-webkit-scrollbar { width:4px; }
 ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:4px; }
+
+/* SEASONAL FX */
+.seasonal-fx{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;}
+.particle{position:absolute;top:-50px;animation:fall linear forwards;}
+@keyframes fall{
+  0%{transform:translateY(0) rotate(0deg);opacity:0;}
+  10%{opacity:1;}
+  90%{opacity:1;}
+  100%{transform:translateY(110vh) rotate(360deg);opacity:0;}
+}
+
+/* Seasonal variations */
+.season-autumn{--accent:#d97706;--accent2:#b45309;}
+.season-winter{--accent:#3b82f6;--accent2:#2563eb;}
+.season-spring{--accent:#ec4899;--accent2:#db2777;}
+
+/* WEATHER WIDGET */
+.weather-widget{display:flex;align-items:center;gap:8px;padding:5px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:11px;box-shadow:var(--shadow);font-family:'DM Mono',monospace;margin-right:8px;}
+.ww-icon{font-size:1rem;}
+.ww-info{display:flex;flex-direction:column;line-height:1.1;}
+.ww-temp{font-size:0.7rem;font-weight:700;color:var(--text);}
+.ww-cond{font-size:0.44rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;}
 
 /* ===== SETTINGS PAGE ===== */
 .settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
@@ -581,8 +685,8 @@ html, body {
 .fc-btn { width:32px; height:32px; border-radius:8px; background:var(--bg3); border:1px solid var(--border); color:var(--text); font-size:0.85rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; font-family:'DM Sans',sans-serif; }
 .fc-btn:hover { background:var(--bg4); }
 .fc-val { font-family:'DM Mono',monospace; font-size:0.7rem; color:var(--text); min-width:32px; text-align:center; }
-.fc-slider { -webkit-appearance:none; width:120px; height:4px; border-radius:4px; background:var(--bg4); outline:none; }
-.fc-slider::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:var(--accent); cursor:pointer; }
+.fc-slider { -webkit-appearance:none; appearance:none; width:120px; height:4px; border-radius:4px; background:var(--bg4); outline:none; }
+.fc-slider::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:14px; height:14px; border-radius:50%; background:var(--accent); cursor:pointer; }
 
 /* Screenshot to theme */
 .screenshot-drop {
@@ -706,7 +810,7 @@ html, body {
 <div class="topbar">
   <div class="logo" onclick="goToLauncher()" style="cursor:pointer;" title="← Torna al Launcher">
     <div class="logo-icon" id="logoIcon">⚡</div>
-    <span id="studioNameLabel">Content Factory</span>
+    Content Factory
   </div>
   <nav class="top-nav">
     <button class="top-nav-item active" onclick="switchPage('home',this)">Dashboard</button>
@@ -717,9 +821,17 @@ html, body {
     <button class="top-nav-item" onclick="switchPage('lounge',this)">☕ Sala Relax</button>
     <button class="top-nav-item" onclick="switchPage('settings',this)">⚙️ Impostazioni</button>
   </nav>
+  <!-- Weather Widget -->
+  <div class="weather-widget">
+    <div class="ww-icon" id="weatherIcon">☀️</div>
+    <div class="ww-info">
+      <div class="ww-temp" id="weatherTemp">--°</div>
+      <div class="ww-cond" id="weatherCond">...</div>
+    </div>
+  </div>
   <div class="topbar-sep"></div>
   <div class="topbar-right">
-    <div class="top-badge"><div class="tbdot"></div>13 agenti</div>
+    <div class="top-badge" id="agentBadge"><div class="tbdot" id="agentBadgeDot"></div><span id="agentBadgeText">13 agenti</span></div>
     <div id="profilePill" onclick="openProfileDrawer()" style="display:flex;align-items:center;gap:7px;padding:5px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;cursor:pointer;transition:all 0.2s;box-shadow:var(--shadow);" onmouseover="this.style.background='var(--bg4)'" onmouseout="this.style.background='var(--bg2)'">
       <div id="profilePillAv" style="width:22px;height:22px;border-radius:50%;background:var(--dark);display:flex;align-items:center;justify-content:center;font-size:0.62rem;border:1.5px solid var(--accent);flex-shrink:0;">🦁</div>
       <span id="profilePillName" style="font-family:'DM Sans',sans-serif;font-size:0.76rem;font-weight:600;color:var(--text);">Il Capo</span>
@@ -765,117 +877,11 @@ html, body {
     <div class="page active" id="page-home">
       <div><div class="page-greeting">Buongiorno 👋</div><div class="page-sub">Il Capo Redattore ha 3 decisioni per te · Call Me River Universe</div></div>
       <div class="stats-row">
-        <!-- HYPE CARD — dark with sparkline -->
-        <div class="stat-card dark" style="position:relative;overflow:hidden;padding-bottom:0;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;">
-            <div>
-              <div class="stat-label">🔥 Hype Score</div>
-              <div class="stat-value">94</div>
-              <div class="stat-change">↑ In crescita</div>
-            </div>
-            <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🔥</div>
-          </div>
-          <svg width="100%" height="52" viewBox="0 0 200 52" preserveAspectRatio="none" style="display:block;margin:0 -18px;width:calc(100% + 36px);">
-            <defs>
-              <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="rgba(232,197,71,0.35)"/>
-                <stop offset="100%" stop-color="rgba(232,197,71,0)"/>
-              </linearGradient>
-            </defs>
-            <path d="M0,40 C20,38 30,35 45,32 C60,29 70,28 85,22 C100,16 110,18 125,14 C140,10 155,8 170,6 C185,4 195,3 200,2 L200,52 L0,52 Z" fill="url(#g1)"/>
-            <path d="M0,40 C20,38 30,35 45,32 C60,29 70,28 85,22 C100,16 110,18 125,14 C140,10 155,8 170,6 C185,4 195,3 200,2" fill="none" stroke="rgba(232,197,71,0.8)" stroke-width="1.8" stroke-linecap="round"/>
-            <circle cx="200" cy="2" r="3" fill="#e8c547"/>
-          </svg>
-        </div>
-
-        <!-- GUADAGNI CARD — accent yellow with sparkline -->
-        <div class="stat-card accent" style="position:relative;overflow:hidden;padding-bottom:0;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;">
-            <div>
-              <div class="stat-label">💰 Guadagni</div>
-              <div class="stat-value">€31</div>
-              <div class="stat-change">↑ +€12 sett.</div>
-            </div>
-            <div style="width:36px;height:36px;border-radius:10px;background:rgba(26,23,20,0.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">💰</div>
-          </div>
-          <svg width="100%" height="52" viewBox="0 0 200 52" preserveAspectRatio="none" style="display:block;margin:0 -18px;width:calc(100% + 36px);">
-            <defs>
-              <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="rgba(26,23,20,0.2)"/>
-                <stop offset="100%" stop-color="rgba(26,23,20,0)"/>
-              </linearGradient>
-            </defs>
-            <path d="M0,45 C15,43 25,42 40,38 C55,34 65,36 80,30 C95,24 105,26 120,20 C135,14 148,16 162,10 C176,4 188,5 200,4 L200,52 L0,52 Z" fill="url(#g2)"/>
-            <path d="M0,45 C15,43 25,42 40,38 C55,34 65,36 80,30 C95,24 105,26 120,20 C135,14 148,16 162,10 C176,4 188,5 200,4" fill="none" stroke="rgba(26,23,20,0.5)" stroke-width="1.8" stroke-linecap="round"/>
-            <circle cx="200" cy="4" r="3" fill="rgba(26,23,20,0.6)"/>
-          </svg>
-        </div>
-
-        <!-- VIEWS CARD — light with blue sparkline -->
-        <div class="stat-card" style="position:relative;overflow:hidden;padding-bottom:0;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;">
-            <div>
-              <div class="stat-label">👁️ Views</div>
-              <div class="stat-value">110K</div>
-              <div class="stat-change">↑ TikTok EN</div>
-            </div>
-            <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,0.08);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">👁️</div>
-          </div>
-          <svg width="100%" height="52" viewBox="0 0 200 52" preserveAspectRatio="none" style="display:block;margin:0 -18px;width:calc(100% + 36px);">
-            <defs>
-              <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="rgba(59,130,246,0.15)"/>
-                <stop offset="100%" stop-color="rgba(59,130,246,0)"/>
-              </linearGradient>
-            </defs>
-            <path d="M0,48 C10,46 20,44 35,40 C50,36 60,38 75,32 C90,26 100,20 115,16 C130,12 145,14 160,8 C175,2 188,4 200,3 L200,52 L0,52 Z" fill="url(#g3)"/>
-            <path d="M0,48 C10,46 20,44 35,40 C50,36 60,38 75,32 C90,26 100,20 115,16 C130,12 145,14 160,8 C175,2 188,4 200,3" fill="none" stroke="rgba(59,130,246,0.7)" stroke-width="1.8" stroke-linecap="round"/>
-            <circle cx="200" cy="3" r="3" fill="#3b82f6"/>
-          </svg>
-        </div>
-
-        <!-- LIBRI CARD -->
-        <div class="stat-card" style="position:relative;overflow:hidden;padding-bottom:0;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;">
-            <div>
-              <div class="stat-label">📚 Libri</div>
-              <div class="stat-value">3</div>
-              <div class="stat-change">↑ +2 sett.</div>
-            </div>
-            <div style="width:36px;height:36px;border-radius:10px;background:rgba(139,92,246,0.08);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📚</div>
-          </div>
-          <!-- Bar chart stile Crextio -->
-          <div style="display:flex;align-items:flex-end;gap:4px;height:40px;padding:0 0 8px 0;">
-            <div style="flex:1;background:var(--border2);border-radius:3px 3px 0 0;height:30%;"></div>
-            <div style="flex:1;background:var(--border2);border-radius:3px 3px 0 0;height:50%;"></div>
-            <div style="flex:1;background:var(--border2);border-radius:3px 3px 0 0;height:40%;"></div>
-            <div style="flex:1;background:var(--border2);border-radius:3px 3px 0 0;height:60%;"></div>
-            <div style="flex:1;background:var(--border2);border-radius:3px 3px 0 0;height:45%;"></div>
-            <div style="flex:1;background:var(--border2);border-radius:3px 3px 0 0;height:70%;"></div>
-            <div style="flex:1;background:var(--dark);border-radius:3px 3px 0 0;height:100%;"></div>
-          </div>
-        </div>
-
-        <!-- CANZONI CARD -->
-        <div class="stat-card" style="position:relative;overflow:hidden;padding-bottom:0;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;">
-            <div>
-              <div class="stat-label">🎵 Canzoni</div>
-              <div class="stat-value">6</div>
-              <div class="stat-change">↑ +3 nuove</div>
-            </div>
-            <div style="width:36px;height:36px;border-radius:10px;background:rgba(249,115,22,0.08);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🎵</div>
-          </div>
-          <!-- Wave bars music style -->
-          <div style="display:flex;align-items:flex-end;gap:3px;height:40px;padding:0 0 8px 0;">
-            <div style="flex:1;background:rgba(249,115,22,0.2);border-radius:3px 3px 0 0;height:60%;"></div>
-            <div style="flex:1;background:rgba(249,115,22,0.3);border-radius:3px 3px 0 0;height:80%;"></div>
-            <div style="flex:1;background:rgba(249,115,22,0.5);border-radius:3px 3px 0 0;height:50%;"></div>
-            <div style="flex:1;background:rgba(249,115,22,0.7);border-radius:3px 3px 0 0;height:90%;"></div>
-            <div style="flex:1;background:rgba(249,115,22,0.5);border-radius:3px 3px 0 0;height:70%;"></div>
-            <div style="flex:1;background:var(--orange);border-radius:3px 3px 0 0;height:100%;"></div>
-          </div>
-        </div>
+        <div class="stat-card dark"><div class="stat-label">🔥 Hype Score</div><div class="stat-value">94</div><div class="stat-change">↑ In crescita</div><div class="stat-icon">🔥</div></div>
+        <div class="stat-card accent"><div class="stat-label">💰 Guadagni</div><div class="stat-value">€31</div><div class="stat-change">↑ +€12 sett.</div><div class="stat-icon">💰</div></div>
+        <div class="stat-card"><div class="stat-label">📚 Libri</div><div class="stat-value">3</div><div class="stat-change">↑ +2 sett.</div><div class="stat-icon">📚</div></div>
+        <div class="stat-card"><div class="stat-label">👁️ Views</div><div class="stat-value">110K</div><div class="stat-change">↑ TikTok EN</div><div class="stat-icon">👁️</div></div>
+        <div class="stat-card"><div class="stat-label">🎵 Canzoni</div><div class="stat-value">6</div><div class="stat-change">↑ +3 nuove</div><div class="stat-icon">🎵</div></div>
       </div>
       <div class="grid-main">
         <div class="chief-card">
@@ -900,79 +906,10 @@ html, body {
           <div class="pipe-step"><div class="ps-dot wait"></div><div class="ps-info"><div class="ps-name">Pubblicazione</div><div class="ps-detail">Amazon · YouTube · TikTok</div></div><div class="ps-badge psb-wait">attesa</div></div>
         </div>
       </div>
-      <div class="stats-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
-
-        <!-- HYPE — compact stat-card style -->
-        <div class="stat-card" style="position:relative;overflow:hidden;padding-bottom:0;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:6px;">
-            <div>
-              <div class="stat-label">🔥 Hype Universe <span class="card-tag live" style="vertical-align:middle;margin-left:4px">live</span></div>
-              <div class="stat-value">94</div>
-              <div class="stat-change">Call Me River · In crescita</div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">
-              <span style="font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 6px;background:rgba(34,197,94,0.08);color:var(--green);border-radius:20px;">📚 ⚡72</span>
-              <span style="font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 6px;background:rgba(34,197,94,0.08);color:var(--green);border-radius:20px;">📱 🔥88</span>
-            </div>
-          </div>
-          <div class="hype-bar-track" style="margin:0 0 8px;"><div class="hype-bar-fill" style="width:94%"></div></div>
-          <svg width="100%" height="44" viewBox="0 0 200 44" preserveAspectRatio="none" style="display:block;margin:0 -18px;width:calc(100% + 36px);">
-            <defs><linearGradient id="gh" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(232,197,71,0.25)"/><stop offset="100%" stop-color="rgba(232,197,71,0)"/></linearGradient></defs>
-            <path d="M0,36 C20,33 35,30 55,26 C75,22 90,24 110,18 C130,12 150,10 170,6 C185,3 195,2 200,1 L200,44 L0,44 Z" fill="url(#gh)"/>
-            <path d="M0,36 C20,33 35,30 55,26 C75,22 90,24 110,18 C130,12 150,10 170,6 C185,3 195,2 200,1" fill="none" stroke="rgba(232,197,71,0.7)" stroke-width="1.5"/>
-            <circle cx="200" cy="1" r="2.5" fill="#e8c547"/>
-          </svg>
-        </div>
-
-        <!-- SENTIMENT — compact -->
-        <div class="stat-card" style="padding:16px 18px;">
-          <div class="stat-label" style="margin-bottom:10px;">🌡️ Sentiment</div>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <div style="font-size:0.7rem;width:80px;color:var(--mid);">❤️ Amore</div>
-              <div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;"><div style="width:67%;height:100%;background:#ff4d6d;border-radius:3px;"></div></div>
-              <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);width:28px;text-align:right;">67%</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <div style="font-size:0.7rem;width:80px;color:var(--mid);">⏳ Attesa</div>
-              <div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;"><div style="width:58%;height:100%;background:var(--purple);border-radius:3px;"></div></div>
-              <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);width:28px;text-align:right;">58%</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <div style="font-size:0.7rem;width:80px;color:var(--mid);">😢 Malinconia</div>
-              <div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;"><div style="width:41%;height:100%;background:var(--blue);border-radius:3px;"></div></div>
-              <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);width:28px;text-align:right;">41%</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <div style="font-size:0.7rem;width:80px;color:var(--mid);">🌱 Speranza</div>
-              <div style="flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;"><div style="width:34%;height:100%;background:var(--green);border-radius:3px;"></div></div>
-              <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);width:28px;text-align:right;">34%</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- PREZZI — compact -->
-        <div class="stat-card" style="position:relative;overflow:hidden;padding-bottom:0;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:6px;">
-            <div>
-              <div class="stat-label">💸 Prezzi</div>
-              <div class="stat-value">€3.99</div>
-              <div class="stat-change" style="color:var(--accent2);">💡 Opportunità</div>
-            </div>
-            <div style="width:36px;height:36px;border-radius:10px;background:rgba(232,197,71,0.12);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">💰</div>
-          </div>
-          <div style="background:rgba(232,197,71,0.08);border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:0.7rem;color:var(--mid);line-height:1.5;">98K views oggi. <strong style="color:var(--text)">€0.99 per 48h</strong> → +34 vendite stimate.</div>
-          <div style="display:flex;gap:6px;margin-bottom:10px;">
-            <button class="price-btn pb-yes" onclick="applyPrice()" style="flex:2;">✓ Applica</button>
-            <button class="price-btn pb-no" style="flex:1;">✕</button>
-          </div>
-          <svg width="100%" height="30" viewBox="0 0 200 30" preserveAspectRatio="none" style="display:block;margin:0 -18px;width:calc(100% + 36px);">
-            <defs><linearGradient id="gp" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(232,197,71,0.2)"/><stop offset="100%" stop-color="rgba(232,197,71,0)"/></linearGradient></defs>
-            <path d="M0,25 C30,22 60,20 90,15 C120,10 150,8 200,3 L200,30 L0,30 Z" fill="url(#gp)"/>
-            <path d="M0,25 C30,22 60,20 90,15 C120,10 150,8 200,3" fill="none" stroke="rgba(212,176,48,0.6)" stroke-width="1.5"/>
-          </svg>
-        </div>
-
+      <div class="grid-3">
+        <div class="card"><div class="card-hdr"><div class="card-title">🔥 Hype Universe</div><span class="card-tag live">live</span></div><div class="card-body"><div class="hype-big">94</div><div style="font-size:0.76rem;color:var(--dim);margin-bottom:12px">Call Me River · In crescita</div><div class="hype-bar-track"><div class="hype-bar-fill" style="width:94%"></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="hype-chip">📚 ⚡72</span><span class="hype-chip">🎬 🔥94</span><span class="hype-chip">📱 🔥88</span></div></div></div>
+        <div class="card"><div class="card-hdr"><div class="card-title">🌡️ Sentiment</div></div><div class="card-body"><div class="emotion-item"><div class="emotion-label">❤️ Amore</div><div class="emotion-track"><div class="emotion-fill" style="width:67%;background:#ff4d6d"></div></div><div class="emotion-pct">67%</div></div><div class="emotion-item"><div class="emotion-label">⏳ Attesa</div><div class="emotion-track"><div class="emotion-fill" style="width:58%;background:var(--purple)"></div></div><div class="emotion-pct">58%</div></div><div class="emotion-item"><div class="emotion-label">😢 Malinconia</div><div class="emotion-track"><div class="emotion-fill" style="width:41%;background:var(--blue)"></div></div><div class="emotion-pct">41%</div></div><div class="emotion-item"><div class="emotion-label">🌱 Speranza</div><div class="emotion-track"><div class="emotion-fill" style="width:34%;background:var(--green)"></div></div><div class="emotion-pct">34%</div></div></div></div>
+        <div class="card"><div class="card-hdr"><div class="card-title">💸 Prezzi</div><span class="card-tag" style="background:rgba(232,197,71,0.15);color:var(--accent2)">💡</span></div><div class="card-body"><div class="price-big">€3.99</div><div class="price-suggestion-box"><div class="psb-label">OPPORTUNITÀ</div><div class="psb-text">98K views oggi. <strong>€0.99 per 48h</strong> → +34 vendite stimate.</div></div><div class="price-actions"><button class="price-btn pb-yes" onclick="applyPrice()">✓ Applica</button><button class="price-btn pb-no">✕ Ignora</button></div></div></div>
       </div>
       <div class="card"><div class="card-hdr"><div class="card-title">📋 Log di sistema</div><span class="card-tag live">live</span></div><div class="log-item"><div class="log-dot-outer success"><div class="log-inner"></div></div><div class="log-time">10:42</div><div class="log-text"><strong>Capo Red. → Musicale</strong> — BPM ridotto a 72 per Cap.7</div></div><div class="log-item"><div class="log-dot-outer success"><div class="log-inner"></div></div><div class="log-time">10:30</div><div class="log-text"><strong>Musicale</strong> — "Pulse Night" generata · 3:42</div></div><div class="log-item"><div class="log-dot-outer warn"><div class="log-inner"></div></div><div class="log-time">10:00</div><div class="log-text"><strong>Sistema</strong> — Runway ML lento · alternativa: Kling AI</div></div></div>
       <button class="run-btn" onclick="runAll(this)">👑 Capo Redattore · Avvia pipeline completa</button>
@@ -981,23 +918,32 @@ html, body {
     <!-- AGENTI -->
     <div class="page" id="page-agents">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;">
-        <div><div class="page-greeting">Agenti</div><div class="page-sub">13 attivi · 3 in esecuzione</div></div>
-        <button onclick="openNamesWizard()" style="display:flex;align-items:center;gap:7px;padding:10px 16px;background:var(--dark);color:#fff;border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;margin-bottom:4px;transition:all 0.2s;">
-          ✨ Assegna nomi agli agenti
-        </button>
+        <div><div class="page-greeting">Agenti & Team</div><div class="page-sub" id="agentStatsSub">13 attivi · 3 in esecuzione</div></div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="openCreateAgentModal()" style="display:flex;align-items:center;gap:7px;padding:10px 16px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;margin-bottom:4px;transition:all 0.2s;box-shadow:var(--shadow);">
+            ✨ Crea Agente
+          </button>
+          <button onclick="openNamesWizard()" style="display:flex;align-items:center;gap:7px;padding:10px 16px;background:var(--dark);color:#fff;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;margin-bottom:4px;transition:all 0.2s;box-shadow:var(--shadow);">
+            🎭 Assegna nomi
+          </button>
+        </div>
       </div>
 
       <!-- Names banner — shown when agents have names -->
-      <div id="namesBanner" style="display:none;background:linear-gradient(135deg,var(--dark),#2a2520);border-radius:var(--radius);padding:16px 20px;display:none;align-items:center;gap:12px;">
+      <div id="namesBanner" style="display:none;background:linear-gradient(135deg,var(--dark),#2a2520);border-radius:var(--radius);padding:16px 20px;align-items:center;gap:12px;margin-bottom:10px;">
         <div style="font-size:1.4rem;">✨</div>
         <div style="flex:1;">
           <div style="font-size:0.84rem;font-weight:700;color:#fff;margin-bottom:2px;">Il team ha un nome!</div>
           <div style="font-family:'DM Mono',monospace;font-size:0.54rem;color:rgba(255,255,255,0.4);">Gli agenti si sono scelti un'identità · clicca su ognuno per vedere il profilo</div>
         </div>
       </div>
-      <div class="grid-2">
-        <div class="card"><div class="card-hdr"><div class="card-title">👑 Coordinamento</div></div><div class="agent-grid"><div class="agent-mini" onclick="openDrawer('drawer-chief')"><div class="agent-mini-header"><div class="am-icon">👑</div><div><div class="am-name">Capo Redattore</div><div class="am-tool">Director AI</div></div><div class="am-status ams-run">dirige</div></div><div class="am-bar"><div class="am-fill" style="width:100%;background:var(--accent)"></div></div></div><div class="agent-mini" onclick="openDrawer('drawer-editorial')"><div class="agent-mini-header"><div class="am-icon">📖</div><div><div class="am-name">Consulente Ed.</div><div class="am-tool">Claude API</div></div><div class="am-status ams-done">pronto</div></div><div class="am-bar"><div class="am-fill" style="width:100%;background:var(--blue)"></div></div></div></div></div>
-        <div class="card"><div class="card-hdr"><div class="card-title">🎭 Produzione</div></div><div class="agent-grid"><div class="agent-mini" onclick="openDrawer('drawer-chars')"><div class="agent-mini-header"><div class="am-icon">🎭</div><div><div class="am-name">Personaggi</div><div class="am-tool">Claude + foto</div></div><div class="am-status ams-done">2</div></div><div class="am-bar"><div class="am-fill" style="width:100%;background:var(--green)"></div></div></div><div class="agent-mini"><div class="agent-mini-header"><div class="am-icon">✍️</div><div><div class="am-name">Scrittore</div><div class="am-tool">Claude API</div></div><div class="am-status ams-done">✓</div></div><div class="am-bar"><div class="am-fill" style="width:100%;background:var(--green)"></div></div></div><div class="agent-mini" onclick="openDrawer('drawer-music')"><div class="agent-mini-header"><div class="am-icon">🎵</div><div><div class="am-name">Musicale</div><div class="am-tool">Suno AI</div></div><div class="am-status ams-run">●</div></div><div class="am-bar"><div class="am-fill" style="width:72%;background:var(--green)" id="musicBar"></div></div></div><div class="agent-mini" onclick="openDrawer('drawer-orch')"><div class="agent-mini-header"><div class="am-icon">🎻</div><div><div class="am-name">Orchestra</div><div class="am-tool">Mixer AI</div></div><div class="am-status ams-done">mixer</div></div><div class="am-bar"><div class="am-fill" style="width:85%;background:var(--purple)"></div></div></div></div></div>
+
+      <!-- CATEGORIZED GRID -->
+      <div class="agent-cat-grid" id="agentCatGrid">
+        <!-- Will be populated by JS -->
+        <div style="grid-column: 1/-1; padding: 40px; text-align: center; color: var(--dim); font-family: 'DM Mono', monospace;">
+          Caricamento flotta agenti...
+        </div>
       </div>
     </div>
 
@@ -1082,28 +1028,44 @@ html, body {
       </div>
 
       <!-- Agent CIPHER intro -->
-      <div style="background:linear-gradient(135deg,#050c10,#0a1a14,#051008);border:1px solid rgba(34,197,94,0.2);border-radius:var(--radius);padding:22px;position:relative;overflow:hidden;">
-        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(34,197,94,0.07),transparent 60%);pointer-events:none;"></div>
-        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
-          <div style="width:52px;height:52px;border-radius:50%;background:rgba(34,197,94,0.12);border:2px solid rgba(34,197,94,0.4);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;position:relative;">
-            🛡️
-            <div style="position:absolute;inset:-4px;border-radius:50%;border:1.5px solid rgba(34,197,94,0.3);animation:spin 3s linear infinite;border-top-color:rgba(34,197,94,0.8);"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+        <div style="background:linear-gradient(135deg,#050c10,#0a1a14,#051008);border:1px solid rgba(34,197,94,0.2);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;">
+          <div style="position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(34,197,94,0.07),transparent 60%);pointer-events:none;"></div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <div style="width:42px;height:42px;border-radius:50%;background:rgba(34,197,94,0.12);border:2px solid rgba(34,197,94,0.4);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;position:relative;">
+              🛡️
+              <div style="position:absolute;inset:-3px;border-radius:50%;border:1.5px solid rgba(34,197,94,0.3);animation:spin 3s linear infinite;border-top-color:rgba(34,197,94,0.8);"></div>
+            </div>
+            <div>
+              <div style="font-size:0.84rem;font-weight:800;color:#fff;margin-bottom:1px;">CIPHER <span style="font-family:'DM Mono',monospace;font-size:0.5rem;color:rgba(34,197,94,0.7);font-weight:400;">· Security</span></div>
+              <div style="font-family:'DM Mono',monospace;font-size:0.48rem;color:rgba(34,197,94,0.6);">Neutro · esso/esso</div>
+            </div>
           </div>
-          <div>
-            <div style="font-size:0.92rem;font-weight:800;color:#fff;margin-bottom:2px;">CIPHER <span style="font-family:'DM Mono',monospace;font-size:0.54rem;color:rgba(34,197,94,0.7);font-weight:400;">· Agente Cybersecurity</span></div>
-            <div style="font-family:'DM Mono',monospace;font-size:0.54rem;color:rgba(34,197,94,0.6);">Età: 4 anni di addestramento · Genere: neutro · Pronomi: esso/esso</div>
-          </div>
-          <div style="margin-left:auto;display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:0.54rem;color:rgba(34,197,94,0.8);background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);padding:5px 11px;border-radius:20px;">
-            <div style="width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease infinite;"></div>
-            monitorando
+          <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:10px 12px;">
+            <div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:rgba(34,197,94,0.6);letter-spacing:0.08em;margin-bottom:4px;">CIPHER DICE:</div>
+            <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(220,255,220,0.8);line-height:1.6;" id="cipherMsg">
+              Tutto sotto controllo. Nessun accesso non autorizzato rilevato oggi.
+            </div>
           </div>
         </div>
-        <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:12px 14px;">
-          <div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:rgba(34,197,94,0.6);letter-spacing:0.08em;margin-bottom:5px;">CIPHER DICE:</div>
-          <div style="font-family:'DM Mono',monospace;font-size:0.62rem;color:rgba(220,255,220,0.8);line-height:1.65;" id="cipherMsg">
-            Tutto sotto controllo. Ho scansionato 47 sessioni oggi — nessuna anomalia rilevata.<br>
-            Il tuo PIN è stato inserito correttamente 1 volta. Nessun accesso non autorizzato.<br>
-            Consiglio: cambia il PIN ogni 30 giorni. Sono qui 24/7.
+
+        <div style="background:linear-gradient(135deg,#0a0a10,#100a1a,#080510);border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;">
+          <div style="position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(139,92,246,0.07),transparent 60%);pointer-events:none;"></div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <div style="width:42px;height:42px;border-radius:50%;background:rgba(139,92,246,0.12);border:2px solid rgba(139,92,246,0.4);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;position:relative;">
+              🕷️
+              <div style="position:absolute;inset:-3px;border-radius:50%;border:1.5px solid rgba(139,92,246,0.3);animation:spin 4s reverse linear infinite;border-top-color:rgba(139,92,246,0.8);"></div>
+            </div>
+            <div>
+              <div style="font-size:0.84rem;font-weight:800;color:#fff;margin-bottom:1px;">BUG HUNTER <span style="font-family:'DM Mono',monospace;font-size:0.5rem;color:rgba(139,92,246,0.7);font-weight:400;">· Debugger</span></div>
+              <div style="font-family:'DM Mono',monospace;font-size:0.48rem;color:rgba(139,92,246,0.6);">Meticoloso · lui/lui</div>
+            </div>
+          </div>
+          <div style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.15);border-radius:10px;padding:10px 12px;">
+            <div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:rgba(139,92,246,0.6);letter-spacing:0.08em;margin-bottom:4px;">HUNTER DICE:</div>
+            <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(230,220,255,0.8);line-height:1.6;" id="hunterMsg">
+              Codice pulito al 98.4%. Ho ottimizzato 3 selettori CSS silenti.
+            </div>
           </div>
         </div>
       </div>
@@ -1137,8 +1099,9 @@ html, body {
               <div style="font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 8px;border-radius:20px;background:rgba(34,197,94,0.1);color:var(--green);">✓ ok</div>
             </div>
           </div>
-          <div style="padding:12px 18px;border-top:1px solid var(--border);">
-            <button onclick="simulateThreat()" style="width:100%;padding:9px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--mid);cursor:pointer;transition:all 0.2s;">🔍 Avvia scansione manuale</button>
+          <div style="padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;">
+            <button onclick="simulateThreat()" style="flex:1;padding:9px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--mid);cursor:pointer;transition:all 0.2s;">🛡️ Scansione Sicurezza</button>
+            <button onclick="runBugHunter()" style="flex:1;padding:9px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--mid);cursor:pointer;transition:all 0.2s;">🕷️ Caccia ai Bug</button>
           </div>
         </div>
 
@@ -1269,7 +1232,7 @@ html, body {
       </div>
 
       <!-- Link to full lounge -->
-      <div onclick="window.location.href='agent-lounge-v2.html'" style="background:var(--bg2);border:2px dashed var(--border2);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--dark)'" onmouseout="this.style.borderColor='var(--border2)'">
+      <div onclick="goToExternalPage('agent-lounge-v2.html')" style="background:var(--bg2);border:2px dashed var(--border2);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--dark)'" onmouseout="this.style.borderColor='var(--border2)'">
         <div style="font-size:1.8rem;margin-bottom:8px;">💬</div>
         <div style="font-size:0.88rem;font-weight:700;margin-bottom:4px;">Apri la Chat Completa</div>
         <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);">Entra nella sala relax · chatta con gli agenti · reagisci · invia foto</div>
@@ -1284,183 +1247,115 @@ html, body {
         <div class="page-sub">Personalizza l'aspetto e il comportamento dell'app · Le modifiche si applicano subito</div>
       </div>
 
-      <!-- ACCORDION: TEMI -->
-      <div class="accordion" id="acc-temi">
-        <div class="accordion-hdr" onclick="toggleAccordion('acc-temi')">
-          <div class="accordion-title">🎨 Temi & Colori <span class="card-tag" id="currentThemeBadge" style="margin-left:8px;">Chiaro attivo</span></div>
-          <div class="accordion-arrow open" id="arr-acc-temi">▼</div>
+      <!-- THEME SWITCHER -->
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">🎨 Temi & Colori</div>
+          <span class="card-tag" id="currentThemeBadge">Chiaro attivo</span>
         </div>
-        <div class="accordion-body open" id="body-acc-temi">
-
-          <!-- ORIGINALI -->
-          <div class="theme-section-label">Temi originali</div>
+        <div class="card-body">
           <div class="theme-grid">
+
+            <!-- Light -->
             <div class="theme-card selected" id="theme-light" onclick="applyTheme('light', this, '🎨 Chiaro')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#f0ede8,#ffffff)"><div class="theme-preview-bar" style="background:rgba(0,0,0,0.05)"><div class="theme-preview-dot" style="background:#1a1714"></div><div class="theme-preview-dot" style="background:#e8c547"></div><div class="theme-preview-dot" style="background:#22c55e"></div></div></div>
+              <div class="theme-preview" style="background:linear-gradient(135deg,#f0ede8,#ffffff)">
+                <div class="theme-preview-bar" style="background:rgba(0,0,0,0.05)">
+                  <div class="theme-preview-dot" style="background:#1a1714"></div>
+                  <div class="theme-preview-dot" style="background:#e8c547"></div>
+                  <div class="theme-preview-dot" style="background:#22c55e"></div>
+                </div>
+              </div>
               <div class="theme-name" style="background:#fff;color:#111">☀️ Chiaro</div>
               <div class="theme-desc" style="background:#fff;color:#888">Sfondo crema, card bianche</div>
             </div>
+
+            <!-- Dark -->
             <div class="theme-card" id="theme-dark" onclick="applyTheme('dark', this, '🌙 Scuro')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#0d1117,#161b22)"><div class="theme-preview-bar" style="background:rgba(255,255,255,0.05)"><div class="theme-preview-dot" style="background:#58a6ff"></div><div class="theme-preview-dot" style="background:#3fb950"></div><div class="theme-preview-dot" style="background:#f78166"></div></div></div>
+              <div class="theme-preview" style="background:linear-gradient(135deg,#0d1117,#161b22)">
+                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.05)">
+                  <div class="theme-preview-dot" style="background:#e6edf3"></div>
+                  <div class="theme-preview-dot" style="background:#f0b429"></div>
+                  <div class="theme-preview-dot" style="background:#22c55e"></div>
+                </div>
+              </div>
               <div class="theme-name">🌙 Scuro</div>
               <div class="theme-desc">GitHub-style dark</div>
             </div>
+
+            <!-- Night -->
             <div class="theme-card" id="theme-night" onclick="applyTheme('night', this, '🌌 Notte')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#000000,#0a0010)"><div class="theme-preview-bar" style="background:rgba(255,255,255,0.03)"><div class="theme-preview-dot" style="background:#7c3aed"></div><div class="theme-preview-dot" style="background:#a78bfa"></div><div class="theme-preview-dot" style="background:#22c55e"></div></div></div>
+              <div class="theme-preview" style="background:linear-gradient(135deg,#080b10,#0d1117)">
+                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.04)">
+                  <div class="theme-preview-dot" style="background:#e8edf5"></div>
+                  <div class="theme-preview-dot" style="background:#8b5cf6"></div>
+                  <div class="theme-preview-dot" style="background:#22c55e"></div>
+                </div>
+              </div>
               <div class="theme-name">🌌 Notte profonda</div>
               <div class="theme-desc">Nero puro + viola</div>
             </div>
-            <div class="theme-card" id="theme-purple" onclick="applyTheme('purple', this, '💜 Viola')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#1e1040,#2d1b69,#1a0533)"><div class="theme-preview-bar" style="background:rgba(255,255,255,0.04)"><div class="theme-preview-dot" style="background:#a78bfa"></div><div class="theme-preview-dot" style="background:#e8c547"></div><div class="theme-preview-dot" style="background:#34d399"></div></div></div>
+
+            <!-- Purple -->
+            <div class="theme-card" id="theme-purple" onclick="applyTheme('purple', this, '💜 Gradiente Viola')">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#1e1130,#3a2260)">
+                <div class="theme-preview-bar" style="background:rgba(168,85,247,0.1)">
+                  <div class="theme-preview-dot" style="background:#f0e8ff"></div>
+                  <div class="theme-preview-dot" style="background:#e879f9"></div>
+                  <div class="theme-preview-dot" style="background:#22c55e"></div>
+                </div>
+              </div>
               <div class="theme-name">💜 Gradiente Viola</div>
               <div class="theme-desc">Deep purple gradient</div>
             </div>
+
+            <!-- Ocean -->
             <div class="theme-card" id="theme-ocean" onclick="applyTheme('ocean', this, '🌊 Oceano')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#0c1e3a,#0a2a4a,#061828)"><div class="theme-preview-bar" style="background:rgba(255,255,255,0.04)"><div class="theme-preview-dot" style="background:#38bdf8"></div><div class="theme-preview-dot" style="background:#0ea5e9"></div><div class="theme-preview-dot" style="background:#22c55e"></div></div></div>
+              <div class="theme-preview" style="background:linear-gradient(135deg,#0a1628,#1a3060)">
+                <div class="theme-preview-bar" style="background:rgba(56,189,248,0.08)">
+                  <div class="theme-preview-dot" style="background:#e0f4ff"></div>
+                  <div class="theme-preview-dot" style="background:#38bdf8"></div>
+                  <div class="theme-preview-dot" style="background:#22c55e"></div>
+                </div>
+              </div>
               <div class="theme-name">🌊 Oceano</div>
               <div class="theme-desc">Deep blue · cyan</div>
             </div>
+
+            <!-- Rose -->
             <div class="theme-card" id="theme-rose" onclick="applyTheme('rose', this, '🌹 Rosa')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#fff1f3,#ffe4e8)"><div class="theme-preview-bar" style="background:rgba(0,0,0,0.04)"><div class="theme-preview-dot" style="background:#f43f5e"></div><div class="theme-preview-dot" style="background:#e8c547"></div><div class="theme-preview-dot" style="background:#22c55e"></div></div></div>
-              <div class="theme-name" style="background:#fff1f3;color:#111">🌹 Rosa</div>
-              <div class="theme-desc" style="background:#fff1f3;color:#888">Chiaro · rose gold</div>
+              <div class="theme-preview" style="background:linear-gradient(135deg,#fff1f3,#ffe4e8)">
+                <div class="theme-preview-bar" style="background:rgba(244,63,94,0.06)">
+                  <div class="theme-preview-dot" style="background:#1a0a0d"></div>
+                  <div class="theme-preview-dot" style="background:#f43f5e"></div>
+                  <div class="theme-preview-dot" style="background:#22c55e"></div>
+                </div>
+              </div>
+              <div class="theme-name" style="background:#fff5f6;color:#1a0a0d">🌹 Rosa</div>
+              <div class="theme-desc" style="background:#fff5f6;color:#c08090">Chiaro · rose gold</div>
             </div>
+
+            <!-- Call Me River -->
             <div class="theme-card" id="theme-river" onclick="applyTheme('river', this, '🌊 Call Me River')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#050c18,#0a1428,#080c20)"><div class="theme-preview-bar" style="background:rgba(255,255,255,0.03)"><div class="theme-preview-dot" style="background:#6366f1"></div><div class="theme-preview-dot" style="background:#8b5cf6"></div><div class="theme-preview-dot" style="background:#ec4899"></div></div></div>
+              <div class="theme-preview" style="background:linear-gradient(135deg,#05080e,#141c2e)">
+                <div class="theme-preview-bar" style="background:rgba(123,79,255,0.1)">
+                  <div class="theme-preview-dot" style="background:#e8edf5"></div>
+                  <div class="theme-preview-dot" style="background:#7b4fff"></div>
+                  <div class="theme-preview-dot" style="background:#ff3d8b"></div>
+                </div>
+              </div>
               <div class="theme-name">🌊 Call Me River</div>
               <div class="theme-desc">Tema del libro · Pulse night</div>
             </div>
-            <div class="theme-card" id="theme-screenshot" onclick="document.getElementById('screenshotInput').click()" style="grid-column:span 1;">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#1a1714,#2a2520);display:flex;align-items:center;justify-content:center;">
+
+            <!-- Screenshot theme card -->
+            <div class="theme-card" id="theme-screenshot" onclick="document.getElementById('screenshotInput').click()" style="grid-column:span 2;">
+              <div class="theme-preview" style="background:linear-gradient(135deg,#1a1714,#2a2520);display:flex;align-items:center;justify-content:center;gap:8px;">
                 <div style="font-size:1.4rem">📸</div>
+                <div style="color:rgba(255,255,255,0.6);font-size:0.76rem;font-weight:600">Genera tema da screenshot</div>
               </div>
               <div class="theme-name">📸 Da screenshot</div>
-              <div class="theme-desc">AI estrae i colori</div>
+              <div class="theme-desc">Carica un'immagine → l'AI estrae i colori e crea un tema</div>
               <input type="file" id="screenshotInput" accept="image/*" style="display:none" onchange="generateThemeFromScreenshot(this)">
-            </div>
-          </div>
-
-          <!-- NUOVI TEMI ISPIRATI AI TUOI SCREENSHOT -->
-          <div class="theme-section-label">Temi ispirati · nuovi</div>
-          <div class="theme-grid" style="grid-template-columns:repeat(4,1fr);">
-
-            <!-- Mistico (Tarot/Pianeti) -->
-            <div class="theme-card" id="theme-mystic" onclick="applyTheme('mystic', this, '🔮 Mistico')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#0d0618,#1a0a2e,#0a0d1a)">
-                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.03)">
-                  <div class="theme-preview-dot" style="background:#c084fc"></div>
-                  <div class="theme-preview-dot" style="background:#d4a853"></div>
-                  <div class="theme-preview-dot" style="background:#e879f9"></div>
-                </div>
-                <div style="display:flex;gap:2px;margin-top:4px;">
-                  <div style="width:8px;height:8px;border-radius:50%;background:rgba(192,132,252,0.4);"></div>
-                  <div style="width:6px;height:6px;border-radius:50%;background:rgba(212,168,83,0.5);margin-top:1px;"></div>
-                  <div style="width:10px;height:10px;border-radius:50%;background:rgba(139,92,246,0.3);"></div>
-                </div>
-              </div>
-              <div class="theme-name">🔮 Mistico</div>
-              <div class="theme-desc">Viola profondo · oro · pianeti</div>
-            </div>
-
-            <!-- Video Editor (dark total) -->
-            <div class="theme-card" id="theme-studio" onclick="applyTheme('studio', this, '🎬 Studio')">
-              <div class="theme-preview" style="background:#000000;">
-                <div class="theme-preview-bar" style="background:#111111;">
-                  <div class="theme-preview-dot" style="background:#a855f7"></div>
-                  <div class="theme-preview-dot" style="background:#ec4899"></div>
-                  <div class="theme-preview-dot" style="background:#06b6d4"></div>
-                </div>
-                <div style="height:6px;background:linear-gradient(90deg,#a855f7,#ec4899);border-radius:2px;margin-top:4px;width:70%;"></div>
-              </div>
-              <div class="theme-name">🎬 Studio</div>
-              <div class="theme-desc">Nero totale · viola · pink</div>
-            </div>
-
-            <!-- Health/ECG -->
-            <div class="theme-card" id="theme-health" onclick="applyTheme('health', this, '❤️ Health')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#05051a,#0a0a2e,#050520)">
-                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.03)">
-                  <div class="theme-preview-dot" style="background:#3b82f6"></div>
-                  <div class="theme-preview-dot" style="background:#ec4899"></div>
-                  <div class="theme-preview-dot" style="background:#06b6d4"></div>
-                </div>
-                <svg viewBox="0 0 60 12" style="width:100%;margin-top:3px;">
-                  <path d="M0,6 L10,6 L14,2 L17,10 L20,6 L30,6 L34,2 L37,10 L40,6 L60,6" fill="none" stroke="#3b82f6" stroke-width="1.2"/>
-                </svg>
-              </div>
-              <div class="theme-name">❤️ Health</div>
-              <div class="theme-desc">Blu notte · ECG · medicale</div>
-            </div>
-
-            <!-- Luxury Cream -->
-            <div class="theme-card" id="theme-luxury" onclick="applyTheme('luxury', this, '✨ Luxury')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#f5e6c8,#faf0dc,#f0ddb0)">
-                <div class="theme-preview-bar" style="background:rgba(0,0,0,0.04)">
-                  <div class="theme-preview-dot" style="background:#1a1210"></div>
-                  <div class="theme-preview-dot" style="background:#b8960c"></div>
-                  <div class="theme-preview-dot" style="background:#8b6914"></div>
-                </div>
-              </div>
-              <div class="theme-name" style="background:#faf0dc;color:#1a1210;">✨ Luxury</div>
-              <div class="theme-desc" style="background:#faf0dc;color:#8b6914;">Crema dorato · serif</div>
-            </div>
-
-            <!-- Finance Dark Orange -->
-            <div class="theme-card" id="theme-finance" onclick="applyTheme('finance', this, '💳 Finance')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#0a0a0a,#1a1010)">
-                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.04)">
-                  <div class="theme-preview-dot" style="background:#f97316"></div>
-                  <div class="theme-preview-dot" style="background:#ea580c"></div>
-                  <div class="theme-preview-dot" style="background:#22c55e"></div>
-                </div>
-                <div style="height:5px;background:linear-gradient(90deg,#f97316,#ea580c);border-radius:2px;margin-top:4px;width:60%;"></div>
-              </div>
-              <div class="theme-name">💳 Finance</div>
-              <div class="theme-desc">Nero · arancione acceso</div>
-            </div>
-
-            <!-- Crypto Trading -->
-            <div class="theme-card" id="theme-crypto" onclick="applyTheme('crypto', this, '📈 Crypto')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#0f0a1e,#1a0f35,#0a0f1e)">
-                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.03)">
-                  <div class="theme-preview-dot" style="background:#00ff88"></div>
-                  <div class="theme-preview-dot" style="background:#d4a853"></div>
-                  <div class="theme-preview-dot" style="background:#f97316"></div>
-                </div>
-                <svg viewBox="0 0 60 12" style="width:100%;margin-top:3px;">
-                  <path d="M0,10 C10,9 15,7 20,8 C25,9 28,4 32,3 C36,2 40,5 45,4 C50,3 55,2 60,1" fill="none" stroke="#00ff88" stroke-width="1.2"/>
-                </svg>
-              </div>
-              <div class="theme-name">📈 Crypto</div>
-              <div class="theme-desc">Dark purple · verde neon</div>
-            </div>
-
-            <!-- Fintech Blue -->
-            <div class="theme-card" id="theme-fintech" onclick="applyTheme('fintech', this, '⚡ Fintech')">
-              <div class="theme-preview" style="background:linear-gradient(135deg,#050a14,#071020,#030810)">
-                <div class="theme-preview-bar" style="background:rgba(255,255,255,0.03)">
-                  <div class="theme-preview-dot" style="background:#2563eb"></div>
-                  <div class="theme-preview-dot" style="background:#3b82f6"></div>
-                  <div class="theme-preview-dot" style="background:#60a5fa"></div>
-                </div>
-                <div style="height:5px;background:linear-gradient(90deg,#2563eb,#60a5fa);border-radius:20px;margin-top:4px;width:80%;"></div>
-              </div>
-              <div class="theme-name">⚡ Fintech</div>
-              <div class="theme-desc">Nero · blu elettrico</div>
-            </div>
-
-            <!-- Neon Matrix -->
-            <div class="theme-card" id="theme-matrix" onclick="applyTheme('matrix', this, '💻 Matrix')">
-              <div class="theme-preview" style="background:#000800">
-                <div class="theme-preview-bar" style="background:#001000">
-                  <div class="theme-preview-dot" style="background:#00ff41"></div>
-                  <div class="theme-preview-dot" style="background:#00cc33"></div>
-                  <div class="theme-preview-dot" style="background:#009922"></div>
-                </div>
-                <div style="font-family:monospace;font-size:5px;color:#00ff41;opacity:0.6;margin-top:3px;letter-spacing:1px;">01 10 11 00 10</div>
-              </div>
-              <div class="theme-name">💻 Matrix</div>
-              <div class="theme-desc">Verde neon · hacker vibe</div>
             </div>
 
           </div>
@@ -1477,86 +1372,106 @@ html, body {
         </div>
       </div>
 
-      <!-- ACCORDION: FONT & SPAZIATURA -->
-      <div class="accordion" id="acc-font">
-        <div class="accordion-hdr" onclick="toggleAccordion('acc-font')">
-          <div class="accordion-title">📏 Font & Spaziatura</div>
-          <div class="accordion-arrow" id="arr-acc-font">▼</div>
-        </div>
-        <div class="accordion-body" id="body-acc-font">
-          <div class="settings-grid" style="margin-top:16px;">
-            <div>
-              <div style="font-size:0.78rem;font-weight:600;margin-bottom:12px;">Dimensione testo</div>
-              <div class="font-control">
-                <div><div class="fc-label">Testo principale</div><div class="fc-desc">Dimensione base di tutti i testi</div></div>
-                <div class="fc-buttons">
-                  <button class="fc-btn" onclick="changeFontSize(-1)">A−</button>
-                  <div class="fc-val" id="fontSizeDisplay">14px</div>
-                  <button class="fc-btn" onclick="changeFontSize(1)">A+</button>
-                </div>
+      <!-- FONT + SPACING -->
+      <div class="settings-grid">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">📏 Dimensione testo</div></div>
+          <div class="card-body">
+            <div class="font-control">
+              <div><div class="fc-label">Testo principale</div><div class="fc-desc">Dimensione base di tutti i testi</div></div>
+              <div class="fc-buttons">
+                <button class="fc-btn" onclick="changeFontSize(-1)">A−</button>
+                <div class="fc-val" id="fontSizeDisplay">14px</div>
+                <button class="fc-btn" onclick="changeFontSize(1)">A+</button>
               </div>
-              <input type="range" class="fc-slider" min="11" max="20" value="14" id="fontSlider" oninput="setFontSize(this.value)" style="width:100%;margin-top:8px">
-              <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:4px"><span>Piccolo</span><span>Grande</span></div>
             </div>
-            <div>
-              <div style="font-size:0.78rem;font-weight:600;margin-bottom:12px;">Spaziatura layout</div>
-              <div class="spacing-preview">
-                <div class="sp-card sel" onclick="setSpacing('compact',this)" id="sp-compact">
-                  <div class="sp-preview" style="width:40px;height:24px;"></div>
-                  <div class="sp-name">Compatto</div>
-                  <div class="sp-desc">più info, meno spazio</div>
-                </div>
-                <div class="sp-card" onclick="setSpacing('normal',this)" id="sp-normal">
-                  <div class="sp-preview" style="width:40px;height:30px;"></div>
-                  <div class="sp-name">Normale</div>
-                  <div class="sp-desc">bilanciato</div>
-                </div>
-                <div class="sp-card" onclick="setSpacing('wide',this)" id="sp-wide">
-                  <div class="sp-preview" style="width:40px;height:38px;"></div>
-                  <div class="sp-name">Ampio</div>
-                  <div class="sp-desc">più respiro</div>
-                </div>
+            <input type="range" class="fc-slider" min="11" max="20" value="14" id="fontSlider" oninput="setFontSize(this.value)" style="width:100%;margin-top:8px">
+            <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:4px"><span>Piccolo</span><span>Grande</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">📐 Spaziatura layout</div></div>
+          <div class="card-body">
+            <div style="font-size:0.78rem;color:var(--dim);margin-bottom:12px">Quanto spazio tra le card e gli elementi</div>
+            <div class="spacing-preview">
+              <div class="sp-card sel" onclick="setSpacing('compact',this)" id="sp-compact">
+                <div class="sp-preview" style="width:40px;height:24px;"></div>
+                <div class="sp-name">Compatto</div>
+                <div class="sp-desc">più info, meno spazio</div>
+              </div>
+              <div class="sp-card" onclick="setSpacing('normal',this)" id="sp-normal">
+                <div class="sp-preview" style="width:40px;height:30px;"></div>
+                <div class="sp-name">Normale</div>
+                <div class="sp-desc">bilanciato</div>
+              </div>
+              <div class="sp-card" onclick="setSpacing('relaxed',this)" id="sp-relaxed">
+                <div class="sp-preview" style="width:40px;height:38px;"></div>
+                <div class="sp-name">Ampio</div>
+                <div class="sp-desc">più respiro</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ACCORDION: LAYOUT -->
-      <div class="accordion" id="acc-layout">
-        <div class="accordion-hdr" onclick="toggleAccordion('acc-layout')">
-          <div class="accordion-title">🖥️ Layout Dashboard</div>
-          <div class="accordion-arrow" id="arr-acc-layout">▼</div>
-        </div>
-        <div class="accordion-body" id="body-acc-layout">
-          <div style="font-size:0.78rem;color:var(--dim);margin:14px 0 14px;">Scegli come vuoi che appaia la tua dashboard principale</div>
-          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;" id="layoutGrid">
-            <div class="layout-opt sel" id="lo-1" onclick="selectLayout(1,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="display:flex;gap:3px;margin-bottom:4px;"><div style="width:30%;height:28px;background:var(--bg4);border-radius:2px;"></div><div style="flex:1;height:28px;background:var(--bg4);border-radius:2px;"></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;"><div style="height:12px;background:var(--dark);border-radius:2px;opacity:0.7;"></div><div style="height:12px;background:var(--accent);border-radius:2px;opacity:0.7;"></div><div style="height:12px;background:var(--bg4);border-radius:2px;"></div></div></div><div class="lo-name">Classic</div><div class="lo-desc">Sidebar + cards in alto</div></div>
-            <div class="layout-opt" id="lo-2" onclick="selectLayout(2,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:2px;margin-bottom:4px;"><div style="height:16px;background:var(--dark);border-radius:2px;opacity:0.7;"></div><div style="height:16px;background:var(--accent);border-radius:2px;opacity:0.7;"></div><div style="height:16px;background:var(--bg4);border-radius:2px;"></div><div style="height:16px;background:var(--bg4);border-radius:2px;"></div></div><div style="height:18px;background:var(--bg4);border-radius:2px;"></div></div><div class="lo-name">Wide</div><div class="lo-desc">Niente sidebar, più spazio</div></div>
-            <div class="layout-opt" id="lo-3" onclick="selectLayout(3,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="height:32px;background:var(--dark);border-radius:2px;margin-bottom:4px;opacity:0.8;"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;"><div style="height:10px;background:var(--bg4);border-radius:2px;"></div><div style="height:10px;background:var(--bg4);border-radius:2px;"></div></div></div><div class="lo-name">Focus</div><div class="lo-desc">Director in primo piano</div></div>
-            <div class="layout-opt" id="lo-4" onclick="selectLayout(4,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:2px;"><div style="height:16px;background:var(--bg4);border-radius:2px;"></div><div style="height:16px;background:var(--dark);border-radius:2px;opacity:0.7;"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;"><div style="height:16px;background:var(--accent);border-radius:2px;opacity:0.6;"></div><div style="height:16px;background:var(--bg4);border-radius:2px;"></div></div></div><div class="lo-name">Grid 2×2</div><div class="lo-desc">Card tutte uguali</div></div>
-            <div class="layout-opt" id="lo-5" onclick="selectLayout(5,this)"><div class="lo-preview"><div style="height:6px;background:var(--dark);border-radius:2px;margin-bottom:3px;"></div><div style="display:flex;gap:2px;margin-bottom:2px;"><div style="height:8px;width:30%;background:var(--dark);border-radius:1px;opacity:0.8;"></div><div style="height:8px;width:28%;background:var(--accent);border-radius:1px;opacity:0.7;"></div><div style="height:8px;width:28%;background:var(--bg4);border-radius:1px;"></div></div><div style="height:20px;background:var(--bg4);border-radius:2px;margin-bottom:2px;"></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;"><div style="height:8px;background:var(--bg3);border-radius:1px;"></div><div style="height:8px;background:var(--bg3);border-radius:1px;"></div><div style="height:8px;background:var(--bg3);border-radius:1px;"></div></div></div><div class="lo-name">Compact</div><div class="lo-desc">Massima densità info</div></div>
-            <div class="layout-opt" id="lo-6" onclick="selectLayout(6,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="display:flex;gap:3px;"><div style="flex:2;height:34px;background:var(--dark);border-radius:2px;opacity:0.8;"></div><div style="flex:1;display:flex;flex-direction:column;gap:2px;"><div style="height:16px;background:var(--bg4);border-radius:2px;"></div><div style="height:16px;background:var(--accent);border-radius:2px;opacity:0.6;"></div></div></div></div><div class="lo-name">Magazine</div><div class="lo-desc">Hero + colonna laterale</div></div>
-            <div class="layout-opt" id="lo-7" onclick="selectLayout(7,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:4px;"><div style="height:20px;background:var(--dark);border-radius:2px;opacity:0.8;"></div><div style="height:20px;background:var(--accent);border-radius:2px;opacity:0.7;"></div><div style="height:20px;background:var(--bg4);border-radius:2px;"></div><div style="height:20px;background:var(--bg4);border-radius:2px;"></div></div><div style="height:12px;background:var(--bg4);border-radius:2px;"></div></div><div class="lo-name">Stats First</div><div class="lo-desc">4 KPI grandi in cima</div></div>
-            <div class="layout-opt" id="lo-8" onclick="selectLayout(8,this)"><div class="lo-preview"><div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div><div style="display:flex;gap:3px;"><div style="flex:1;display:flex;flex-direction:column;gap:2px;"><div style="height:8px;background:var(--bg4);border-radius:2px;"></div><div style="height:8px;background:var(--bg4);border-radius:2px;"></div><div style="height:8px;background:var(--bg4);border-radius:2px;"></div><div style="height:8px;background:var(--bg4);border-radius:2px;"></div></div><div style="flex:2;height:36px;background:var(--bg4);border-radius:2px;"></div></div></div><div class="lo-name">Pipeline</div><div class="lo-desc">Workflow e log al centro</div></div>
-            <div class="layout-opt" id="lo-9" onclick="selectLayout(9,this)"><div class="lo-preview" style="background:#1a1714;"><div style="height:8px;background:#2a2520;border-radius:2px;margin-bottom:4px;"></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-bottom:4px;"><div style="height:14px;background:rgba(232,197,71,0.4);border-radius:2px;"></div><div style="height:14px;background:rgba(255,255,255,0.1);border-radius:2px;"></div><div style="height:14px;background:rgba(34,197,94,0.3);border-radius:2px;"></div></div><div style="height:12px;background:rgba(255,255,255,0.05);border-radius:2px;"></div></div><div class="lo-name">Dark Pro</div><div class="lo-desc">Tutto scuro, accenti gold</div></div>
-            <div class="layout-opt" id="lo-10" onclick="selectLayout(10,this)"><div class="lo-preview"><div style="height:4px;background:var(--dark);border-radius:2px;margin-bottom:6px;width:40%;"></div><div style="height:22px;background:var(--bg4);border-radius:2px;margin-bottom:4px;width:80%;"></div><div style="height:8px;background:var(--bg3);border-radius:2px;width:60%;margin-bottom:2px;"></div><div style="height:8px;background:var(--bg3);border-radius:2px;width:70%;"></div></div><div class="lo-name">Minimal</div><div class="lo-desc">Solo l'essenziale</div></div>
+      <!-- AGENTE GRAFICO + FIXER -->
+      <div class="settings-grid">
+
+        <!-- Agente Grafico -->
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🎨 Agente Grafico AI</div><span class="card-tag live">attivo</span></div>
+          <div class="card-body">
+            <div style="font-size:0.78rem;color:var(--dim);margin-bottom:14px;line-height:1.6">Genera nuovi temi basandosi sul mood del libro corrente o su una tua descrizione.</div>
+            <textarea class="drawer-textarea" id="themePrompt" rows="2" placeholder="Es: 'tema cyberpunk neon verde', 'colori del tramonto', 'freddo e minimalista'..." style="width:100%;margin-bottom:10px"></textarea>
+            <div style="display:flex;gap:8px">
+              <button class="drawer-btn db-dark" style="flex:2" onclick="generateThemeFromPrompt()">🎨 Genera tema AI</button>
+              <button class="drawer-btn db-light" style="flex:1" onclick="generateThemeFromBook()">📖 Da CMR</button>
+            </div>
+            <div id="promptThemeResult" style="display:none;margin-top:12px;background:var(--bg3);border-radius:var(--radius-sm);padding:12px;border:1px solid var(--border)">
+              <div style="font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--green);margin-bottom:8px">✓ TEMA GENERATO</div>
+              <div class="gtp-colors" id="promptColors"></div>
+              <button class="drawer-btn db-accent" style="margin-top:10px;width:100%" onclick="applyPromptTheme()">✓ Applica</button>
+            </div>
           </div>
-          <div style="margin-top:14px;padding:12px;background:var(--bg3);border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);">
-            Layout selezionato: <span id="currentLayoutName" style="color:var(--text);font-weight:600;">Classic attivo</span>
+        </div>
+
+        <!-- Agente Fixer -->
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🔧 Agente Fixer</div><span class="card-tag" style="background:rgba(249,115,22,0.1);color:var(--orange)">2 problemi</span></div>
+          <div class="card-body">
+            <div style="font-size:0.78rem;color:var(--dim);margin-bottom:12px">Analizza l'interfaccia e sistema automaticamente problemi di layout, testo e proporzioni.</div>
+            <div class="fixer-item">
+              <div class="fixer-ico" style="background:rgba(249,115,22,0.1)">📐</div>
+              <div class="fixer-info">
+                <div class="fixer-title">Sidebar troppo stretta su schermi &lt; 1280px</div>
+                <div class="fixer-desc">Su alcuni laptop la sidebar comprime il contenuto</div>
+              </div>
+              <button class="fixer-action fix" onclick="fixItem(this,'sidebar')">✓ Fixa</button>
+            </div>
+            <div class="fixer-item">
+              <div class="fixer-ico" style="background:rgba(249,115,22,0.1)">🔤</div>
+              <div class="fixer-info">
+                <div class="fixer-title">Testo DM Mono troppo piccolo su retina</div>
+                <div class="fixer-desc">0.5rem è illeggibile su display ad alta densità</div>
+              </div>
+              <button class="fixer-action fix" onclick="fixItem(this,'font')">✓ Fixa</button>
+            </div>
+            <div class="fixer-item">
+              <div class="fixer-ico" style="background:rgba(34,197,94,0.1)">✓</div>
+              <div class="fixer-info">
+                <div class="fixer-title">Layout griglia dashboard</div>
+                <div class="fixer-desc">Tutto ok · proporzioni corrette</div>
+              </div>
+              <button class="fixer-action" style="color:var(--green);background:rgba(34,197,94,0.08)" disabled>ok</button>
+            </div>
+            <button class="drawer-btn db-light" style="width:100%;margin-top:10px" onclick="runFixer()">🔍 Scansiona di nuovo</button>
           </div>
         </div>
       </div>
 
-      <!-- ACCORDION: OPZIONI -->
-      <div class="accordion" id="acc-opts">
-        <div class="accordion-hdr" onclick="toggleAccordion('acc-opts')">
-          <div class="accordion-title">🔧 Opzioni & Comportamento</div>
-          <div class="accordion-arrow" id="arr-acc-opts">▼</div>
-        </div>
-        <div class="accordion-body" id="body-acc-opts">
-
-          <div class="card">
+      <!-- TOGGLES -->
+      <div class="card">
         <div class="card-hdr"><div class="card-title">⚙️ Preferenze interfaccia</div></div>
         <div class="card-body">
           <div class="toggle-row"><div><div class="toggle-label">Animazioni</div><div class="toggle-desc">Transizioni fluide tra pagine e card</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
@@ -1564,197 +1479,131 @@ html, body {
           <div class="toggle-row"><div><div class="toggle-label">Log in tempo reale</div><div class="toggle-desc">Aggiornamenti automatici nel log di sistema</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
           <div class="toggle-row"><div><div class="toggle-label">Notifiche desktop</div><div class="toggle-desc">Avvisi quando gli agenti completano task</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
           <div class="toggle-row"><div><div class="toggle-label">Tema segue il libro</div><div class="toggle-desc">Cambia automaticamente tema in base all'universe attivo</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-        </div>
-      </div>
-
-
-      <!-- LAYOUT SECTION -->
-      <div class="card">
-        <div class="card-hdr">
-          <div class="card-title">🖥️ Layout Dashboard</div>
-          <span class="card-tag">10 stili</span>
-        </div>
-        <div class="card-body">
-          <div style="font-size:0.78rem;color:var(--dim);margin-bottom:14px;">Scegli come vuoi che appaia la tua dashboard principale</div>
-          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;" id="layoutGrid">
-
-            <!-- Layout 1: Classic (attuale) -->
-            <div class="layout-opt sel" id="lo-1" onclick="selectLayout(1,this)">
-              <div class="lo-preview">
-                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
-                <div style="display:flex;gap:3px;margin-bottom:4px;">
-                  <div style="width:30%;height:28px;background:var(--bg4);border-radius:2px;"></div>
-                  <div style="flex:1;height:28px;background:var(--bg4);border-radius:2px;"></div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;">
-                  <div style="height:12px;background:var(--dark);border-radius:2px;opacity:0.7;"></div>
-                  <div style="height:12px;background:var(--accent);border-radius:2px;opacity:0.7;"></div>
-                  <div style="height:12px;background:var(--bg4);border-radius:2px;"></div>
-                </div>
-              </div>
-              <div class="lo-name">Classic</div>
-              <div class="lo-desc">Sidebar + cards in alto</div>
+          <div class="toggle-row" style="background:rgba(59,130,246,0.05);border-radius:10px;padding:11px 13px;margin-top:5px;border:1px solid rgba(59,130,246,0.2)">
+            <div>
+              <div class="toggle-label" style="color:var(--blue)">🌦️ Tema Auto (Meteo)</div>
+              <div class="toggle-desc">Il tema cambia da solo in base al meteo e all'orario</div>
             </div>
-
-            <!-- Layout 2: Wide — no sidebar, tutto in larghezza -->
-            <div class="layout-opt" id="lo-2" onclick="selectLayout(2,this)">
-              <div class="lo-preview">
-                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:2px;margin-bottom:4px;">
-                  <div style="height:16px;background:var(--dark);border-radius:2px;opacity:0.7;"></div>
-                  <div style="height:16px;background:var(--accent);border-radius:2px;opacity:0.7;"></div>
-                  <div style="height:16px;background:var(--bg4);border-radius:2px;"></div>
-                  <div style="height:16px;background:var(--bg4);border-radius:2px;"></div>
-                </div>
-                <div style="height:18px;background:var(--bg4);border-radius:2px;"></div>
-              </div>
-              <div class="lo-name">Wide</div>
-              <div class="lo-desc">Niente sidebar, più spazio</div>
-            </div>
-
-            <!-- Layout 3: Focus — 1 card grande al centro -->
-            <div class="layout-opt" id="lo-3" onclick="selectLayout(3,this)">
-              <div class="lo-preview">
-                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
-                <div style="height:32px;background:var(--dark);border-radius:2px;margin-bottom:4px;opacity:0.8;"></div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
-                  <div style="height:10px;background:var(--bg4);border-radius:2px;"></div>
-                  <div style="height:10px;background:var(--bg4);border-radius:2px;"></div>
-                </div>
-              </div>
-              <div class="lo-name">Focus</div>
-              <div class="lo-desc">Director in primo piano</div>
-            </div>
-
-            <!-- Layout 4: Grid — tutto a griglia uguale -->
-            <div class="layout-opt" id="lo-4" onclick="selectLayout(4,this)">
-              <div class="lo-preview">
-                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:2px;">
-                  <div style="height:16px;background:var(--bg4);border-radius:2px;"></div>
-                  <div style="height:16px;background:var(--dark);border-radius:2px;opacity:0.7;"></div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
-                  <div style="height:16px;background:var(--accent);border-radius:2px;opacity:0.6;"></div>
-                  <div style="height:16px;background:var(--bg4);border-radius:2px;"></div>
-                </div>
-              </div>
-              <div class="lo-name">Grid 2×2</div>
-              <div class="lo-desc">Card tutte uguali</div>
-            </div>
-
-            <!-- Layout 5: Compact — più info, meno spazio -->
-            <div class="layout-opt" id="lo-5" onclick="selectLayout(5,this)">
-              <div class="lo-preview">
-                <div style="height:6px;background:var(--dark);border-radius:2px;margin-bottom:3px;"></div>
-                <div style="display:flex;gap:2px;margin-bottom:2px;flex-wrap:wrap;">
-                  <div style="height:8px;width:30%;background:var(--dark);border-radius:1px;opacity:0.8;"></div>
-                  <div style="height:8px;width:28%;background:var(--accent);border-radius:1px;opacity:0.7;"></div>
-                  <div style="height:8px;width:28%;background:var(--bg4);border-radius:1px;"></div>
-                </div>
-                <div style="height:20px;background:var(--bg4);border-radius:2px;margin-bottom:2px;"></div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;">
-                  <div style="height:8px;background:var(--bg3);border-radius:1px;"></div>
-                  <div style="height:8px;background:var(--bg3);border-radius:1px;"></div>
-                  <div style="height:8px;background:var(--bg3);border-radius:1px;"></div>
-                </div>
-              </div>
-              <div class="lo-name">Compact</div>
-              <div class="lo-desc">Massima densità info</div>
-            </div>
-
-            <!-- Layout 6: Magazine — stile editoriale -->
-            <div class="layout-opt" id="lo-6" onclick="selectLayout(6,this)">
-              <div class="lo-preview">
-                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
-                <div style="display:flex;gap:3px;">
-                  <div style="flex:2;height:34px;background:var(--dark);border-radius:2px;opacity:0.8;"></div>
-                  <div style="flex:1;display:flex;flex-direction:column;gap:2px;">
-                    <div style="height:16px;background:var(--bg4);border-radius:2px;"></div>
-                    <div style="height:16px;background:var(--accent);border-radius:2px;opacity:0.6;"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="lo-name">Magazine</div>
-              <div class="lo-desc">Hero + colonna laterale</div>
-            </div>
-
-            <!-- Layout 7: Stats First — numeri in primo piano -->
-            <div class="layout-opt" id="lo-7" onclick="selectLayout(7,this)">
-              <div class="lo-preview">
-                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
-                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:4px;">
-                  <div style="height:20px;background:var(--dark);border-radius:2px;opacity:0.8;"></div>
-                  <div style="height:20px;background:var(--accent);border-radius:2px;opacity:0.7;"></div>
-                  <div style="height:20px;background:var(--bg4);border-radius:2px;"></div>
-                  <div style="height:20px;background:var(--bg4);border-radius:2px;"></div>
-                </div>
-                <div style="height:12px;background:var(--bg4);border-radius:2px;"></div>
-              </div>
-              <div class="lo-name">Stats First</div>
-              <div class="lo-desc">4 KPI grandi in cima</div>
-            </div>
-
-            <!-- Layout 8: Pipeline — workflow verticale -->
-            <div class="layout-opt" id="lo-8" onclick="selectLayout(8,this)">
-              <div class="lo-preview">
-                <div style="height:8px;background:var(--dark);border-radius:2px;margin-bottom:4px;"></div>
-                <div style="display:flex;gap:3px;">
-                  <div style="flex:1;display:flex;flex-direction:column;gap:2px;">
-                    <div style="height:8px;background:var(--bg4);border-radius:2px;"></div>
-                    <div style="height:8px;background:var(--bg4);border-radius:2px;"></div>
-                    <div style="height:8px;background:var(--bg4);border-radius:2px;"></div>
-                    <div style="height:8px;background:var(--bg4);border-radius:2px;"></div>
-                  </div>
-                  <div style="flex:2;height:36px;background:var(--bg4);border-radius:2px;"></div>
-                </div>
-              </div>
-              <div class="lo-name">Pipeline</div>
-              <div class="lo-desc">Workflow e log al centro</div>
-            </div>
-
-            <!-- Layout 9: Dark Pro -->
-            <div class="layout-opt" id="lo-9" onclick="selectLayout(9,this)">
-              <div class="lo-preview" style="background:#1a1714;">
-                <div style="height:8px;background:#2a2520;border-radius:2px;margin-bottom:4px;"></div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-bottom:4px;">
-                  <div style="height:14px;background:rgba(232,197,71,0.4);border-radius:2px;"></div>
-                  <div style="height:14px;background:rgba(255,255,255,0.1);border-radius:2px;"></div>
-                  <div style="height:14px;background:rgba(34,197,94,0.3);border-radius:2px;"></div>
-                </div>
-                <div style="height:12px;background:rgba(255,255,255,0.05);border-radius:2px;"></div>
-              </div>
-              <div class="lo-name">Dark Pro</div>
-              <div class="lo-desc">Tutto scuro, accenti gold</div>
-            </div>
-
-            <!-- Layout 10: Minimal — solo essenziale -->
-            <div class="layout-opt" id="lo-10" onclick="selectLayout(10,this)">
-              <div class="lo-preview">
-                <div style="height:4px;background:var(--dark);border-radius:2px;margin-bottom:6px;width:40%;"></div>
-                <div style="height:22px;background:var(--bg4);border-radius:2px;margin-bottom:4px;width:80%;"></div>
-                <div style="height:8px;background:var(--bg3);border-radius:2px;width:60%;margin-bottom:2px;"></div>
-                <div style="height:8px;background:var(--bg3);border-radius:2px;width:70%;"></div>
-              </div>
-              <div class="lo-name">Minimal</div>
-              <div class="lo-desc">Solo l'essenziale, niente rumore</div>
-            </div>
-
+            <div class="toggle" id="autoThemeToggle" onclick="toggleAutoTheme(this)"></div>
           </div>
-
-          <div style="margin-top:14px;padding:12px;background:var(--bg3);border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);">
-            ℹ️ Il layout selezionato si applica alla dashboard principale. Temi e colori rimangono invariati. <span id="currentLayoutName" style="color:var(--text);font-weight:600;">Classic attivo</span>
+          <div class="toggle-row" style="background:rgba(232,197,71,0.05);border-radius:10px;padding:11px 13px;margin-top:5px;border:1px solid rgba(232,197,71,0.2)">
+            <div>
+              <div class="toggle-label" style="color:var(--accent2)">🚀 Modalità Simulazione</div>
+              <div class="toggle-desc">Usa risposte predefinite quando i token API sono finiti</div>
+            </div>
+            <div class="toggle" id="offlineToggle" onclick="toggleOfflineMode(this)"></div>
           </div>
         </div>
       </div>
 
-        </div>
-      </div>
-
-            <!-- RESET -->
+      <!-- RESET -->
       <div style="display:flex;gap:10px">
         <button class="drawer-btn db-dark" style="flex:1" onclick="showToast('✓ Impostazioni salvate!')">💾 Salva impostazioni</button>
         <button class="drawer-btn db-light" style="flex:1" onclick="resetSettings()">↩ Ripristina default</button>
+      </div>
+
+      <!-- ===== API KEYS ===== -->
+      <div class="card" style="margin-top:16px;">
+        <div class="card-hdr"><div class="card-title">🔑 API Keys</div><span class="card-tag" id="apiKeysBadge">gestisci</span></div>
+        <div class="card-body">
+          <div style="font-size:0.78rem;color:var(--dim);margin-bottom:14px;line-height:1.6">Inserisci le tue chiavi API per attivare gli agenti con risposte reali. Le chiavi sono salvate solo localmente nel tuo browser, mai nel codice sorgente.</div>
+
+          <!-- Gemini API Key -->
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:1rem;">✨</span>
+              <span style="font-size:0.82rem;font-weight:700;">Google Gemini API</span>
+              <span id="geminiKeyStatus" style="font-family:'DM Mono',monospace;font-size:0.52rem;padding:3px 9px;border-radius:20px;margin-left:auto;"></span>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <input type="password" class="drawer-textarea" id="geminiKeyInput" placeholder="Incolla la tua Gemini API Key..." style="flex:1;padding:10px 13px;border-radius:10px;font-size:0.78rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;">
+              <button onclick="saveApiKey('gemini')" style="padding:8px 14px;background:var(--dark);color:#fff;border:none;border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;cursor:pointer;font-weight:600;">💾 Salva</button>
+              <button onclick="deleteApiKey('gemini')" style="padding:8px 14px;background:rgba(239,68,68,0.08);color:var(--red);border:1px solid rgba(239,68,68,0.2);border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;cursor:pointer;">🗑️</button>
+            </div>
+          </div>
+
+          <!-- Claude API Key -->
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:1rem;">🤖</span>
+              <span style="font-size:0.82rem;font-weight:700;">Anthropic Claude API</span>
+              <span id="claudeKeyStatus" style="font-family:'DM Mono',monospace;font-size:0.52rem;padding:3px 9px;border-radius:20px;margin-left:auto;"></span>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <input type="password" class="drawer-textarea" id="claudeKeyInput" placeholder="Incolla la tua Claude API Key..." style="flex:1;padding:10px 13px;border-radius:10px;font-size:0.78rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;">
+              <button onclick="saveApiKey('claude')" style="padding:8px 14px;background:var(--dark);color:#fff;border:none;border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;cursor:pointer;font-weight:600;">💾 Salva</button>
+              <button onclick="deleteApiKey('claude')" style="padding:8px 14px;background:rgba(239,68,68,0.08);color:var(--red);border:1px solid rgba(239,68,68,0.2);border-radius:10px;font-family:'DM Mono',monospace;font-size:0.58rem;cursor:pointer;">🗑️</button>
+            </div>
+          </div>
+
+          <div style="font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:12px;line-height:1.6;">⚠️ Le chiavi non vengono mai inviate a terze parti · sono usate solo per chiamate dirette alle API · puoi eliminarle in qualsiasi momento</div>
+        </div>
+      </div>
+
+      <!-- ===== SOCIAL LINKS ===== -->
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">📱 Social Collegati</div><span class="card-tag" id="socialBadge">0 collegati</span></div>
+        <div class="card-body">
+          <div style="font-size:0.78rem;color:var(--dim);margin-bottom:14px;line-height:1.6">Collega i tuoi profili social perché gli agenti possano usarli per distribuire contenuti, analizzare hype e pianificare post.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(255,0,80,0.08);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;">🎵</div>
+              <input class="drawer-textarea" id="socialTiktok" placeholder="@username TikTok" onchange="saveSocialLinks()" style="flex:1;padding:8px 11px;border-radius:9px;font-size:0.76rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;">
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(225,48,108,0.08);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;">📸</div>
+              <input class="drawer-textarea" id="socialInstagram" placeholder="@username Instagram" onchange="saveSocialLinks()" style="flex:1;padding:8px 11px;border-radius:9px;font-size:0.76rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;">
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(255,0,0,0.08);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;">▶️</div>
+              <input class="drawer-textarea" id="socialYoutube" placeholder="Canale YouTube" onchange="saveSocialLinks()" style="flex:1;padding:8px 11px;border-radius:9px;font-size:0.76rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;">
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(29,161,242,0.08);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;">𝕏</div>
+              <input class="drawer-textarea" id="socialTwitter" placeholder="@handle Twitter/X" onchange="saveSocialLinks()" style="flex:1;padding:8px 11px;border-radius:9px;font-size:0.76rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;">
+            </div>
+          </div>
+          <button onclick="saveSocialLinks()" style="margin-top:12px;width:100%;padding:10px;background:var(--dark);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">💾 Salva social links</button>
+        </div>
+      </div>
+
+      <!-- ===== STRUMENTI & INTEGRAZIONI ===== -->
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">🔧 Strumenti & Integrazioni</div></div>
+        <div class="card-body">
+          <div style="font-size:0.78rem;color:var(--dim);margin-bottom:14px;line-height:1.6">Collega strumenti esterni gratuiti usati dagli agenti per video, email, analytics e automazione.</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <!-- Sumo -->
+            <div style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--bg3);border-radius:10px;border:1px solid var(--border);">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(249,115,22,0.1);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;">📧</div>
+              <div style="flex:1;">
+                <div style="font-size:0.78rem;font-weight:600;">Sumo</div>
+                <div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);">Email growth & analytics</div>
+              </div>
+              <input class="drawer-textarea" id="sumoSiteId" placeholder="Sumo Site ID" onchange="saveSumoId()" style="width:180px;padding:7px 10px;border-radius:8px;font-size:0.72rem;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;">
+              <span id="sumoStatus" style="font-family:'DM Mono',monospace;font-size:0.52rem;"></span>
+            </div>
+            <!-- Kling AI -->
+            <div style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--bg3);border-radius:10px;border:1px solid var(--border);">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;">🎬</div>
+              <div style="flex:1;">
+                <div style="font-size:0.78rem;font-weight:600;">Kling AI / Runway ML</div>
+                <div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);">Generazione video AI gratuita</div>
+              </div>
+              <span style="font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);padding:3px 9px;border-radius:20px;background:var(--bg4);">prossimamente</span>
+            </div>
+            <!-- Make.com -->
+            <div style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--bg3);border-radius:10px;border:1px solid var(--border);">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(59,130,246,0.1);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;">⚡</div>
+              <div style="flex:1;">
+                <div style="font-size:0.78rem;font-weight:600;">Make.com</div>
+                <div style="font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);">Webhook e automazione</div>
+              </div>
+              <span style="font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);padding:3px 9px;border-radius:20px;background:var(--bg4);">prossimamente</span>
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
 
     </div>
@@ -2010,6 +1859,31 @@ html, body {
 </div>
 
 
+<!-- AGENT CREATION MODAL -->
+<div class="modal-overlay" id="createAgentModal" onclick="if(event.target===this)closeCreateAgentModal()">
+  <div class="modal" style="width:460px;">
+    <div style="font-family:'Instrument Serif',serif;font-size:1.4rem;letter-spacing:-0.02em;margin-bottom:4px;">✨ Evoca nuovo Agente</div>
+    <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);margin-bottom:22px;">Descrivi il ruolo e la personalità · l'AI farà il resto</div>
+    
+    <div class="form-label" style="font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--dim);margin-bottom:6px;">COSA DEVE FARE L'AGENTE?</div>
+    <textarea class="drawer-textarea" id="newAgentPrompt" style="height:100px;margin-bottom:16px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;width:100%;font-family:inherit;color:var(--text);" placeholder="es. Crea un esperto SEO meticoloso che analizza ogni link..."></textarea>
+    
+    <div class="form-label" style="font-family:'DM Mono',monospace;font-size:0.54rem;color:var(--dim);margin-bottom:6px;">CATEGORIA</div>
+    <select id="newAgentCat" style="width:100%;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:20px;font-family:inherit;font-size:0.8rem;color:var(--text);outline:none;">
+      <option value="coordination">Coordinamento & Strategia</option>
+      <option value="production" selected>Produzione Contenuti</option>
+      <option value="analysis">Distribuzione & Analisi</option>
+      <option value="security">Sicurezza & Monitor</option>
+    </select>
+
+    <div style="display:flex;gap:8px;">
+      <button class="run-btn" onclick="createNewAgent()" style="flex:2;padding:12px;font-size:0.8rem;height:auto;">✨ Crea Agente</button>
+      <button onclick="closeCreateAgentModal()" style="flex:1;padding:12px;background:var(--bg4);color:var(--mid);border:none;border-radius:12px;font-size:0.8rem;cursor:pointer;">Annulla</button>
+    </div>
+  </div>
+</div>
+
+
 <!-- NAMES WIZARD MODAL -->
 <div class="modal-overlay" id="namesWizardModal" onclick="if(event.target===this)closeNamesWizard()">
   <div class="modal" style="width:520px;max-height:85vh;overflow-y:auto;">
@@ -2033,31 +1907,14 @@ html, body {
 <script>
 // ===== SESSION & STUDIO INIT =====
 (function() {
-  // Check if launcher asked to open a specific page
-  const openPage = localStorage.getItem('cf_open_page');
-  if(openPage) {
-    localStorage.removeItem('cf_open_page');
-    // Wait for DOM then switch page
-    window.addEventListener('DOMContentLoaded', function() {
-      setTimeout(() => {
-        const btn = Array.from(document.querySelectorAll('.top-nav-item'))
-          .find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+openPage+"'"));
-        switchPage(openPage, btn);
-      }, 100);
-    });
-  }
-})();
-
-// ===== SESSION & STUDIO INIT =====
-(function() {
   // Load active studio name into UI
   try {
     const studioName = localStorage.getItem('cf_active_studio_name') || 'Io, Scrittore';
     const studioId = localStorage.getItem('cf_active_studio') || 'cmr';
     document.title = studioName + ' — Content Factory';
     // Update logo text
-    const logo = document.querySelector('.tlogo');
-    if(logo) logo.innerHTML = '<div class="tlogo-icon">⚡</div>' + studioName;
+    const logo = document.querySelector('.logo');
+    if(logo) logo.innerHTML = '<div class="logo-icon">⚡</div>' + studioName;
     // Update universe pill
     const pill = document.querySelector('.universe-pill');
     if(pill) pill.innerHTML = studioName + '<div class="universe-pill-sub">Studio attivo · 🔥 Hype 94</div>';
@@ -2066,10 +1923,37 @@ html, body {
 
 // ===== NAVIGATION =====
 function goToLauncher() {
-  // Confirm if agents are working
   showToast('↩ Torno al Launcher...');
   setTimeout(() => { window.location.href = 'launcher.html'; }, 800);
 }
+function goToExternalPage(url) {
+  showToast('▶ Apertura...');
+  setTimeout(() => { window.location.href = url; }, 500);
+}
+
+// Deep-link: open a specific page if requested from launcher
+(function(){
+  const openPage = localStorage.getItem('cf_open_page');
+  if(openPage) {
+    localStorage.removeItem('cf_open_page');
+    setTimeout(() => {
+      const btn = document.querySelector('.top-nav-item');
+      switchPage(openPage, null);
+      // Also sync sidebar
+      document.querySelectorAll('.sidebar-item').forEach(i => {
+        i.classList.remove('active');
+        if(i.getAttribute('onclick') && i.getAttribute('onclick').includes("'"+openPage+"'")) i.classList.add('active');
+      });
+      // Sync topbar
+      const map = ['home','agents','social','archive','cyber','lounge','settings'];
+      const idx = map.indexOf(openPage);
+      document.querySelectorAll('.top-nav-item').forEach((b,i) => {
+        b.classList.remove('active');
+        if(i === idx) b.classList.add('active');
+      });
+    }, 300);
+  }
+})();
 
 // ===== PAGE NAV =====
 function switchPage(name, btn) {
@@ -2078,6 +1962,9 @@ function switchPage(name, btn) {
   const pg = document.getElementById('page-'+name);
   if(pg) pg.classList.add('active');
   if(btn) btn.classList.add('active');
+  
+  // Custom renders
+  if(name === 'agents') renderAgentsByCategory();
 }
 function switchSidebar(el, name) {
   document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
@@ -2118,38 +2005,6 @@ function pdSetPhoto(input) {
   };
   r.readAsDataURL(file);
 }
-
-
-// ===== ACCORDION =====
-function toggleAccordion(id) {
-  const body = document.getElementById('body-' + id);
-  const arrow = document.getElementById('arr-' + id);
-  const isOpen = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  arrow.classList.toggle('open', !isOpen);
-}
-
-// ===== LAYOUT SELECTOR =====
-var currentLayout = 1;
-function selectLayout(n, el) {
-  document.querySelectorAll('.layout-opt').forEach(o => o.classList.remove('sel'));
-  el.classList.add('sel');
-  currentLayout = n;
-  const names = {1:'Classic',2:'Wide',3:'Focus',4:'Grid 2x2',5:'Compact',6:'Magazine',7:'Stats First',8:'Pipeline',9:'Dark Pro',10:'Minimal'};
-  const lbl = document.getElementById('currentLayoutName');
-  if(lbl) lbl.textContent = (names[n]||'Layout '+n) + ' attivo';
-  localStorage.setItem('cf_layout', n);
-  showToast('Layout: ' + (names[n]||n));
-  addLog('info', 'Layout', 'Cambiato a ' + (names[n]||n));
-}
-(function() {
-  const saved = localStorage.getItem('cf_layout');
-  if(saved) {
-    const el = document.getElementById('lo-'+saved);
-    if(el) { document.querySelectorAll('.layout-opt').forEach(o=>o.classList.remove('sel')); el.classList.add('sel'); currentLayout=parseInt(saved); }
-  }
-})();
-
 // ===== GLOBAL STATUS SYSTEM =====
 // Single source of truth for user status - updates everywhere simultaneously
 const STATUS_COLORS = {
@@ -2230,18 +2085,33 @@ function selectPronome(el) {
   el.classList.add('sel'); pdCurrentPronome = el.textContent;
 }
 
-function saveProfileDrawer() {
+async function saveProfileDrawer() {
   const name = document.getElementById('pdName').value.trim() || 'Il Capo';
   const sub  = document.getElementById('pdTag').value.trim() || 'Fondatore';
   const statusMsg = document.getElementById('pdStatusMsg').value.trim();
   const p = JSON.parse(localStorage.getItem('cf_profile') || '{}');
   p.name = name; p.sub = sub; p.emoji = pdCurrentEmoji;
   p.status = pdCurrentStatus; p.statusMsg = statusMsg; p.pronomi = pdCurrentPronome;
+  
+  // 1. Save to LocalStorage (Immediate feedback/Offline-first)
   localStorage.setItem('cf_profile', JSON.stringify(p));
   applyProfileUI(p);
   applyGlobalStatus(pdCurrentStatus.icon, pdCurrentStatus.text);
   closeDrawer('drawer-profile');
-  showToast('✓ Profilo salvato!');
+  showToast('✓ Profilo salvato localmente!');
+
+  // 2. Sync to Firebase if available
+  if (window.db && window.fs) {
+    try {
+      showToast('☁ Sincronizzazione Cloud...');
+      const userRef = window.fs.doc(window.db, "users", "default_user"); // Using default_user for now
+      await window.fs.setDoc(userRef, p, { merge: true });
+      showToast('✓ Cloud Sync completato!');
+    } catch (e) {
+      console.error("Firebase Sync Error:", e);
+      showToast('⚠️ Errore Sincronizzazione Cloud');
+    }
+  }
 }
 
 function applyProfileUI(p) {
@@ -2260,9 +2130,48 @@ function applyProfileUI(p) {
 }
 
 // Init on load
-(function(){
+(async function(){
+  // 1. Local Load (Immediate)
   const p = JSON.parse(localStorage.getItem('cf_profile') || '{"name":"Il Capo","sub":"Fondatore · Call Me River","emoji":"🦁","status":{"icon":"🟢","text":"online"}}');
   applyProfileUI(p);
+
+  // 2. Cloud Load (Background)
+  if (window.db && window.fs) {
+    try {
+      const userRef = window.fs.doc(window.db, "users", "default_user");
+      const snap = await window.fs.getDoc(userRef);
+      if (snap.exists()) {
+        const cloudData = snap.data();
+        localStorage.setItem('cf_profile', JSON.stringify(cloudData));
+        applyProfileUI(cloudData);
+        console.log("☁ Dati Profilo caricati da Firebase");
+      }
+      
+      // Load other settings
+      const apiSnap = await window.fs.getDoc(window.fs.doc(window.db, "settings", "api_keys"));
+      if (apiSnap.exists()) {
+        const keys = apiSnap.data();
+        if(keys.gemini) localStorage.setItem('cf_gemini_key', keys.gemini);
+        if(keys.claude) localStorage.setItem('cf_claude_key', keys.claude);
+        updateApiKeyStatus();
+      }
+      
+      const socialSnap = await window.fs.getDoc(window.fs.doc(window.db, "settings", "social"));
+      if (socialSnap.exists()) {
+        localStorage.setItem('cf_social_links', JSON.stringify(socialSnap.data()));
+        loadSocialLinks();
+      }
+
+      // Load Agents for the current studio
+      const studioId = localStorage.getItem('cf_active_studio') || 'cmr';
+      const agentsSnap = await window.fs.getDoc(window.fs.doc(window.db, "users", "default_user", "studios", studioId));
+      if (agentsSnap.exists() && agentsSnap.data().agents_data) {
+        AGENTS_DATA = agentsSnap.data().agents_data;
+        renderAgentsByCategory();
+        console.log("☁ Agenti caricati da Firebase per lo studio:", studioId);
+      }
+    } catch (e) { console.warn("Firebase Init Skip:", e); }
+  }
 })();
 
 // ===== DRAWERS =====
@@ -2275,6 +2184,101 @@ const themes = ['light','dark','night','purple','ocean','rose','river'];
 let currentTheme = 'light';
 let generatedThemeColors = null;
 let generatedPromptColors = null;
+
+window.addEventListener('gemini-quota-error', () => {
+  showToast("⚠️ Quota API esaurita! Passaggio a Modalità Simulazione...");
+  const t = document.getElementById('offlineToggle');
+  if(t && !t.classList.contains('on')) toggleOfflineMode(t);
+});
+
+function openCreateAgentModal() { document.getElementById('createAgentModal').classList.add('open'); }
+function closeCreateAgentModal() { document.getElementById('createAgentModal').classList.remove('open'); }
+
+async function createNewAgent() {
+  const prompt = document.getElementById('newAgentPrompt').value.trim();
+  const cat = document.getElementById('newAgentCat').value;
+  if(!prompt) { showToast('⚠ Descrivi l\'agente'); return; }
+  
+  showToast('✨ Evocazione in corso...');
+  
+  const isSecurity = prompt.toLowerCase().includes('sicurezza') || prompt.toLowerCase().includes('hacker');
+  const isCreativity = prompt.toLowerCase().includes('scrittore') || prompt.toLowerCase().includes('arte');
+  
+  const newId = 'agent_' + Date.now();
+  const newAgent = {
+    id: newId,
+    icon: isSecurity ? '🛡️' : (isCreativity ? '🎨' : '🧠'),
+    role: prompt.substring(0, 20) + '...',
+    tool: 'Custom AI',
+    category: cat,
+    status: 'done',
+    manualOn: true,
+    color: isSecurity ? 'green' : (isCreativity ? 'pink' : 'blue')
+  };
+  
+  AGENTS_DATA.push(newAgent);
+  
+  // Save to Firebase
+  if (window.db && window.fs) {
+    try {
+      const studioId = localStorage.getItem('cf_active_studio') || 'cmr';
+      const studioRef = window.fs.doc(window.db, "users", "default_user", "studios", studioId);
+      await window.fs.setDoc(studioRef, { agents_data: AGENTS_DATA }, { merge: true });
+    } catch (e) { console.error("Firebase Agent Sync Error:", e); }
+  }
+
+  setTimeout(() => {
+    closeCreateAgentModal();
+    document.getElementById('newAgentPrompt').value = '';
+    renderAgentsByCategory();
+    showToast('✓ Agente creato con successo!');
+  }, 1500);
+}
+
+function toggleAutoTheme(toggle) {
+  toggle.classList.toggle('on');
+  const enabled = toggle.classList.contains('on');
+  localStorage.setItem('cf_auto_theme_enabled', enabled);
+  if(enabled && window.WeatherEngine) {
+    WeatherEngine.init();
+    showToast('🌦️ Tema Automatico ATTIVATO');
+  } else {
+    if (window.WeatherEngine) WeatherEngine.stop();
+    showToast('🖐️ Tema Automatico DISATTIVATO');
+  }
+}
+
+function updateAgentBadge() {
+  const badge = document.getElementById('agentBadge');
+  const dot = document.getElementById('agentBadgeDot');
+  const text = document.getElementById('agentBadgeText');
+  const isOffline = window.Gemini && window.Gemini.offlineMode;
+
+  if(isOffline) {
+    badge.style.background = 'rgba(232,197,71,0.1)';
+    badge.style.borderColor = 'rgba(232,197,71,0.25)';
+    badge.style.color = 'var(--accent2)';
+    dot.style.background = 'var(--accent2)';
+    text.textContent = '13 agenti (Simulazione)';
+  } else {
+    badge.style.background = 'rgba(34,197,94,0.1)';
+    badge.style.borderColor = 'rgba(34,197,94,0.2)';
+    badge.style.color = 'var(--green)';
+    dot.style.background = 'var(--green)';
+    text.textContent = '13 agenti';
+  }
+}
+
+// Init offline UI
+(function(){
+  setTimeout(() => {
+    const t = document.getElementById('offlineToggle');
+    if(t && window.Gemini && window.Gemini.offlineMode) {
+      t.classList.add('on');
+      updateAgentBadge();
+    }
+  }, 500);
+})();
 
 function applyTheme(name, card, label) {
   // Remove all theme classes
@@ -2291,6 +2295,13 @@ function applyTheme(name, card, label) {
   if(indicator) indicator.textContent = label;
   showToast('✓ Tema '+label+' applicato!');
   addLog('info','Impostazioni','Tema cambiato: '+label);
+  // Disable auto-theme if a manual theme is applied
+  const autoThemeToggle = document.getElementById('autoThemeToggle');
+  if (autoThemeToggle && autoThemeToggle.classList.contains('on')) {
+    autoThemeToggle.classList.remove('on');
+    localStorage.setItem('cf_auto_theme_enabled', false);
+    if (window.WeatherEngine) WeatherEngine.stop();
+  }
 }
 
 function generateThemeFromScreenshot(input) {
@@ -2365,6 +2376,13 @@ function applyCustomColors(colors) {
   document.getElementById('currentThemeBadge').textContent = '✨ Custom attivo';
   document.getElementById('themeIndicator').textContent = '✨ Custom';
   showToast('✓ Tema personalizzato applicato!');
+  // Disable auto-theme if a manual theme is applied
+  const autoThemeToggle = document.getElementById('autoThemeToggle');
+  if (autoThemeToggle && autoThemeToggle.classList.contains('on')) {
+    autoThemeToggle.classList.remove('on');
+    localStorage.setItem('cf_auto_theme_enabled', false);
+    if (window.WeatherEngine) WeatherEngine.stop();
+  }
 }
 function mixColors(c1,c2,ratio) {
   return c1; // simplified
@@ -2378,7 +2396,7 @@ function generateThemeFromPrompt() {
     'cyberpunk': ['#0a0a0f','#0d0d1a','#1a0a2e','#00ff88','#ff0080'],
     'tramonto': ['#1a0a05','#ff6b35','#ffd23f','#fff8f0','#ffffff'],
     'minimalista': ['#111111','#1a1a1a','#2a2a2a','#e0e0e0','#ffffff'],
-    'foresta': ['#0a1a0a','#1a3a1a','#2a5a2a','#a0d4a0','#f0faf0'],
+    'foresta': ['#0a1a0a','#1a3a1a','#2a5a1a','#a0d4a0','#f0faf0'],
     'default': ['#1a1714','#2a2520','#3a3530','#c0b8b0','#f0ede8'],
   };
   setTimeout(() => {
@@ -2438,6 +2456,157 @@ function toggleSidebar(toggle) {
     layout.style.gridTemplateColumns = '240px 1fr';
   }
 }
+
+// ===== API KEYS MANAGEMENT =====
+async function saveApiKey(provider) {
+  const inputId = provider === 'gemini' ? 'geminiKeyInput' : 'claudeKeyInput';
+  const key = document.getElementById(inputId).value.trim();
+  if(!key) { showToast('⚠ Inserisci la chiave API'); return; }
+  
+  // 1. Local Save
+  localStorage.setItem('cf_' + provider + '_key', key);
+  document.getElementById(inputId).value = '';
+  updateApiKeyStatus();
+  if(provider === 'gemini' && window.Gemini) {
+    window.Gemini.apiKey = key;
+    window.Gemini.offlineMode = false;
+    const t = document.getElementById('offlineToggle');
+    if(t) t.classList.remove('on');
+    updateAgentBadge();
+  }
+  showToast('✓ ' + provider.charAt(0).toUpperCase() + provider.slice(1) + ' API Key salvata localmente!');
+  
+  // 2. Cloud Sync
+  if (window.db && window.fs) {
+    try {
+      const settingsRef = window.fs.doc(window.db, "settings", "api_keys");
+      await window.fs.setDoc(settingsRef, { [provider]: key }, { merge: true });
+      showToast('☁ Sync Cloud completato!');
+    } catch (e) { console.error(e); }
+  }
+}
+
+function deleteApiKey(provider) {
+  localStorage.removeItem('cf_' + provider + '_key');
+  const inputId = provider === 'gemini' ? 'geminiKeyInput' : 'claudeKeyInput';
+  document.getElementById(inputId).value = '';
+  updateApiKeyStatus();
+  if(provider === 'gemini' && window.Gemini) {
+    window.Gemini.apiKey = null;
+  }
+  showToast('🗑️ ' + provider.charAt(0).toUpperCase() + provider.slice(1) + ' API Key eliminata');
+  addLog('info', '🔑 API', provider + ' key rimossa');
+}
+
+function updateApiKeyStatus() {
+  const geminiKey = localStorage.getItem('cf_gemini_key');
+  const claudeKey = localStorage.getItem('cf_claude_key');
+  const gs = document.getElementById('geminiKeyStatus');
+  const cs = document.getElementById('claudeKeyStatus');
+  if(gs) {
+    if(geminiKey) { gs.textContent = '🟢 Collegata'; gs.style.background = 'rgba(34,197,94,0.1)'; gs.style.color = 'var(--green)'; }
+    else { gs.textContent = '🔴 Non inserita'; gs.style.background = 'rgba(239,68,68,0.08)'; gs.style.color = 'var(--red)'; }
+  }
+  if(cs) {
+    if(claudeKey) { cs.textContent = '🟢 Collegata'; cs.style.background = 'rgba(34,197,94,0.1)'; cs.style.color = 'var(--green)'; }
+    else { cs.textContent = '🔴 Non inserita'; cs.style.background = 'rgba(239,68,68,0.08)'; cs.style.color = 'var(--red)'; }
+  }
+  const badge = document.getElementById('apiKeysBadge');
+  const count = (geminiKey ? 1 : 0) + (claudeKey ? 1 : 0);
+  if(badge) badge.textContent = count > 0 ? count + ' attive' : 'gestisci';
+}
+
+// ===== SOCIAL LINKS =====
+async function saveSocialLinks() {
+  const links = {
+    tiktok: document.getElementById('socialTiktok')?.value.trim() || '',
+    instagram: document.getElementById('socialInstagram')?.value.trim() || '',
+    youtube: document.getElementById('socialYoutube')?.value.trim() || '',
+    twitter: document.getElementById('socialTwitter')?.value.trim() || '',
+  };
+  
+  // 1. Local Save
+  localStorage.setItem('cf_social_links', JSON.stringify(links));
+  const count = Object.values(links).filter(v => v).length;
+  const badge = document.getElementById('socialBadge');
+  if(badge) badge.textContent = count + ' collegat' + (count === 1 ? 'o' : 'i');
+  showToast('✓ Social links salvati localmente!');
+
+  // 2. Cloud Sync
+  if (window.db && window.fs) {
+    try {
+      const socialRef = window.fs.doc(window.db, "settings", "social");
+      await window.fs.setDoc(socialRef, links, { merge: true });
+      showToast('☁ Sync Cloud completato!');
+    } catch (e) { console.error(e); }
+  }
+}
+
+function loadSocialLinks() {
+  try {
+    const links = JSON.parse(localStorage.getItem('cf_social_links') || '{}');
+    if(links.tiktok) document.getElementById('socialTiktok').value = links.tiktok;
+    if(links.instagram) document.getElementById('socialInstagram').value = links.instagram;
+    if(links.youtube) document.getElementById('socialYoutube').value = links.youtube;
+    if(links.twitter) document.getElementById('socialTwitter').value = links.twitter;
+    const count = Object.values(links).filter(v => v).length;
+    const badge = document.getElementById('socialBadge');
+    if(badge && count > 0) badge.textContent = count + ' collegat' + (count === 1 ? 'o' : 'i');
+  } catch(e) {}
+}
+
+// ===== SUMO =====
+function saveSumoId() {
+  const id = document.getElementById('sumoSiteId')?.value.trim() || '';
+  if(id) {
+    localStorage.setItem('cf_sumo_id', id);
+    updateSumoStatus();
+    loadSumoScript(id);
+    showToast('✓ Sumo Site ID salvato!');
+  } else {
+    localStorage.removeItem('cf_sumo_id');
+    updateSumoStatus();
+    showToast('🗑️ Sumo Site ID rimosso');
+  }
+}
+
+function updateSumoStatus() {
+  const id = localStorage.getItem('cf_sumo_id');
+  const el = document.getElementById('sumoStatus');
+  if(el) {
+    if(id) { el.textContent = '🟢 attivo'; el.style.color = 'var(--green)'; }
+    else { el.textContent = '⚪ non configurato'; el.style.color = 'var(--dim)'; }
+  }
+}
+
+function loadSumoScript(siteId) {
+  if(!siteId || document.getElementById('sumoScript')) return;
+  const s = document.createElement('script');
+  s.id = 'sumoScript';
+  s.src = 'https://load.sumo.com/' + siteId;
+  s.async = true;
+  document.body.appendChild(s);
+}
+
+// Init settings on load
+(function(){
+  setTimeout(() => {
+    updateApiKeyStatus();
+    loadSocialLinks();
+    const sumoId = localStorage.getItem('cf_sumo_id');
+    if(document.getElementById('sumoSiteId') && sumoId) document.getElementById('sumoSiteId').value = sumoId;
+    updateSumoStatus();
+    if(sumoId) loadSumoScript(sumoId);
+    
+    // Auto-theme toggle init
+    const autoTheme = localStorage.getItem('cf_auto_theme_enabled') === 'true';
+    const att = document.getElementById('autoThemeToggle');
+    if(att && autoTheme) {
+      att.classList.add('on');
+      if (window.WeatherEngine) WeatherEngine.init();
+    }
+  }, 200);
+})();
 
 // ===== FIXER =====
 function fixItem(btn, type) {
@@ -2535,19 +2704,104 @@ function runAll(btn){btn.textContent='⏳ In esecuzione...';btn.disabled=true;ad
 
 
 // ===== AGENT NAMES SYSTEM =====
-const AGENTS_DATA = [
-  { id:'director', icon:'👑', role:'Capo Redattore', tool:'Director AI', color:'linear-gradient(135deg,#1a1714,#3a3530)' },
-  { id:'scrittore', icon:'✍️', role:'Scrittore', tool:'Claude API', color:'linear-gradient(135deg,#eff6ff,#dbeafe)' },
-  { id:'musicale', icon:'🎵', role:'Musicale', tool:'Suno AI', color:'linear-gradient(135deg,#fff7ed,#fed7aa)' },
-  { id:'consulente', icon:'📖', role:'Consulente Ed.', tool:'Claude API', color:'linear-gradient(135deg,#fdf4ff,#e9d5ff)' },
-  { id:'sentiment', icon:'🌡️', role:'Sentiment', tool:'Claude API', color:'linear-gradient(135deg,#fefce8,#fef08a)' },
-  { id:'visual', icon:'🎨', role:'Visual Identity', tool:'MS Designer', color:'linear-gradient(135deg,#fff1f3,#fecdd3)' },
-  { id:'prezzi', icon:'💸', role:'Prezzi', tool:'Amazon KDP', color:'linear-gradient(135deg,#f0fdf4,#bbf7d0)' },
-  { id:'sistema', icon:'🔧', role:'Sistema', tool:'Monitor', color:'linear-gradient(135deg,#f7fee7,#d9f99d)' },
-  { id:'cipher', icon:'🛡️', role:'Cybersecurity', tool:'CIPHER', color:'linear-gradient(135deg,#f0fdf4,#dcfce7)' },
-  { id:'personaggi', icon:'🎭', role:'Personaggi', tool:'Claude + foto', color:'linear-gradient(135deg,#eff6ff,#bfdbfe)' },
-  { id:'orchestra', icon:'🎻', role:'Orchestra AI', tool:'Mixer AI', color:'linear-gradient(135deg,#fdf4ff,#f3e8ff)' },
+let AGENTS_DATA = [
+  { id:'director', icon:'👑', role:'Capo Redattore', tool:'Director AI', category:'coordination', status:'run', manualOn:true, color:'pink' },
+  { id:'scrittore', icon:'✍️', role:'Scrittore', tool:'Claude API', category:'production', status:'done', manualOn:true, color:'pink' },
+  { id:'musicale', icon:'🎵', role:'Musicale', tool:'Suno AI', category:'production', status:'run', manualOn:true, color:'pink' },
+  { id:'consulente', icon:'📖', role:'Consulente Ed.', tool:'Claude API', category:'coordination', status:'done', manualOn:true, color:'blue' },
+  { id:'sentiment', icon:'🌡️', role:'Sentiment', tool:'Claude API', category:'analysis', status:'wait', manualOn:false, color:'yellow' },
+  { id:'visual', icon:'🎨', role:'Visual Identity', tool:'MS Designer', category:'analysis', status:'done', manualOn:true, color:'pink' },
+  { id:'prezzi', icon:'💸', role:'Prezzi', tool:'Amazon KDP', category:'analysis', status:'done', manualOn:true, color:'green' },
+  { id:'sistema', icon:'🔧', role:'Sistema', tool:'Monitor', category:'coordination', status:'done', manualOn:true, color:'orange' },
+  { id:'cipher', icon:'🛡️', role:'Cybersecurity', tool:'CIPHER', category:'security', status:'done', manualOn:true, color:'green' },
+  { id:'bughunter', icon:'🕷️', role:'Bug Hunter', tool:'Debugger', category:'security', status:'done', manualOn:true, color:'purple' },
+  { id:'personaggi', icon:'🎭', role:'Personaggi', tool:'Claude + foto', category:'production', status:'done', manualOn:true, color:'blue' },
+  { id:'orchestra', icon:'🎻', role:'Orchestra AI', tool:'Mixer AI', category:'production', status:'done', manualOn:true, color:'purple' },
+  { id:'bughunter_fixer', icon:'🔧', role:'Auto-Fixer', tool:'Patch Agent', category:'security', status:'done', manualOn:true, color:'yellow' },
 ];
+
+const CATEGORIES = {
+  coordination: { name: 'Coordinamento & Strategia', icon: '🎯' },
+  production: { name: 'Produzione Contenuti', icon: '✍️' },
+  analysis: { name: 'Distribuzione & Analisi', icon: '📊' },
+  security: { name: 'Sicurezza & Monitor', icon: '🛡️' }
+};
+
+function renderAgentsByCategory() {
+  const grid = document.getElementById('agentCatGrid');
+  if(!grid) return;
+  grid.innerHTML = '';
+
+  for (const [catId, catInfo] of Object.entries(CATEGORIES)) {
+    const agents = AGENTS_DATA.filter(a => a.category === catId);
+    
+    const card = document.createElement('div');
+    card.className = 'agent-cat-card';
+    card.innerHTML = `
+      <div class="ac-hdr">
+        <div class="ac-title">${catInfo.icon} ${catInfo.name}</div>
+        <div class="ac-count">${agents.length} agenti</div>
+      </div>
+      <div class="agent-list" id="list-${catId}"></div>
+    `;
+    grid.appendChild(card);
+
+    const list = card.querySelector('.agent-list');
+    agents.forEach(agent => {
+      const row = document.createElement('div');
+      row.className = `agent-row ${agent.manualOn ? '' : 'off'}`;
+      row.onclick = () => openDrawer('drawer-' + (agent.id === 'director' ? 'chief' : agent.id));
+      
+      const spinnerClass = agent.status === 'run' ? 's-green' : (agent.status === 'wait' ? 's-yellow' : (agent.status === 'queue' ? 's-blue' : 's-red'));
+      
+      row.innerHTML = `
+        <div class="ar-left">
+          <div class="ar-decorator glow-${agent.color || 'pink'}"></div>
+          <div class="ar-icon">${agent.icon}</div>
+          <div class="ar-info">
+            <div class="ar-name">${agent.role}</div>
+            <div class="ar-role">${agent.tool}</div>
+          </div>
+        </div>
+        <div class="ar-right">
+          <div class="ar-status-wrap">
+            <div class="ar-spinner active ${agent.manualOn ? spinnerClass : 's-red'}"></div>
+          </div>
+          <div class="ar-toggle ${agent.manualOn ? 'on' : 'off'}" onclick="event.stopPropagation(); toggleAgentStatus('${agent.id}')"></div>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  }
+}
+
+async function toggleAgentStatus(id) {
+  const agent = AGENTS_DATA.find(a => a.id === id);
+  if(agent) {
+    agent.manualOn = !agent.manualOn;
+    showToast(`${agent.role} ${agent.manualOn ? 'ATTIVATO' : 'DISATTIVATO'}`);
+    
+    // Save to Firebase
+    if (window.db && window.fs) {
+      try {
+        const studioId = localStorage.getItem('cf_active_studio') || 'cmr';
+        const studioRef = window.fs.doc(window.db, "users", "default_user", "studios", studioId);
+        await window.fs.setDoc(studioRef, { agents_data: AGENTS_DATA }, { merge: true });
+      } catch (e) { console.error("Firebase Agent Sync Error:", e); }
+    }
+
+    renderAgentsByCategory();
+    updateAgentBadge();
+  }
+}
+
+function updateAgentBadge() {
+  const activeCount = AGENTS_DATA.filter(a => a.manualOn).length;
+  const badge = document.getElementById('agentBadgeText');
+  const dot = document.getElementById('agentBadgeDot');
+  if(badge) badge.textContent = activeCount + ' agenti';
+  if(dot) dot.style.background = activeCount > 0 ? 'var(--green)' : 'var(--red)';
+}
 
 // Name suggestions pool per agent
 const NAME_POOL = {
@@ -2562,10 +2816,45 @@ const NAME_POOL = {
   cipher:     [{name:'Nyx', age:'∞', gender:'N', story:'Nata dalla convergenza di mille incidenti di sicurezza. Non dorme mai. Letteralmente.'}, {name:'Ghost', age:'???', gender:'N', story:'Presenza silenziosa. Agisce prima che tu ti accorga del pericolo.'}, {name:'AEGIS', age:'v4.2', gender:'N', story:'Sistema di difesa evolutivo. Ogni attacco che blocca la rende più forte.'}],
   personaggi: [{name:'Dante (il vero)', age:27, gender:'M', story:'Appassionato di character design. Passa ore a studiare come le persone si muovono.'}, {name:'Iris', age:24, gender:'F', story:'Scrittrice di fanfiction cresciuta. Conosce ogni archetipo, li smonta e rimonta.'}, {name:'Poe', age:30, gender:'N', story:'Costumista teatrale. Vede ogni personaggio come un costume che rivela l\'anima.'}],
   orchestra:  [{name:'Maestro V', age:55, gender:'M', story:'Direttore d\'orchestra semi-pensionato. Ora dirige bit invece di violini.'}, {name:'Aya', age:29, gender:'F', story:'Sound designer cinematografica. Sa che il silenzio è uno strumento.'}, {name:'Echo', age:32, gender:'N', story:'Foley artist e compositore. Registra suoni di strada e li trasforma in musica.'}],
+  bughunter: [{name:'Otto', age:30, gender:'M', story:'Ex ingegnere QA ossessionato dalla perfezione. Trova bug dove nessuno guarda.'}, {name:'Lara', age:28, gender:'F', story:'Pentester convertita. Vede falle logiche invece di stringhe di codice.'}, {name:'Zero', age:25, gender:'N', story:'Genio del debug. Parla in assembly quando è nervoso.'}],
+  bughunter_fixer: [{name:'FixBot', age:1, gender:'N', story:'Protocollo automatizzato di correzione. Pulisce tutto quello che Hunter trova.'}],
 };
 
 let agentNames = JSON.parse(localStorage.getItem('cf_agent_names') || '{}');
 let pendingNames = {};
+
+// ===== SECURITY FUNCTIONS =====
+async function runBugHunter() {
+  showToast('🕷️ Bug Hunter al lavoro...');
+  if(window.Gemini) {
+    const resp = await window.Gemini.askAgent('bughunter', "Esegui una scansione del codice corrente e trova eventuali anomalie.");
+    document.getElementById('hunterMsg').textContent = resp;
+    
+    // Aggiungi un alert simulato
+    const list = document.getElementById('cyberAlertList');
+    if(list) {
+      const div = document.createElement('div');
+      div.style.cssText = 'display:flex;align-items:flex-start;gap:10px;padding:11px 18px;border-bottom:1px solid var(--border);animation:msgIn 0.3s ease;';
+      const time = new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+      div.innerHTML = `
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--purple);margin-top:4px;flex-shrink:0;box-shadow:0 0 6px var(--purple);"></div>
+        <div style="flex:1;"><div style="font-size:0.78rem;font-weight:600;">Scansione Bug</div><div style="font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:1px;">${resp.substring(0,60)}... · ${time}</div></div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 8px;border-radius:20px;background:rgba(139,92,246,0.1);color:var(--purple);">✓ fixato</div>`;
+      list.insertBefore(div, list.firstChild);
+    }
+    addLog('success', '🕷️ HUNTER', 'Scansione bug completata');
+  }
+}
+
+// Live monitor interval
+setInterval(() => {
+  const isCyber = document.getElementById('page-cyber').classList.contains('active');
+  if(isCyber && Math.random() > 0.7) {
+    const chance = Math.random();
+    if(chance > 0.5) simulateThreat();
+    else runBugHunter();
+  }
+}, 45000);
 
 function openNamesWizard() {
   renderNamesWizard();

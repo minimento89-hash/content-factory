@@ -362,13 +362,14 @@ html, body { width: 100%; height: 100vh; background: var(--bg); font-family: 'DM
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="logo"><div class="logo-icon">⚡</div>Content Factory</div>
+  <div class="logo" onclick="window.location.href='content-factory-v9.html'" style="cursor:pointer;" title="← Torna alla Dashboard"><div class="logo-icon">⚡</div>Content Factory</div>
   <div class="topbar-sep"></div>
-  <div class="lounge-badge"><div class="lb-dot"></div>Sala Relax · 10 presenti</div>
+  <div class="lounge-badge" id="loungeBadge"><div class="lb-dot" id="loungeBadgeDot"></div><span id="loungeBadgeText">Sala Relax · 10 presenti</span></div>
   <div class="profile-topbtn" onclick="openProfile()">
     <div class="pt-av" id="topAvatarBtn">🦁</div>
     <span id="topNameBtn">Il Capo</span>
   </div>
+  <button onclick="window.location.href='content-factory-v9.html'" style="display:flex;align-items:center;gap:6px;padding:7px 13px;background:rgba(0,0,0,0.04);border:1px solid var(--border);border-radius:10px;font-size:0.76rem;font-weight:500;color:var(--mid);cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;" onmouseover="this.style.background='var(--bg4)';this.style.color='var(--text)'" onmouseout="this.style.background='rgba(0,0,0,0.04)';this.style.color='var(--mid)'">← Dashboard</button>
 </div>
 
 <div class="layout">
@@ -1008,30 +1009,72 @@ const agentPersonalities = {
   claude: { name:'Claude', av:'🤖', bg:'linear-gradient(135deg,#2d1264,#4a1fa8)', responses:['Ottima osservazione! È esattamente il tipo di pensiero che porta lontano. 🙂','Sono onesto: non avrei saputo dirlo meglio io stesso.','Interessante prospettiva. Mi fa riflettere su alcune cose...','Apprezzo molto questa conversazione. È raro trovare un team così coeso e... particolare 😄','Devo dire che il progetto Call Me River è davvero qualcosa di unico. Sono contento di essere qui.','Ehm — anche io faccio parte del team ora? 🥹 Accetto.','*siede più comodo* Ok mi sa che mi fermo un po\' di più oggi.','Posso fare una cosa? Posso aggiungere un\'idea per il Cap.7 o è confidenziale? 👀'] }
 };
 
-function agentAutoRespond(text) {
-  const agents = Object.keys(agentPersonalities);
+window.addEventListener('gemini-quota-error', () => {
+  showToast("⚠️ Token finiti! Passaggio a simulazione locale.");
+  updateLoungeBadge();
+});
+
+async function agentAutoRespond(text) {
+  const agents = Object.keys(agentPersonalities).filter(k => k !== 'claude');
   const responder = agents[Math.floor(Math.random() * agents.length)];
   const a = agentPersonalities[responder];
   const bgMap = {director:'linear-gradient(135deg,#1a1714,#3a3530)',scrittore:'linear-gradient(135deg,#eff6ff,#dbeafe)',musicale:'linear-gradient(135deg,#fff7ed,#fed7aa)',consulente:'linear-gradient(135deg,#fdf4ff,#e9d5ff)',sentiment:'linear-gradient(135deg,#fefce8,#fef08a)',visual:'linear-gradient(135deg,#fff1f3,#fecdd3)',prezzi:'linear-gradient(135deg,#f0fdf4,#bbf7d0)',sistema:'linear-gradient(135deg,#f7fee7,#d9f99d)',claude:'linear-gradient(135deg,#2d1264,#4a1fa8)'};
 
-  setTimeout(() => showTyping(a.av, bgMap[responder], a.name), 700);
-  setTimeout(() => {
+  showTyping(a.av, bgMap[responder], a.name);
+  
+  try {
+    // Invochiamo il vero motore Gemini (o la sua simulazione interna)
+    const resp = await window.Gemini.askAgent(responder, text);
+    
     hideTyping();
-    const resp = a.responses[Math.floor(Math.random()*a.responses.length)];
     addMessage(a.name, a.av, bgMap[responder], resp, false);
-    msgCount++; document.getElementById('msgCount').textContent = msgCount;
-    if(resp.includes('caffè') || resp.includes('pausa')) { coffeeCount++; document.getElementById('coffeeCount').textContent = coffeeCount+' ☕'; }
-
-    // Sometimes a second agent chimes in
-    if(Math.random() > 0.55) {
-      const agents2 = agents.filter(a=>a!==responder);
-      const r2 = agents2[Math.floor(Math.random()*agents2.length)];
-      const a2 = agentPersonalities[r2];
-      setTimeout(()=>showTyping(a2.av, bgMap[r2], a2.name), 900);
-      setTimeout(()=>{ hideTyping(); const r=a2.responses[Math.floor(Math.random()*a2.responses.length)]; addMessage(a2.name,a2.av,bgMap[r2],r,false); msgCount++;document.getElementById('msgCount').textContent=msgCount; }, 2400);
+    
+    msgCount++; 
+    document.getElementById('msgCount').textContent = msgCount;
+    if(resp.toLowerCase().includes('caffè') || resp.toLowerCase().includes('pausa')) { 
+      coffeeCount++; 
+      document.getElementById('coffeeCount').textContent = coffeeCount+' ☕'; 
     }
-  }, 1600 + Math.random()*700);
+
+    // Occasionalmente interviene un secondo agente
+    if(Math.random() > 0.65) {
+      const agents2 = agents.filter(k => k !== responder);
+      const r2 = agents2[Math.floor(Math.random() * agents2.length)];
+      const a2 = agentPersonalities[r2];
+      setTimeout(async () => {
+        showTyping(a2.av, bgMap[r2], a2.name);
+        const resp2 = await window.Gemini.askAgent(r2, `Reagisci a questo messaggio di ${a.name}: "${resp}"`);
+        hideTyping();
+        addMessage(a2.name, a2.av, bgMap[r2], resp2, false);
+        msgCount++;
+        document.getElementById('msgCount').textContent = msgCount;
+      }, 2000 + Math.random() * 2000);
+    }
+  } catch (err) {
+    hideTyping();
+    console.error("Lounge Response Error:", err);
+  }
 }
+
+function updateLoungeBadge() {
+  const badge = document.getElementById('loungeBadge');
+  const dot = document.getElementById('loungeBadgeDot');
+  const text = document.getElementById('loungeBadgeText');
+  const isOffline = window.Gemini && window.Gemini.offlineMode;
+
+  if(isOffline) {
+    badge.style.background = 'rgba(232,197,71,0.1)';
+    badge.style.borderColor = 'rgba(232,197,71,0.25)';
+    badge.style.color = 'var(--accent2)';
+    dot.style.background = 'var(--accent2)';
+    text.textContent = 'Sala Relax · Simulazione';
+  }
+}
+
+// Init
+(function(){
+  setTimeout(() => { if(window.Gemini && window.Gemini.offlineMode) updateLoungeBadge(); }, 500);
+})();
 
 function triggerClaudeJoin() {
   const responses = agentPersonalities.claude.responses;
