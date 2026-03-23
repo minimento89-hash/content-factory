@@ -205,12 +205,6 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
 .season-winter{--accent:#3b82f6;--accent2:#2563eb;}
 .season-spring{--accent:#ec4899;--accent2:#db2777;}
 
-/* WEATHER WIDGET */
-.weather-widget{display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;box-shadow:var(--shadow);font-family:'DM Mono',monospace;}
-.ww-icon{font-size:1.1rem;}
-.ww-info{display:flex;flex-direction:column;line-height:1.1;}
-.ww-temp{font-size:0.75rem;font-weight:700;color:var(--text);}
-.ww-cond{font-size:0.48rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.04em;}
 </style>
 </head>
 <body>
@@ -320,14 +314,6 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
   </div>
   <div class="tsep"></div>
   
-  <!-- Weather Widget -->
-  <div class="weather-widget">
-    <div class="ww-icon" id="weatherIcon">☀️</div>
-    <div class="ww-info">
-      <div class="ww-temp" id="weatherTemp">--°</div>
-      <div class="ww-cond" id="weatherCond">Caricamento...</div>
-    </div>
-  </div>
 
   <div class="tuser" onclick="showToast('Profilo · prossimamente!')">
     <div class="tuser-av" id="topAv">🦁</div>
@@ -351,10 +337,10 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
   <!-- Quick links -->
   <div class="section-lbl">Accesso rapido</div>
   <div class="quick-grid">
-    <div class="ql-card" onclick="goToPage('agent-lounge-v2.html')">
-      <div class="ql-icon">☕</div>
-      <div class="ql-title">Sala Relax</div>
-      <div class="ql-sub">Gli agenti ti aspettano</div>
+    <div class="ql-card" onclick="goToPage('roadmap.html')">
+      <div class="ql-icon">🚀</div>
+      <div class="ql-title">Roadmap</div>
+      <div class="ql-sub">Avanzamento & Milestone</div>
     </div>
     <div class="ql-card" onclick="goToFactory('settings')">
       <div class="ql-icon">⚙️</div>
@@ -698,6 +684,5 @@ function showToast(msg) {
 // Init
 loadSavedFactories();
 </script>
-<script src="weather-engine.js"></script>
 </body>
 </html>

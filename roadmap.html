@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Factory — Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f0ede8;--bg2:#fff;--bg3:#f7f5f2;--bg4:#ede9e3;
+  --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.13);
+  --text:#111;--dim:#9a948c;--mid:#6b6560;
+  --dark:#1a1714;--accent:#e8c547;
+  --green:#22c55e;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;--cyan:#06b6d4;--yellow:#eab308;
+  --radius:20px;--radius-sm:12px;
+  --shadow:0 4px 16px rgba(0,0,0,0.06);
+}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min-height:100vh;padding:40px 20px;}
+.container{max-width:1100px;margin:0 auto;}
+
+/* HEADER */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px;}
+.back-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;font-size:0.75rem;font-weight:600;cursor:pointer;transition:all 0.2s;text-decoration:none;color:inherit;}
+.back-btn:hover{background:var(--bg4);transform:translateX(-3px);}
+.title-area{text-align:right;}
+.title{font-family:'Instrument Serif',serif;font-size:2.2rem;line-height:1;}
+.subtitle{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;}
+
+/* LEGENDA */
+.legend{background:var(--bg2);padding:16px 20px;border-radius:12px;border:1px solid var(--border);display:grid;grid-template-columns:repeat(auto-fit, minmax(110px, 1fr));gap:12px;margin-bottom:30px;box-shadow:var(--shadow);}
+.leg-item{display:flex;align-items:center;gap:10px;}
+.leg-dot{width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;}
+.leg-info{display:flex;flex-direction:column;line-height:1.2;}
+.leg-name{font-size:0.7rem;font-weight:700;}
+.leg-desc{font-size:10px;color:var(--dim);font-family:'DM Mono',monospace;}
+
+/* GRID */
+.roadmap-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;}
+.rm-card{background:var(--bg2);border-radius:var(--radius);padding:20px;border:1px solid var(--border);box-shadow:var(--shadow);transition:all 0.4s cubic-bezier(0.16,1,0.3,1);cursor:pointer;position:relative;overflow:hidden;min-height:220px;display:flex;flex-direction:column;}
+.rm-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.06);border-color:var(--border2);}
+.rm-card.expanded { grid-column: 1 / -1; min-height: auto; cursor: default; transform: none !important; }
+
+.card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.card-icon{font-size:1.8rem;}
+.card-status-indicator{width:40px;height:24px;display:flex;align-items:center;justify-content:center;position:relative;}
+
+.card-title{font-family:'Instrument Serif',serif;font-size:1.3rem;margin-bottom:4px;}
+.card-desc{font-size:0.75rem;color:var(--mid);line-height:1.5;margin-bottom:16px;}
+
+.card-footer{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--border);margin-top:auto;}
+.tag{font-family:'DM Mono',monospace;font-size:0.5rem;padding:3px 8px;border-radius:20px;background:var(--bg4);color:var(--dim);}
+.progress-val{font-weight:800;font-size:0.75rem;}
+
+/* TASK LIST (Hidden by default) */
+.task-list { display:none; flex-direction:column; gap:8px; margin:20px 0; padding:20px; background:var(--bg3); border-radius:12px; }
+.rm-card.expanded .task-list { display:flex; }
+.task-item { display:flex; align-items:center; gap:10px; font-size:0.8rem; color:var(--text2); }
+.task-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.task-dot.done { background:var(--green); box-shadow:0 0 8px var(--green); }
+.task-dot.todo { background:var(--border2); }
+.task-text { flex:1; }
+
+/* EXPANDED CONTROLS */
+.close-btn { display:none; position:absolute; top:20px; right:20px; padding:6px 12px; border-radius:8px; background:var(--dark); color:#fff; font-size:10px; font-weight:700; cursor:pointer; }
+.rm-card.expanded .close-btn { display:block; }
+
+/* PROFILE-STYLE ANIMATIONS */
+@keyframes pulse-ring { 0% { transform: scale(0.5); opacity: 0.8; } 100% { transform: scale(2.2); opacity: 0; } }
+@keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: 0.4; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes dots-scroll { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.p-indicator { width:100%; height:100%; display:flex; align-items:center; justify-content:center; gap:3px; position:relative; }
+.rm-card.expanded .card-status-indicator { display:none; }
+
+/* Cog Wheels for Revisione & Futuro */
+.p-gear { 
+  width: 14px; height: 14px; 
+  background: conic-gradient(from 0deg, currentColor 0deg 30deg, transparent 30deg 60deg, currentColor 60deg 90deg, transparent 90deg 120deg, currentColor 120deg 150deg, transparent 150deg 180deg, currentColor 180deg 210deg, transparent 210deg 240deg, currentColor 240deg 270deg, transparent 270deg 300deg, currentColor 300deg 330deg, transparent 330deg 360deg);
+  border-radius: 50%; 
+  position: relative; 
+  animation: spin 4s infinite linear; 
+  will-change: transform;
+}
+.p-gear::after { content:''; position:absolute; inset:3.5px; background:var(--bg2); border-radius:50%; }
+
+/* Blue Cog Wheel (Review) */
+.p-blue { color: var(--blue); }
+
+/* Purple Cog Wheel (Future) */
+.p-purple { color: var(--purple); width:16px; height:16px; animation-duration: 6s; }
+.p-purple::after { inset:4.5px; }
+
+/* Red Square (Issue) - User prefers square for Criticità */
+.p-red { width:12px; height:12px; background:var(--red); border-radius:3px; animation: pulse-intense 0.6s infinite alternate; box-shadow: 0 0 12px rgba(239, 68, 68, 0.4); will-change: transform, opacity; }
+
+@keyframes pulse-intense { 0% { opacity: 0.2; transform: scale(0.85); } 100% { opacity: 1; transform: scale(1.1); } }
+
+/* Grey Spin (Planned) - ADDED: gentle spin */
+.p-grey { width:10px; height:10px; color: var(--dim); border: 2px dashed currentColor; border-radius: 50%; animation: spin 10s infinite linear; will-change: transform; }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  
+  <header class="header">
+    <a href="launcher.html" class="back-btn">← Torna al Launcher</a>
+    <div class="title-area">
+      <h1 class="title">Roadmap di Progetto</h1>
+      <p class="subtitle">Avanzamento tecnologico & Visione Futura</p>
+    </div>
+  </header>
+
+  <!-- LEGENDA -->
+  <section class="legend">
+    <div class="leg-item">
+      <div class="leg-dot"><div class="p-green-dot"></div><div class="p-green-pulse"></div></div>
+      <div class="leg-info"><span class="leg-name">Finito</span><span class="leg-desc">Operativo al 100%</span></div>
+    </div>
+    <div class="leg-item">
+      <div class="leg-dot"><div class="p-dots"><div class="p-dot-unit"></div><div class="p-dot-unit"></div><div class="p-dot-unit"></div></div></div>
+      <div class="leg-info"><span class="leg-name">In Corso</span><span class="leg-desc">Sviluppo attivo</span></div>
+    </div>
+    <div class="leg-item">
+      <div class="leg-dot"><div class="p-gear p-blue"></div></div>
+      <div class="leg-info"><span class="leg-name">Revisione</span><span class="leg-desc">Approvazione</span></div>
+    </div>
+    <div class="leg-item">
+      <div class="leg-dot"><div class="p-gear p-purple"></div></div>
+      <div class="leg-info"><span class="leg-name">Futuro</span><span class="leg-desc">Idee/Sogni</span></div>
+    </div>
+    <div class="leg-item">
+      <div class="leg-dot"><div class="p-red"></div></div>
+      <div class="leg-info"><span class="leg-name">Criticità</span><span class="leg-desc">Problemi</span></div>
+    </div>
+    <div class="leg-item">
+      <div class="leg-dot"><div class="p-cyan"></div></div>
+      <div class="leg-info"><span class="leg-name">Info</span><span class="leg-desc">News</span></div>
+    </div>
+    <div class="leg-item">
+      <div class="leg-dot"><div class="p-grey"></div></div>
+      <div class="leg-info"><span class="leg-name">Pianificato</span><span class="leg-desc">In coda</span></div>
+    </div>
+  </section>
+
+  <div class="roadmap-grid">
+    
+    <!-- PHASE 1 -->
+    <div class="rm-card" onclick="toggleCard(this)">
+      <div class="close-btn">Torna Indietro</div>
+      <div class="card-hdr">
+        <div class="card-icon">🧠</div>
+        <div class="card-status-indicator"><div class="p-green-dot"></div><div class="p-green-pulse"></div></div>
+      </div>
+      <h2 class="card-title">Sistema Agenti V9</h2>
+      <p class="card-desc">Architettura multi-thread e gestione identità.</p>
+      
+      <div class="task-list">
+        <div class="task-item"><div class="task-dot done"></div><div class="task-text">Architettura Multi-thread</div></div>
+        <div class="task-item"><div class="task-dot done"></div><div class="task-text">Gestione Identità & Profili</div></div>
+        <div class="task-item"><div class="task-dot done"></div><div class="task-text">Stati Dinamici (Online/In Focus)</div></div>
+        <div class="task-item"><div class="task-dot done"></div><div class="task-text">Logica Decisionale Chief</div></div>
+      </div>
+
+      <div class="card-footer">
+        <span class="tag">INFRASTRUTTURA</span>
+        <span class="progress-val" style="color:var(--green)">100%</span>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="rm-card" onclick="toggleCard(this)">
+      <div class="close-btn">Torna Indietro</div>
+      <div class="card-hdr">
+        <div class="card-icon">🎻</div>
+        <div class="card-status-indicator"><div class="p-green-dot"></div><div class="p-green-pulse"></div></div>
+      </div>
+      <h2 class="card-title">Media Factory Suite</h2>
+      <p class="card-desc">Mixer AI e Visualizzatore universale.</p>
+      
+      <div class="task-list">
+        <div class="task-item"><div class="task-dot done"></div><div class="task-text">Orchestra Player (Mixer AI)</div></div>
+        <div class="task-item"><div class="task-dot done"></div><div class="task-text">Kindle Reader (TTS)</div></div>
+        <div class="task-item"><div class="task-dot done"></div><div class="task-text">Visualizzatore Reel & Video</div></div>
+        <div class="task-item"><div class="task-dot done"></div><div class="task-text">Audio Analysis Engine</div></div>
+      </div>
+
+      <div class="card-footer">
+        <span class="tag">PRODUZIONE</span>
+        <span class="progress-val" style="color:var(--green)">100%</span>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="rm-card" onclick="toggleCard(this)">
+      <div class="close-btn">Torna Indietro</div>
+      <div class="card-hdr">
+        <div class="card-icon">🎭</div>
+        <div class="card-status-indicator"><div class="p-gear p-blue"></div></div>
+      </div>
+      <h2 class="card-title">Critique Ecosystem</h2>
+      <p class="card-desc">Beta Reader AI e feedback oggettivo.</p>
+      
+      <div class="task-list">
+        <div class="task-item"><div class="task-dot done"></div><div class="task-text">Beta Reader AI Core</div></div>
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Integrazione Feedback Loop</div></div>
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Analisi Tono e Stile</div></div>
+      </div>
+
+      <div class="card-footer">
+        <span class="tag">ANALISI</span>
+        <span class="progress-val" style="color:var(--blue)">95%</span>
+      </div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div class="rm-card" onclick="toggleCard(this)">
+      <div class="close-btn">Torna Indietro</div>
+      <div class="card-hdr">
+        <div class="card-icon">📱</div>
+        <div class="card-status-indicator"><div class="p-dots"><div class="p-dot-unit"></div><div class="p-dot-unit"></div><div class="p-dot-unit"></div></div></div>
+      </div>
+      <h2 class="card-title">Social Approval Loop</h2>
+      <p class="card-desc">Pipeline di revisione e pubblicazione.</p>
+
+      <div class="task-list">
+        <div class="task-item"><div class="task-dot done"></div><div class="task-text">Pipeline TikTok/Instagram</div></div>
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Auto-reposting Logic</div></div>
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Calendarizzazione Post</div></div>
+      </div>
+
+      <div class="card-footer">
+        <span class="tag">DISTRIBUZIONE</span>
+        <span class="progress-val" style="color:var(--yellow)">80%</span>
+      </div>
+    </div>
+
+    <!-- PHASE 5 -->
+    <div class="rm-card" onclick="toggleCard(this)">
+      <div class="close-btn">Torna Indietro</div>
+      <div class="card-hdr">
+        <div class="card-icon">🔑</div>
+        <div class="card-status-indicator"><div class="p-grey"></div></div>
+      </div>
+      <h2 class="card-title">Identità & Accesso</h2>
+      <p class="card-desc">Sistema di registrazione Firebase Auth.</p>
+
+      <div class="task-list">
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Integrazione Firebase Auth</div></div>
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Profili Multi-studio</div></div>
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Registrazione Utenti Sicura</div></div>
+      </div>
+
+      <div class="card-footer">
+        <span class="tag">SICUREZZA</span>
+        <span class="progress-val">In Coda</span>
+      </div>
+    </div>
+
+    <!-- FUTURE 1 -->
+    <div class="rm-card" onclick="toggleCard(this)">
+      <div class="close-btn">Torna Indietro</div>
+      <div class="card-hdr">
+        <div class="card-icon">🔮</div>
+        <div class="card-status-indicator"><div class="p-gear p-purple"></div></div>
+      </div>
+      <h2 class="card-title">Aggiornamenti Futuri</h2>
+      <p class="card-desc">Nuove idee e sogni in espansione.</p>
+
+      <div class="task-list">
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Social Ads Agent</div></div>
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Real-time Market Analysis</div></div>
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Multilingual Dubbing AI</div></div>
+      </div>
+
+      <div class="card-footer">
+        <span class="tag">EVOLUZIONE</span>
+        <span class="progress-val" style="color:var(--purple)">Sogno</span>
+      </div>
+    </div>
+
+    <!-- INFO 1 -->
+    <div class="rm-card" onclick="toggleCard(this)">
+      <div class="close-btn">Torna Indietro</div>
+      <div class="card-hdr">
+        <div class="card-icon">💡</div>
+        <div class="card-status-indicator"><div class="p-cyan"></div></div>
+      </div>
+      <h2 class="card-title">Curiosità V9</h2>
+      <p class="card-desc">Lo sapevi? L'app è offline-first.</p>
+
+      <div class="task-list">
+        <div class="task-item"><div class="task-dot done"></div><div class="task-text">Offline-first local storage</div></div>
+        <div class="task-item"><div class="task-dot done"></div><div class="task-text">Firebase Cloud Sync (opzionale)</div></div>
+      </div>
+
+      <div class="card-footer">
+        <span class="tag">INFO</span>
+        <span class="progress-val" style="color:var(--cyan)">News</span>
+      </div>
+    </div>
+
+    <!-- ISSUE 1 -->
+    <div class="rm-card" onclick="toggleCard(this)" style="border-color:rgba(239, 68, 68, 0.2)">
+      <div class="close-btn">Torna Indietro</div>
+      <div class="card-hdr">
+        <div class="card-icon">⚠️</div>
+        <div class="card-status-indicator"><div class="p-red"></div></div>
+      </div>
+      <h2 class="card-title">Criticità Note</h2>
+      <p class="card-desc">Possibili rallentamenti Video Engine.</p>
+
+      <div class="task-list">
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Ottimizzazione Runway ML</div></div>
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Fallback Kling/Luma AI</div></div>
+      </div>
+
+      <div class="card-footer">
+        <span class="tag">BUG DEPOT</span>
+        <span class="progress-val" style="color:var(--red)">In corso</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function toggleCard(card) {
+  if (card.classList.contains('expanded')) {
+    card.classList.remove('expanded');
+    return;
+  }
+  
+  // Close others
+  document.querySelectorAll('.rm-card').forEach(c => c.classList.remove('expanded'));
+  card.classList.add('expanded');
+  
+  // Scroll into view if needed
+  setTimeout(() => {
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 300);
+}
+</script>
+
+</div>
+
+</body>
+</html>
