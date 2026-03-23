@@ -964,7 +964,14 @@ html, body {
 </head>
 <script src="analytics-engine.js"></script>
 <script src="forge-engine.js"></script>
-<body class="theme-dark">
+<body>
+<script>
+  // Global Theme Initialization
+  (function() {
+    const savedTheme = localStorage.getItem('cf_theme') || 'dark'; // Default to dark but allow change
+    document.body.className = 'theme-' + savedTheme;
+  })();
+</script>
 <script>
   // Dynamic Layout & Theme Initialization
   (function() {
@@ -980,6 +987,8 @@ html, body {
       document.documentElement.style.setProperty('--user-color', color);
       document.documentElement.style.setProperty('--user-color-dark', color + 'dd');
     }
+    // Initialize
+    renderQuickGuides();
   })();
 </script>
 
@@ -1054,6 +1063,17 @@ html, body {
 
   <!-- CONTENT -->
   <main class="content">
+
+    <!-- ACCESSORAPIDO / QUICK GUIDES -->
+    <div id="quick-guides" style="margin-bottom:24px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+            <div style="font-size:0.9rem; font-weight:800; color:var(--text); letter-spacing:0.02em;">⚡ Accesso Rapido</div>
+            <div style="font-family:'DM Mono',monospace; font-size:0.55rem; color:var(--dim);">TIPS & TRICKS</div>
+        </div>
+        <div id="quickGuideGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:15px;">
+            <!-- Will be populated by JS -->
+        </div>
+    </div>
 
     <!-- DASHBOARD -->
     <div class="page active" id="page-home">
@@ -2319,6 +2339,30 @@ html, body {
           </div>
         </div>
 
+        <!-- MODULE: META-FORGE -->
+        <div class="roadmap-item" style="border-left:2px solid var(--orange); padding-left:20px; margin-left:10px; position:relative; border-left-style: dashed;">
+          <div class="ri-gear" style="position:absolute; left:-7px; top:12px; color:var(--orange); font-size:12px; background:transparent; border:none; animation-duration:10s;"></div>
+          <div class="ri-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="ri-title">La Meta-Officina (Studio Creator AI)</div>
+              <div style="font-family:'DM Mono',monospace; font-size:0.5rem; padding:3px 8px; border-radius:20px; background:rgba(249,115,22,0.1); color:var(--orange);">PIANIFICATO (V13)</div>
+            </div>
+            <div class="ri-desc">Crea nuovi studio: Idea → Agent Team → Potenziale Profitto.</div>
+          </div>
+        </div>
+
+        <!-- MODULE: GUIDES -->
+        <div class="roadmap-item" style="border-left:2px solid var(--green); padding-left:20px; margin-left:10px; position:relative;">
+          <div style="position:absolute; left:-7px; top:12px; width:12px; height:12px; border-radius:50%; background:var(--green); border:3px solid var(--bg2);"></div>
+          <div class="ri-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="ri-title">Guide Rapide (Accesso Rapido)</div>
+              <div style="font-family:'DM Mono',monospace; font-size:0.5rem; padding:3px 8px; border-radius:20px; background:rgba(34,197,94,0.1); color:var(--green);">FINITO (V14)</div>
+            </div>
+            <div class="ri-desc">Card interattive in Dashboard per consigli e trucchi veloci.</div>
+          </div>
+        </div>
+
       </div>
 
       <button class="drawer-btn db-dark" style="width:100%; margin-top:20px; background:var(--accent); color:var(--dark);" onclick="closeDrawer('drawer-roadmap')">Capito, avanti tutta! 🚀</button>
@@ -2607,6 +2651,29 @@ function switchPage(name, btn) {
   if(name === 'agents') renderAgentsByCategory();
   if(name === 'analytics') renderAnalytics();
   if(name === 'forge') renderForge();
+  if(name === 'home') renderQuickGuides();
+}
+
+const QUICK_GUIDES_DATA = [
+    { title: "Strategia AI", desc: "Come far collaborare gli agenti nel brainstorming.", icon: "🧠", color: "var(--blue)", tip: "Usa l'Officina Idee per piani completi." },
+    { title: "Workflow V9", desc: "Dall'idea al post finale in soli 3 passaggi.", icon: "⚡", color: "var(--accent)", tip: "Approva i contenuti in Social & Hype." },
+    { title: "Personalizza", desc: "Cambia look e layout del tuo studio subito.", icon: "🎨", color: "var(--purple)", tip: "Impostazioni Studio → Wizard Layout." }
+];
+
+function renderQuickGuides() {
+    const grid = document.getElementById('quickGuideGrid');
+    if(!grid) return;
+    
+    grid.innerHTML = QUICK_GUIDES_DATA.map(g => `
+        <div class="card" style="padding:16px; border:1px solid var(--border); transition:all 0.2s; cursor:pointer;" onmouseover="this.style.borderColor='${g.color}'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                <div style="width:34px; height:34px; border-radius:10px; background:${g.color}15; color:${g.color}; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">${g.icon}</div>
+                <div style="font-weight:700; font-size:0.8rem;">${g.title}</div>
+            </div>
+            <div style="font-size:0.7rem; color:var(--dim); line-height:1.4; margin-bottom:8px;">${g.desc}</div>
+            <div style="font-family:'DM Mono',monospace; font-size:0.52rem; color:${g.color}; padding:5px 8px; background:${g.color}08; border-radius:6px; display:inline-block;">💡 ${g.tip}</div>
+        </div>
+    `).join('');
 }
 
 function renderForge() {
