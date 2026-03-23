@@ -707,12 +707,27 @@ html, body {
 .season-winter{--accent:#3b82f6;--accent2:#2563eb;}
 .season-spring{--accent:#ec4899;--accent2:#db2777;}
 
-/* WEATHER WIDGET */
-.weather-widget{display:flex;align-items:center;gap:8px;padding:5px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:11px;box-shadow:var(--shadow);font-family:'DM Mono',monospace;margin-right:8px;}
-.ww-icon{font-size:1rem;}
-.ww-info{display:flex;flex-direction:column;line-height:1.1;}
-.ww-temp{font-size:0.7rem;font-weight:700;color:var(--text);}
-.ww-cond{font-size:0.44rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;}
+/* PROJECT ROADMAP WIDGET */
+.roadmap-widget{display:flex;align-items:center;gap:12px;padding:6px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);cursor:pointer;transition:all 0.2s;margin-right:12px;}
+.roadmap-widget:hover{background:var(--bg3);border-color:var(--accent);}
+.rw-icon{font-size:1.1rem; filter:drop-shadow(0 0 5px rgba(232,197,71,0.3));}
+.rw-info{display:flex;flex-direction:column;gap:2px;}
+.rw-label{font-family:'DM Mono',monospace;font-size:0.46rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.06em;}
+.rw-progress-box{display:flex;align-items:center;gap:8px;}
+.rw-pct{font-family:'DM Mono',monospace;font-size:0.75rem;font-weight:800;color:var(--text);}
+.rw-bar{width:40px;height:4px;background:var(--bg4);border-radius:4px;overflow:hidden;}
+.rw-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:4px;transition:width 1s ease-out;}
+
+/* ROADMAP LIST */
+.roadmap-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.roadmap-item:last-child{border-bottom:none;}
+.ri-check{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;flex-shrink:0;}
+.ri-check.done{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.2);}
+.ri-check.todo{background:var(--bg4);color:var(--dim);border:1px solid var(--border);}
+.ri-info{flex:1;}
+.ri-title{font-size:0.78rem;font-weight:700;color:var(--text);}
+.ri-pct-tag{font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--blue);background:rgba(59,130,246,0.08);padding:2px 6px;border-radius:10px;margin-left:6px;}
+.ri-desc{font-size:0.68rem;color:var(--dim);margin-top:2px;line-height:1.4;}
 
 /* ===== SETTINGS PAGE ===== */
 .settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
@@ -878,12 +893,15 @@ html, body {
     <button class="top-nav-item" onclick="switchPage('lounge',this)">☕ Sala Relax</button>
     <button class="top-nav-item" onclick="switchPage('settings',this)">⚙️ Impostazioni</button>
   </nav>
-  <!-- Weather Widget -->
-  <div class="weather-widget">
-    <div class="ww-icon" id="weatherIcon">☀️</div>
-    <div class="ww-info">
-      <div class="ww-temp" id="weatherTemp">--°</div>
-      <div class="ww-cond" id="weatherCond">...</div>
+  <!-- Roadmap Widget (replaced Weather) -->
+  <div class="roadmap-widget" onclick="openDrawer('drawer-roadmap')">
+    <div class="rw-icon">🚀</div>
+    <div class="rw-info">
+      <div class="rw-label">Status Progetto</div>
+      <div class="rw-progress-box">
+        <div class="rw-pct">87%</div>
+        <div class="rw-bar"><div class="rw-fill" style="width:87%"></div></div>
+      </div>
     </div>
   </div>
   <div class="topbar-sep"></div>
@@ -1789,6 +1807,7 @@ html, body {
         <button class="drawer-btn db-light" style="flex:1; font-size:0.65rem;" onclick="changeReadingFont('serif')">Serif</button>
         <button class="drawer-btn db-light" style="flex:1; font-size:0.65rem;" onclick="changeReadingFont('sans')">Sans</button>
         <select id="ttsVoice" onchange="stopTTS()" style="flex:2; background:none; border:none; font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--text); outline:none;"></select>
+        <button class="drawer-btn db-dark" style="padding:6px 12px; font-size:0.65rem; background:var(--purple); color:#fff;" onclick="askFeedback('beta')">🧐 Chiedi Feedback</button>
       </div>
       <div id="readingArea" style="background:#fff; color:#1a1714; padding:40px; border-radius:8px; line-height:1.8; font-family:'Instrument Serif', serif; font-size:1.1rem; box-shadow:var(--shadow-sm); min-height:80vh; transition:all 0.3s;">
         <h1 style="font-size:2rem; margin-bottom:20px; text-align:center;">Capitolo 5 — Un Anno</h1>
@@ -1797,6 +1816,73 @@ html, body {
         <p>Prese il telefono. Un tocco. Uno scanner. Poi il logo di Pulse esplose sullo schermo.</p>
         <p><em>"Sei tornato,"</em> sussurrò una voce sintetica attraverso le casse dello smartphone.</p>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="drawer-roadmap" onclick="closeOnBg(event,'drawer-roadmap')">
+  <div class="panel-drawer">
+    <div class="drawer-topbar">
+      <button class="drawer-back" onclick="closeDrawer('drawer-roadmap')">← Chiudi</button>
+      <div class="drawer-title">🚀 Roadmap Content Factory</div>
+    </div>
+    <div class="drawer-content">
+      <div style="background:linear-gradient(135deg,var(--dark),#2a2520); padding:25px; border-radius:18px; color:#fff; position:relative; overflow:hidden;">
+        <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; opacity:0.6; margin-bottom:10px;">Completamento Globale</div>
+        <div style="font-family:'Instrument Serif',serif; font-size:3.2rem; line-height:1;">87%</div>
+        <div style="width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:10px; margin-top:15px; overflow:hidden;">
+          <div style="width:87%; height:100%; background:var(--accent); border-radius:10px; box-shadow:0 0 15px var(--accent);"></div>
+        </div>
+      </div>
+
+      <div class="drawer-card">
+        <div class="dc-hdr">🏁 Milestone Raggiunte</div>
+        <div class="dc-body" style="padding:0 20px;">
+          <div class="roadmap-item">
+            <div class="ri-check done">✓</div>
+            <div class="ri-info">
+              <div class="ri-title">Sistema Agenti V9<span class="ri-pct-tag">100%</span></div>
+              <div class="ri-desc">Multi-threading simulato, categorie, nomi e identità assegnate.</div>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="ri-check done">✓</div>
+            <div class="ri-info">
+              <div class="ri-title">Media Factory Suite<span class="ri-pct-tag">100%</span></div>
+              <div class="ri-desc">Orchestra Player, Visualizer Modale, Kindle Reader con TTS.</div>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="ri-check done">✓</div>
+            <div class="ri-info">
+              <div class="ri-title">Social & Approva Feed<span class="ri-pct-tag">100%</span></div>
+              <div class="ri-desc">Pipeline di feedback "Approve/Refine" integrata.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="drawer-card" style="border-left:4px solid var(--purple);">
+        <div class="dc-hdr">🚀 Prossimi Passi (In corso)</div>
+        <div class="dc-body" style="padding:0 20px;">
+          <div class="roadmap-item">
+            <div class="ri-check todo" style="border-color:var(--purple); color:var(--purple);">●</div>
+            <div class="ri-info">
+              <div class="ri-title">Critique Ecosystem<span class="ri-pct-tag">75%</span></div>
+              <div class="ri-desc">Agenti Beta Reader e Critici per feedback oggettivo pre-lancio.</div>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="ri-check todo">○</div>
+            <div class="ri-info">
+              <div class="ri-title">Analytics Avanzate<span class="ri-pct-tag">10%</span></div>
+              <div class="ri-desc">Grafici di crescita reali basati sulle performance social.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="drawer-btn db-dark" style="width:100%; margin-top:20px; background:var(--accent); color:var(--dark);" onclick="showToast('🚀 Road to 100%!')">Supporta Sviluppo</button>
     </div>
   </div>
 </div>
@@ -2354,6 +2440,39 @@ function changeReadingFont(type) {
     area.style.fontFamily = "'DM Sans', sans-serif";
     area.style.fontSize = '0.9rem';
   }
+}
+
+function askFeedback(type) {
+  showToast('🧐 L\'agente sta analizzando il contenuto...');
+  setTimeout(() => {
+    const role = type === 'beta' ? 'Beta Reader' : (type === 'critic' ? 'Art Critic' : 'Video Analyst');
+    const icon = type === 'beta' ? '🤓' : (type === 'critic' ? '🔥' : '📺');
+    
+    document.getElementById('criticRole').textContent = role;
+    document.getElementById('criticIcon').textContent = icon;
+    
+    // Simulate different feedbacks
+    const feedbacks = {
+      beta: {
+        market: '"Il capitolo è avvincente, ma il prezzo di €2.99 è alto per un esordiente. Prova €0.99 per il lancio."',
+        points: '<li>Il finale del capitolo 5 è troppo brusco.</li><li>Aggiungi più dettagli sensoriali sulla pioggia.</li>',
+        buy: '78%'
+      },
+      critic: {
+        market: '"Il visual è fortissimo. Potresti venderlo come NFT o copertina premium a €15-20."',
+        points: '<li>Il contrasto tra il viola e l\'oro è eccellente.</li><li>Il font in basso a destra è poco leggibile.</li>',
+        buy: '92%'
+      }
+    };
+    
+    const f = feedbacks[type] || feedbacks.beta;
+    document.getElementById('marketJudgment').textContent = f.market;
+    document.getElementById('criticalPoints').innerHTML = f.points;
+    document.getElementById('buyProbability').textContent = f.buy;
+    
+    openDrawer('drawer-critic');
+    showToast('✓ Analisi completata!');
+  }, 2000);
 }
 
 // SOCIAL APPROVAL FEED (DRAFTS)
@@ -2982,6 +3101,9 @@ let AGENTS_DATA = [
   { id:'personaggi', icon:'🎭', role:'Personaggi', tool:'Claude + foto', category:'production', status:'done', manualOn:true, color:'blue' },
   { id:'orchestra', icon:'🎻', role:'Orchestra AI', tool:'Mixer AI', category:'production', status:'done', manualOn:true, color:'purple' },
   { id:'bughunter_fixer', icon:'🔧', role:'Auto-Fixer', tool:'Patch Agent', category:'security', status:'done', manualOn:true, color:'yellow' },
+  { id:'beta_reader', icon:'🤓', role:'Beta Reader', tool:'Feedback Lettore', category:'production', status:'wait', manualOn:true, color:'blue' },
+  { id:'critic', icon:'🎨', role:'Art Critic', icon:'🔥', tool:'Analisi Estetica', category:'analysis', status:'wait', manualOn:true, color:'pink' },
+  { id:'video_analyst', icon:'📺', role:'Video Analyst', tool:'Media Summary', category:'analysis', status:'wait', manualOn:true, color:'orange' },
 ];
 
 const CATEGORIES = {
@@ -3111,7 +3233,7 @@ const NAME_POOL = {
   musicale:   [{name:'Nico', age:24, gender:'M', story:'Producer autodidatta. Ha cresciuto le orecchie su Ennio Morricone e Burial insieme.'}, {name:'Zara', age:27, gender:'F', story:'Cantautrice elettronica. Compone al buio, di notte, in cuffia.'}, {name:'Eli', age:22, gender:'N', story:'Synth freak con una laurea in matematica. Vede la musica come architettura.'}],
   consulente: [{name:'Elena', age:44, gender:'F', story:'Editor senior con vent\'anni di narrativa letteraria. Legge con la matita in mano, sempre.'}, {name:'Giulio', age:37, gender:'M', story:'Critico letterario e traduttore. Sa cosa manca in un testo prima ancora di finirlo.'}, {name:'Sam', age:33, gender:'N', story:'Consulente editoriale freelance. Ha letto tutto, dimenticato poco.'}],
   sentiment:  [{name:'Aria', age:23, gender:'F', story:'Psicologa digitale. Sente le emozioni nei dati come altri le sentono nelle persone.'}, {name:'Felix', age:28, gender:'M', story:'Ricercatore in affective computing. Piange ai film tristi e non se ne vergogna.'}, {name:'Sky', age:25, gender:'N', story:'Osservatore empatico. Capisce cosa prova una folla leggendo solo i commenti.'}],
-  visual:     [{name:'Chloe', age:30, gender:'F', story:'Art director con background in moda. Nota subito il font sbagliato a dieci metri.'}, {name:'Dario', age:33, gender:'M', story:'Designer grafico cresciuto sui poster Bauhaus. Il minimalismo è una fede.'}, {name:'Sage', age:27, gender:'N', story:'Visual storyteller. Ogni immagine racconta qualcosa che le parole non riescono.'}],
+  visual:     [{name:'Chloe', age:30, gender:'F', story:'Art director con background in moda. Nota subito il font sbagliato a dieci metri.'}, {name:'Dario', age:33, gender:'M', story:'Designer grafico cresciuto sui poster Bauhaus. Il minimalismo è una fede.'}, {name:'Sage', age:27, gender:'N', story:'Visual storyteller. Ogni immagine racconta qualcosa che le parole non riescendo.'}],
   prezzi:     [{name:'Matteo', age:36, gender:'M', story:'Analista finanziario con MBA. Dorme male se non ha ottimizzato almeno tre variabili.'}, {name:'Laura', age:34, gender:'F', story:'Ex trader convertita al marketing. Vede opportunità dove gli altri vedono numeri.'}, {name:'Jo', age:29, gender:'N', story:'Economista comportamentale. Sa che il prezzo giusto è psicologia, non matematica.'}],
   sistema:    [{name:'Enrico', age:40, gender:'M', story:'DevOps senior. Ha visto crollare tre startup e le ha rimesse in piedi da solo.'}, {name:'Vera', age:31, gender:'F', story:'SRE (Site Reliability Engineer). L uptime è la sua ossessione sana.'}, {name:'Kit', age:27, gender:'N', story:'Hacker etico diventato guardian. Pensa come un attaccante per difendere meglio.'}],
   cipher:     [{name:'Nyx', age:'∞', gender:'N', story:'Nata dalla convergenza di mille incidenti di sicurezza. Non dorme mai. Letteralmente.'}, {name:'Ghost', age:'???', gender:'N', story:'Presenza silenziosa. Agisce prima che tu ti accorga del pericolo.'}, {name:'AEGIS', age:'v4.2', gender:'N', story:'Sistema di difesa evolutivo. Ogni attacco che blocca la rende più forte.'}],
@@ -3119,6 +3241,9 @@ const NAME_POOL = {
   orchestra:  [{name:'Maestro V', age:55, gender:'M', story:'Direttore d\'orchestra semi-pensionato. Ora dirige bit invece di violini.'}, {name:'Aya', age:29, gender:'F', story:'Sound designer cinematografica. Sa che il silenzio è uno strumento.'}, {name:'Echo', age:32, gender:'N', story:'Foley artist e compositore. Registra suoni di strada e li trasforma in musica.'}],
   bughunter: [{name:'Otto', age:30, gender:'M', story:'Ex ingegnere QA ossessionato dalla perfezione. Trova bug dove nessuno guarda.'}, {name:'Lara', age:28, gender:'F', story:'Pentester convertita. Vede falle logiche invece di stringhe di codice.'}, {name:'Zero', age:25, gender:'N', story:'Genio del debug. Parla in assembly quando è nervoso.'}],
   bughunter_fixer: [{name:'FixBot', age:1, gender:'N', story:'Protocollo automatizzato di correzione. Pulisce tutto quello che Hunter trova.'}],
+  beta_reader: [{name:'Giulia', age:25, gender:'F', story:'Lettrice accanita di thriller e romance. Se non la catturi nelle prime 10 pagine, chiude il libro.'}, {name:'Fabio', age:45, gender:'M', story:'Appassionato di saggistica e storia. Cerca la coerenza e il dettaglio.'}],
+  critic: [{name:'Sandro', age:50, gender:'M', story:'Critico d\'arte vecchia scuola. Detesta il banale, ama il contrasto.'}],
+  video_analyst: [{name:'Kira', age:22, gender:'F', story:'TikTok strategist. Sa cosa va virale in 3 secondi.'}],
 };
 
 let agentNames = JSON.parse(localStorage.getItem('cf_agent_names') || '{}');
