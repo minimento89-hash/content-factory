@@ -562,6 +562,26 @@ html, body {
 .ab-primary:hover { opacity:0.9; transform:scale(1.02); }
 .ab-secondary:hover { background:rgba(0,0,0,0.1); }
 
+/* SOCIAL TABS (Phase 4) */
+.social-tabs { display:flex; gap:10px; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px; }
+.social-tab { padding:8px 16px; border-radius:12px; font-family:'DM Mono',monospace; font-size:0.64rem; font-weight:700; cursor:pointer; color:var(--dim); transition:all 0.2s; border:1px solid transparent; }
+.social-tab:hover { background:var(--bg3); }
+.social-tab.active { background:var(--dark); color:#fff; border-color:var(--dark); }
+.social-pane { display:none; animation:fadeIn 0.3s ease; }
+.social-pane.active { display:block; }
+
+.published-item { display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--bg3); border:1px solid var(--border); border-radius:16px; margin-bottom:10px; }
+.pi-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0; }
+.pi-info { flex:1; }
+.pi-title { font-size:0.78rem; font-weight:600; color:var(--text); }
+.pi-meta { font-family:'DM Mono',monospace; font-size:0.48rem; color:var(--dim); margin-top:1px; }
+.pi-stats { display:flex; gap:10px; font-family:'DM Mono',monospace; font-size:0.52rem; color:var(--green); }
+
+.scheduled-item { display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--bg3); border:1px solid var(--border); border-radius:16px; border-left:4px solid var(--accent); margin-bottom:10px; }
+.si-time { font-family:'DM Mono',monospace; font-size:0.6rem; font-weight:800; color:var(--accent2); padding:4px 8px; background:rgba(232,197,71,0.08); border-radius:8px; }
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
 .feedback-box { margin-top:15px; display:none; animation:fadeIn 0.3s; }
 .fb-input { width:100%; padding:12px; border:1px solid var(--border); border-radius:10px; font-family:inherit; font-size:0.8rem; background:rgba(255,255,255,0.5); resize:none; }
 
@@ -1067,13 +1087,45 @@ html, body {
     <div class="page" id="page-social">
       <div><div class="page-greeting">Social & Hype</div><div class="page-sub">Statistiche live & Contenuti in arrivo</div></div>
       
-      <div class="card" style="margin-bottom:24px;">
-        <div class="card-hdr">
-          <div class="card-title">✨ In Approvazione</div>
-          <span class="card-tag live">bozze</span>
+      <div class="social-tabs">
+        <div class="social-tab active" onclick="switchSocialTab('approva', this)">Approva</div>
+        <div class="social-tab" onclick="switchSocialTab('programmati', this)">Programmati</div>
+        <div class="social-tab" onclick="switchSocialTab('pubblicati', this)">Pubblicati</div>
+      </div>
+
+      <div id="pane-approva" class="social-pane active">
+        <div class="card" style="margin-bottom:24px;">
+          <div class="card-hdr">
+            <div class="card-title">✨ In Approvazione</div>
+            <span class="card-tag live">bozze</span>
+          </div>
+          <div id="approvalFeed" style="padding:20px;">
+            <!-- Populated by renderApprovalFeed() -->
+          </div>
         </div>
-        <div id="approvalFeed" style="padding:20px;">
-          <!-- Populated by renderApprovalFeed() -->
+      </div>
+
+      <div id="pane-programmati" class="social-pane">
+        <div class="card" style="margin-bottom:24px;">
+          <div class="card-hdr">
+            <div class="card-title">📅 Post Calendarizzati</div>
+            <span class="card-tag" style="background:rgba(232,197,71,0.1);color:var(--accent2)">in coda</span>
+          </div>
+          <div id="scheduledFeed" style="padding:20px;">
+            <!-- Populated by renderScheduledFeed() -->
+          </div>
+        </div>
+      </div>
+
+      <div id="pane-pubblicati" class="social-pane">
+        <div class="card" style="margin-bottom:24px;">
+          <div class="card-hdr">
+            <div class="card-title">🚀 Storia Pubblicazioni</div>
+            <span class="card-tag" style="background:rgba(34,197,94,0.1);color:var(--green)">live</span>
+          </div>
+          <div id="publishedFeed" style="padding:20px;">
+            <!-- Populated by renderPublishedFeed() -->
+          </div>
         </div>
       </div>
 
@@ -1082,9 +1134,9 @@ html, body {
           <div class="card-title">📊 Piattaforme</div>
           <span class="card-tag live">live</span>
         </div>
-        <div class="platform-row"><div class="plat-icon" style="background:rgba(255,0,80,0.08)">🎵</div><div><div class="plat-name">TikTok</div><div class="plat-handle">@callmeriver</div></div><div class="live-dot"></div><div class="plat-stats"><div><div class="plat-stat-val">98K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">14.2K</div><div class="plat-stat-label">❤️</div></div><div><div class="plat-stat-val">341</div><div class="plat-stat-label">💬</div></div></div></div>
-        <div class="platform-row"><div class="plat-icon" style="background:rgba(225,48,108,0.08)">📸</div><div><div class="plat-name">Instagram</div><div class="plat-handle">@callmeriver</div></div><div class="plat-stats"><div><div class="plat-stat-val">41K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">6.8K</div><div class="plat-stat-label">❤️</div></div><div><div class="plat-stat-val">128</div><div class="plat-stat-label">💬</div></div></div></div>
-        <div class="platform-row"><div class="plat-icon" style="background:rgba(255,0,0,0.08)">▶️</div><div><div class="plat-name">YouTube</div><div class="plat-handle">Call Me River</div></div><div class="plat-stats"><div><div class="plat-stat-val">12K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">1.2K</div><div class="plat-stat-label">👍</div></div><div><div class="plat-stat-val">67</div><div class="plat-stat-label">💬</div></div></div></div>
+        <div class="platform-row" onclick="showPlatformDetails('tiktok')"><div class="plat-icon" style="background:rgba(255,0,80,0.08)">🎵</div><div><div class="plat-name">TikTok</div><div class="plat-handle">@callmeriver</div></div><div class="live-dot"></div><div class="plat-stats"><div><div class="plat-stat-val">98K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">14.2K</div><div class="plat-stat-label">❤️</div></div><div><div class="plat-stat-val">341</div><div class="plat-stat-label">💬</div></div></div></div>
+        <div class="platform-row" onclick="showPlatformDetails('instagram')"><div class="plat-icon" style="background:rgba(225,48,108,0.08)">📸</div><div><div class="plat-name">Instagram</div><div class="plat-handle">@callmeriver</div></div><div class="plat-stats"><div><div class="plat-stat-val">41K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">6.8K</div><div class="plat-stat-label">❤️</div></div><div><div class="plat-stat-val">128</div><div class="plat-stat-label">💬</div></div></div></div>
+        <div class="platform-row" onclick="showPlatformDetails('youtube')"><div class="plat-icon" style="background:rgba(255,0,0,0.08)">▶️</div><div><div class="plat-name">YouTube</div><div class="plat-handle">Call Me River</div></div><div class="plat-stats"><div><div class="plat-stat-val">12K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">1.2K</div><div class="plat-stat-label">👍</div></div><div><div class="plat-stat-val">67</div><div class="plat-stat-label">💬</div></div></div></div>
       </div>
     </div>
 
@@ -2703,30 +2755,49 @@ function refineCritique() {
   }
 }
 
-// SOCIAL APPROVAL FEED (DRAFTS)
+// SOCIAL APPROVAL FEED (Phase 4)
 let DRAFTS_DATA = [
   { id:'d1', type:'video', agent:'Video Maker', role:'Reel TikTok', preview:'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4', title:'Il Risveglio di River', status:'pending' },
   { id:'d2', type:'image', agent:'Visual Identity', role:'Spotify Cover', preview:'https://picsum.photos/id/10/800/800', title:'Electronic Dreams Vol.1', status:'pending' },
   { id:'d3', type:'text', agent:'Social & Hype', role:'Draft Post IG', preview:'Qualcosa sta cambiando nel Pulse. Sei pronto a scoprirlo?', title:'Capturing the Hype', status:'pending' }
 ];
 
+let SCHEDULED_DATA = [
+  { id:'s1', type:'video', platform:'TikTok', title:'Behind the Scenes Cap.7', time:'Oggi, 18:30', preview:'🎬' },
+  { id:'s2', type:'image', platform:'Instagram', title:'Quotes from River', time:'Domani, 10:00', preview:'📸' }
+];
+
+let PUBLISHED_DATA = [
+  { id:'p1', type:'video', platform:'TikTok', title:'Trailer Call Me River', date:'23 Mar 2026', stats:'98K views · 14.2K likes', icon:'🎵' },
+  { id:'p2', type:'image', platform:'Instagram', title:'Dante Portrait', date:'22 Mar 2026', stats:'41K views · 6.8K likes', icon:'📸' }
+];
+
+function switchSocialTab(tab, el) {
+  document.querySelectorAll('.social-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.social-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('pane-' + tab).classList.add('active');
+  
+  if(tab === 'approva') renderApprovalFeed();
+  if(tab === 'programmati') renderScheduledFeed();
+  if(tab === 'pubblicati') renderPublishedFeed();
+}
+
 function renderApprovalFeed() {
   const container = document.getElementById('approvalFeed');
   if(!container) return;
+  if(DRAFTS_DATA.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--dim); font-family:'DM Mono',monospace; font-size:0.7rem;">Nessun contenuto in approvazione.</div>`;
+    return;
+  }
   container.innerHTML = '';
-  
   DRAFTS_DATA.forEach(draft => {
     const card = document.createElement('div');
     card.className = 'approval-card';
-    
     let mediaHTML = '';
-    if(draft.type === 'video') {
-      mediaHTML = `<div class="ac-media" onclick="openVisualizer('video', '${draft.preview}')"><video src="${draft.preview}" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video></div>`;
-    } else if(draft.type === 'image') {
-      mediaHTML = `<div class="ac-media" onclick="openVisualizer('image', '${draft.preview}')"><img src="${draft.preview}" style="width:100%; display:block;"></div>`;
-    } else {
-      mediaHTML = `<div style="background:rgba(0,0,0,0.05); padding:15px; border-radius:10px; font-style:italic; font-size:0.8rem; margin:10px 0;">"${draft.preview}"</div>`;
-    }
+    if(draft.type === 'video') mediaHTML = `<div class="ac-media" onclick="openVisualizer('video', '${draft.preview}')"><video src="${draft.preview}" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video></div>`;
+    else if(draft.type === 'image') mediaHTML = `<div class="ac-media" onclick="openVisualizer('image', '${draft.preview}')"><img src="${draft.preview}" style="width:100%; display:block;"></div>`;
+    else mediaHTML = `<div style="background:rgba(0,0,0,0.05); padding:15px; border-radius:10px; font-style:italic; font-size:0.8rem; margin:10px 0;">"${draft.preview}"</div>`;
     
     card.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -2735,17 +2806,82 @@ function renderApprovalFeed() {
       </div>
       ${mediaHTML}
       <div class="ac-btns">
-        <button class="ab-primary" onclick="approveDraft('${draft.id}')">✓ Approva</button>
+        <button class="ab-primary" onclick="approveSocialItem('${draft.id}')">✓ Approva e Pubblica</button>
         <button class="ab-secondary" onclick="toggleFeedback('${draft.id}')">🔄 Rifina</button>
         <button class="ab-secondary" onclick="deleteDraft('${draft.id}')">🗑️</button>
       </div>
       <div class="feedback-box" id="fb-${draft.id}">
-        <textarea class="fb-input" placeholder="Cosa dobbiamo migliorare? Esempio: 'Colori più caldi', 'Tono più serio'..."></textarea>
-        <button class="ab-primary" style="margin-top:8px; font-size:0.6rem; padding:8px;" onclick="sendFeedback('${draft.id}')">Invia Feedback all'Agente</button>
+        <textarea class="fb-input" placeholder="Feedback..."></textarea>
+        <button class="ab-primary" style="margin-top:8px; font-size:0.6rem; padding:8px;" onclick="sendFeedback('${draft.id}')">Invia Feedback</button>
       </div>
     `;
     container.appendChild(card);
   });
+}
+
+function renderScheduledFeed() {
+  const container = document.getElementById('scheduledFeed');
+  if(!container) return;
+  container.innerHTML = '';
+  SCHEDULED_DATA.forEach(item => {
+    container.innerHTML += `
+      <div class="scheduled-item">
+        <div style="font-size:1.2rem;">${item.preview}</div>
+        <div class="pi-info">
+          <div class="pi-title">${item.title}</div>
+          <div class="pi-meta">${item.platform} · In attesa</div>
+        </div>
+        <div class="si-time">${item.time}</div>
+      </div>
+    `;
+  });
+}
+
+function renderPublishedFeed() {
+  const container = document.getElementById('publishedFeed');
+  if(!container) return;
+  container.innerHTML = '';
+  PUBLISHED_DATA.forEach(item => {
+    container.innerHTML += `
+      <div class="published-item">
+        <div class="pi-icon" style="background:var(--bg4)">${item.icon}</div>
+        <div class="pi-info">
+          <div class="pi-title">${item.title}</div>
+          <div class="pi-meta">${item.platform} · Pubblicato il ${item.date}</div>
+        </div>
+        <div class="pi-stats">${item.stats}</div>
+      </div>
+    `;
+  });
+}
+
+function approveSocialItem(id) {
+  const draft = DRAFTS_DATA.find(d => d.id === id);
+  if(!draft) return;
+  showToast('✓ Caricamento in corso...');
+  setTimeout(() => {
+    // Simulate auto-reposting
+    const published = {
+      id: 'p'+Date.now(),
+      type: draft.type,
+      platform: draft.role.includes('TikTok') ? 'TikTok' : (draft.role.includes('IG') ? 'Instagram' : 'Social'),
+      title: draft.title,
+      date: 'Oggi',
+      stats: '0 views · 0 likes',
+      icon: draft.type === 'video' ? '🎬' : '📸'
+    };
+    PUBLISHED_DATA.unshift(published);
+    DRAFTS_DATA = DRAFTS_DATA.filter(d => d.id !== id);
+    renderApprovalFeed();
+    showToast('🚀 Post pubblicato con successo!');
+    addLog('success', 'Social', 'Nuovo post pubblicato: ' + draft.title);
+  }, 1200);
+}
+
+function showPlatformDetails(plat) {
+  const name = plat.charAt(0).toUpperCase() + plat.slice(1);
+  showToast('📊 Apertura dettagli ' + name + '...');
+  // Possible extension: open a modal with growth charts
 }
 
 function toggleFeedback(id) {
@@ -2753,37 +2889,23 @@ function toggleFeedback(id) {
   box.style.display = box.style.display === 'block' ? 'none' : 'block';
 }
 
-function approveDraft(id) {
-  showToast('Contenuto approvato e pubblicato! ✨');
-  DRAFTS_DATA = DRAFTS_DATA.filter(d => d.id !== id);
-  renderApprovalFeed();
-}
-
 function deleteDraft(id) {
-  if(confirm('Sei sicuro di voler eliminare questo bozzetto?')) {
+  if(confirm('Eliminare bozzetto?')) {
     DRAFTS_DATA = DRAFTS_DATA.filter(d => d.id !== id);
     renderApprovalFeed();
   }
 }
 
 function sendFeedback(id) {
-  const box = document.getElementById('fb-' + id);
-  const input = box.querySelector('textarea');
-  if(!input.value) return;
-  
-  showToast('Feedback inviato all\'Agente! 🔄 Rielaborazione in corso...');
+  showToast('🔄 Feedback inviato!');
   toggleFeedback(id);
-  // Simulating the agent "working"
-  const draft = DRAFTS_DATA.find(d => d.id === id);
-  if(draft) {
-    draft.title += ' (Rielaborato)';
-  }
-  renderApprovalFeed();
 }
 
-// Initialize components
+// Initialize on Load
 document.addEventListener('DOMContentLoaded', () => {
   renderApprovalFeed();
+  renderScheduledFeed();
+  renderPublishedFeed();
 });
 
 function openDrawer(id){ console.log('Opening drawer:', id); document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
