@@ -964,6 +964,7 @@ html, body {
 </head>
 <script src="analytics-engine.js"></script>
 <script src="forge-engine.js"></script>
+<script src="flow-engine.js"></script>
 <body>
 <script>
   // Global Theme Initialization
@@ -1048,6 +1049,7 @@ html, body {
     <div class="sidebar-item" onclick="openDrawer('drawer-chars')"><div class="si-icon">🎭</div>Personaggi</div>
     <div class="sidebar-item" onclick="openDrawer('drawer-orch')"><div class="si-icon">🎻</div>Orchestra AI</div>
     <div class="sidebar-item" onclick="switchSidebar(this,'forge')"><div class="si-icon">🧪</div>Officina Idee</div>
+    <div class="sidebar-item" onclick="switchSidebar(this,'flows')"><div class="si-icon">🕸️</div>Mappe Studio</div>
     <div class="sidebar-item" onclick="openDrawer('drawer-music')"><div class="si-icon">🎵</div>Musica<span class="si-badge hot">6</span></div>
     <div class="sidebar-section">Distribuzione</div>
     <div class="sidebar-item" onclick="switchSidebar(this,'social')"><div class="si-icon">📱</div>Social & Hype</div>
@@ -1269,6 +1271,25 @@ html, body {
             <div id="forgeIdeaList" style="flex:1; padding:20px; overflow-y:auto;">
                 <!-- Populated by ForgeEngine -->
             </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLOWS (MAPPE STUDIO) -->
+    <div class="page" id="page-flows">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;">
+        <div>
+            <div class="page-greeting">Mappe Studio</div>
+            <div class="page-sub">Logic Flows · Architettura Agentica</div>
+        </div>
+      </div>
+      <div class="card" style="height:600px; display:flex; flex-direction:column; padding:10px; position:relative; overflow:hidden;">
+        <div id="flowContainer" style="flex:1; width:100%; height:100%;">
+            <!-- SVG Rendered by FlowEngine -->
+        </div>
+        <div style="position:absolute; bottom:20px; right:20px; background:rgba(0,0,0,0.6); padding:8px 15px; border-radius:20px; font-family:'DM Mono',monospace; font-size:0.55rem; color:#fff; display:flex; gap:10px; align-items:center; border:1px solid rgba(255,255,255,0.1);">
+            <div style="display:flex; align-items:center; gap:5px;"><div style="width:6px; height:6px; border-radius:50%; background:var(--accent);"></div> Active Flow</div>
+            <div style="display:flex; align-items:center; gap:5px;"><div style="width:6px; height:6px; border-radius:50%; background:var(--dim);"></div> Static Link</div>
         </div>
       </div>
     </div>
@@ -2627,7 +2648,7 @@ function goToExternalPage(url) {
         if(i.getAttribute('onclick') && i.getAttribute('onclick').includes("'"+openPage+"'")) i.classList.add('active');
       });
       // Sync topbar
-      const map = ['home','agents','social','forge','analytics','archive','cyber','lounge','settings'];
+      const map = ['home', 'agents', 'social', 'forge', 'flows', 'analytics', 'archive', 'cyber', 'lounge', 'settings'];
       const idx = map.indexOf(openPage);
       document.querySelectorAll('.top-nav-item').forEach((b,i) => {
         b.classList.remove('active');
@@ -2651,7 +2672,12 @@ function switchPage(name, btn) {
   if(name === 'agents') renderAgentsByCategory();
   if(name === 'analytics') renderAnalytics();
   if(name === 'forge') renderForge();
+  if(name === 'flows') renderFlows();
   if(name === 'home') renderQuickGuides();
+}
+
+function renderFlows() {
+    FlowEngine.init('flowContainer');
 }
 
 const QUICK_GUIDES_DATA = [
@@ -2699,7 +2725,7 @@ function renderAnalytics() {
 function switchSidebar(el, name) {
   document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
   el.classList.add('active');
-  const map = ['home','agents','social','forge','analytics','archive','cyber','lounge','settings'];
+  const map = ['home', 'agents', 'social', 'forge', 'flows', 'analytics', 'archive', 'cyber', 'lounge', 'settings'];
   document.querySelectorAll('.top-nav-item').forEach(b=>b.classList.remove('active'));
   const idx = map.indexOf(name);
   if(idx>=0) document.querySelectorAll('.top-nav-item')[idx]?.classList.add('active');
