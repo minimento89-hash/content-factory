@@ -16,7 +16,7 @@
 
   // Global protection & Profile sync
   onAuthChange(async (user, profile) => {
-    if (!user) {
+    if (!user && !profile) {
       console.log("🚫 Not authenticated, redirecting to login...");
       window.location.href = "login.html";
       return;
@@ -24,7 +24,7 @@
 
     currentUser = user;
     if (profile) {
-      console.log("✅ Authenticated as:", profile.name);
+      console.log(user ? "✅ Cloud authenticated" : "🔓 Local authenticated (PIN)");
       
       // Sync UI
       document.getElementById('topAv').textContent = profile.emoji || '🦁';
@@ -34,8 +34,14 @@
       const greet = h < 12 ? 'Buongiorno' : h < 18 ? 'Buon pomeriggio' : 'Buonasera';
       document.getElementById('greetingTxt').textContent = `${greet} ${profile.name} 👋`;
       
-      // Load Factories for this specific user
-      await loadSavedFactories(user.uid);
+      // Load Factories
+      if (user) {
+        await loadSavedFactories(user.uid);
+      } else {
+        // Fallback: Local only
+        const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
+        renderInitialFactories(saved);
+      }
       document.getElementById('greetingSub').textContent = `Hai ${getFactoryCount()} studi attivi · scegli dove lavorare oggi`;
     }
   });

@@ -92,7 +92,15 @@ export function onAuthChange(callback) {
         callback(user, null);
       }
     } else {
-      callback(null, null);
+      // BACKWARD COMPATIBILITY: Check for local session marker (PIN login)
+      const isLocalAuth = sessionStorage.getItem('cf_logged') === '1';
+      if (isLocalAuth) {
+        console.log("🔓 Local session detected (PIN), allowing read-only cloud mode");
+        const profile = JSON.parse(localStorage.getItem('cf_profile') || '{"name":"Il Capo","emoji":"🦁"}');
+        callback(null, profile);
+      } else {
+        callback(null, null);
+      }
     }
   });
 }

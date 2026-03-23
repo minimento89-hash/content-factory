@@ -13,7 +13,7 @@
 
   // Global protection & Profile sync
   onAuthChange(async (user, profile) => {
-    if (!user) {
+    if (!user && !profile) {
       console.log("🚫 Not authenticated, redirecting to login...");
       window.location.href = "login.html";
       return;
