@@ -31,8 +31,11 @@ const WeatherEngine = {
             const data = await this.getWeatherData();
             if (data) {
                 this.updateUI(data);
-                if (localStorage.getItem(this.config.autoThemeKey) === 'true') {
+                const isAuto = localStorage.getItem(this.config.autoThemeKey);
+                if (isAuto === 'true' || isAuto === true) {
                     this.applyDynamicTheme(data);
+                } else {
+                    console.log("🌦️ WeatherEngine: Auto-theme disattivato, salto applicazione tema.");
                 }
                 this.applySeasonalEffects();
             }

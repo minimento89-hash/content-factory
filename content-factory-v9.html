@@ -91,6 +91,23 @@
   --spacing-scale: 1;
 }
 
+/* ===== LIGHT THEME ===== */
+.theme-light {
+  --bg: #f5f3f0 !important;
+  --bg2: #ffffff !important;
+  --bg3: #faf9f7 !important;
+  --bg4: #edeae4 !important;
+  --border: rgba(0,0,0,0.08) !important;
+  --border2: rgba(0,0,0,0.14) !important;
+  --text: #1a1714 !important;
+  --text2: #4a4540 !important;
+  --dim: #948c84 !important;
+  --mid: #6b635c !important;
+  --dark: #ffffff !important; /* In light mode, 'dark' elements become light */
+  --dark2: #f0ede8 !important;
+  --shadow: 0 4px 20px rgba(0,0,0,0.05) !important;
+}
+
 /* ===== DARK THEME ===== */
 .theme-dark {
   --bg: #0d1117;
@@ -305,7 +322,7 @@ html, body {
   border: 1px solid transparent;
 }
 .sidebar-item:hover { background: var(--bg3); color: var(--text2); }
-.sidebar-item.active { background: var(--dark); color: var(--bg); border-color: transparent; }
+.sidebar-item.active { background: var(--accent); color: var(--dark); border-color: transparent; }
 .sidebar-item.active .si-icon { opacity: 1; }
 .si-icon { font-size: 0.95rem; width: 20px; text-align: center; flex-shrink: 0; }
 .si-badge {
@@ -955,9 +972,15 @@ html, body {
 .layout-creative .stat-card.accent { background: var(--accent); color: var(--bg); }
 .layout-creative .chief-card { border: 2px solid var(--accent); }
 
-/* Theme Color Injection */
-.custom-theme-color { --accent: var(--user-color); --accent2: var(--user-color-dark); }
-
+  /* Theme Power Overrides */
+  body.theme-light, body.theme-light .topbar, body.theme-light .sidebar, body.theme-light .content { background: var(--bg) !important; color: var(--text) !important; }
+  body.theme-light .sidebar-item:not(.active), body.theme-light .card, body.theme-light .stat-card:not(.dark):not(.accent) { background: var(--bg2) !important; border-color: var(--border) !important; }
+  body.theme-light .sidebar-item.active { background: var(--accent) !important; color: #000 !important; }
+  body.theme-light .logo, body.theme-light .logo-icon { color: var(--text) !important; }
+  
+  body.theme-dark, body.theme-dark .topbar, body.theme-dark .sidebar, body.theme-dark .content { background: var(--bg) !important; color: var(--text) !important; }
+  body.theme-dark .sidebar-item:not(.active), body.theme-dark .card { background: var(--bg2) !important; }
+  
   @keyframes slideInUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
@@ -967,32 +990,6 @@ html, body {
 <script src="flow-engine.js"></script>
 <script src="sentiment-engine.js"></script>
 <body>
-<script>
-  // Global Theme Initialization
-  (function() {
-    const savedTheme = localStorage.getItem('cf_theme') || 'dark'; // Default to dark but allow change
-    document.body.className = 'theme-' + savedTheme;
-  })();
-</script>
-<script>
-  // Dynamic Layout & Theme Initialization
-  (function() {
-    const layout = localStorage.getItem('cf_active_studio_layout') || 'standard';
-    const color = localStorage.getItem('cf_active_studio_color');
-    
-    if (layout !== 'standard') {
-      document.body.classList.add('layout-' + layout);
-    }
-    
-    if (color) {
-      document.body.classList.add('custom-theme-color');
-      document.documentElement.style.setProperty('--user-color', color);
-      document.documentElement.style.setProperty('--user-color-dark', color + 'dd');
-    }
-    // Initialize
-    renderQuickGuides();
-  })();
-</script>
 
 <!-- TOPBAR -->
 <div class="topbar">
@@ -1029,8 +1026,8 @@ html, body {
       <span id="profilePillName" style="font-family:'DM Sans',sans-serif;font-size:0.76rem;font-weight:600;color:var(--text);">Il Capo</span>
       <div id="profilePillStatusDot" style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
     </div>
-    <div id="themeIndicator" style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--dim);padding:5px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;cursor:pointer;" onclick="switchPage('settings',document.querySelectorAll('.top-nav-item')[6])">
-      🎨 Chiaro
+    <div id="themeIndicator" style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--dim);padding:5px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;cursor:pointer;" onclick="toggleTheme()">
+      🎨 Caricamento...
     </div>
   </div>
 </div>
@@ -1069,19 +1066,18 @@ html, body {
   <!-- CONTENT -->
   <main class="content">
 
-    <!-- ACCESSORAPIDO / QUICK GUIDES -->
-    <div id="quick-guides" style="margin-bottom:24px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-            <div style="font-size:0.9rem; font-weight:800; color:var(--text); letter-spacing:0.02em;">⚡ Accesso Rapido</div>
-            <div style="font-family:'DM Mono',monospace; font-size:0.55rem; color:var(--dim);">TIPS & TRICKS</div>
-        </div>
-        <div id="quickGuideGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:15px;">
-            <!-- Will be populated by JS -->
-        </div>
-    </div>
-
     <!-- DASHBOARD -->
     <div class="page active" id="page-home">
+      <!-- ACCESSORAPIDO / QUICK GUIDES -->
+      <div id="quick-guides" style="margin-bottom:30px; animation: fadeIn 0.8s ease;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+              <div style="font-size:0.9rem; font-weight:800; color:var(--text); letter-spacing:0.02em;">⚡ Accesso Rapido</div>
+              <div style="font-family:'DM Mono',monospace; font-size:0.55rem; color:var(--dim);">TIPS & TRICKS</div>
+          </div>
+          <div id="quickGuideGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:15px;">
+              <!-- Populated by JS -->
+          </div>
+      </div>
       <div><div class="page-greeting" id="dashboardGreeting">Buongiorno 👋</div><div class="page-sub">L'Editor in Capo ha 3 decisioni per te · Workspace</div></div>
       <div class="stats-row">
         <div class="stat-card dark"><div class="stat-label">🔥 Hype Score</div><div class="stat-value">94</div><div class="stat-change">↑ In crescita</div><div class="stat-icon">🔥</div></div>
@@ -2733,11 +2729,63 @@ function switchPage(name, btn) {
   if(name === 'forge') renderForge();
   if(name === 'sentiment') renderSentiment();
   if(name === 'flows') renderFlows();
-  if(name === 'home') renderQuickGuides();
+  if(name === 'home') {
+    setTimeout(renderQuickGuides, 10);
+  }
 }
 
 function renderSentiment() {
     SentimentEngine.init();
+}
+
+function toggleTheme() {
+    console.log("Toggling theme...");
+    const isDark = document.body.classList.contains('theme-dark');
+    const next = isDark ? 'light' : 'dark';
+    localStorage.setItem('cf_theme', next);
+    syncTheme();
+    showToast('✨ Tema ' + (next === 'dark' ? '🌙 Scuro' : '☀️ Chiaro') + ' applicato!');
+}
+
+function updateThemeIndicator() {
+    const isDark = document.body.classList.contains('theme-dark');
+    const el = document.getElementById('themeIndicator');
+    if(el) {
+        el.innerText = isDark ? '🌙 Scuro' : '☀️ Chiaro';
+        el.style.color = isDark ? '#fff' : 'var(--accent)';
+    }
+}
+
+function syncTheme() {
+    console.log("Syncing theme...");
+    const savedTheme = localStorage.getItem('cf_theme') || 'light';
+    const autoEnabled = localStorage.getItem('cf_auto_theme_enabled') === 'true';
+    console.log("Applying theme:", savedTheme, "Auto-theme:", autoEnabled);
+    
+    // Unify targeting: Always use documentElement for theme classes
+    const root = document.documentElement;
+    root.className = root.className
+        .split(' ')
+        .filter(c => !c.startsWith('theme-'))
+        .join(' ');
+        
+    if (savedTheme !== 'light') root.classList.add('theme-' + savedTheme);
+    
+    // Also reset body classes just in case as a cleanup
+    document.body.classList.remove('theme-dark', 'theme-night', 'theme-light');
+
+    updateThemeIndicator();
+    
+    // Sync layout/color
+    const layout = localStorage.getItem('cf_active_studio_layout') || 'standard';
+    const color = localStorage.getItem('cf_active_studio_color');
+    document.body.classList.remove('layout-focused', 'layout-creative');
+    if (layout !== 'standard') document.body.classList.add('layout-' + layout);
+    if (color) {
+      document.body.classList.add('custom-theme-color');
+      document.documentElement.style.setProperty('--user-color', color);
+      document.documentElement.style.setProperty('--user-color-dark', color + 'dd');
+    }
 }
 
 function renderFlows() {
@@ -2751,8 +2799,12 @@ const QUICK_GUIDES_DATA = [
 ];
 
 function renderQuickGuides() {
+    console.log("Rendering Quick Guides...");
     const grid = document.getElementById('quickGuideGrid');
-    if(!grid) return;
+    if(!grid) {
+        console.warn("quickGuideGrid not found!");
+        return;
+    }
     
     grid.innerHTML = QUICK_GUIDES_DATA.map(g => `
         <div class="card" style="padding:16px; border:1px solid var(--border); transition:all 0.2s; cursor:pointer;" onmouseover="this.style.borderColor='${g.color}'" onmouseout="this.style.borderColor='var(--border)'">
@@ -3316,12 +3368,10 @@ function openDrawer(id){
   console.log('Opening drawer:', id); 
   document.getElementById(id).classList.add('open'); 
   document.body.style.overflow='hidden'; 
-  if (id === 'drawer-roadmap' && window.WeatherEngine) WeatherEngine.init();
 }
 function closeDrawer(id){
   document.getElementById(id).classList.remove('open');
   document.body.style.overflow='';
-  if (id === 'drawer-roadmap' && window.WeatherEngine) WeatherEngine.stop();
 }
 function closeOnBg(e,id){if(e.target===document.getElementById(id))closeDrawer(id);}
 
@@ -3427,11 +3477,15 @@ function updateAgentBadge() {
 })();
 
 function applyTheme(name, card, label) {
-  // Remove all theme classes
-  themes.forEach(t => document.documentElement.classList.remove('theme-'+t));
+  // Remove all theme classes from documentElement
+  const root = document.documentElement;
+  themes.forEach(t => root.classList.remove('theme-'+t));
+  
   // Apply new theme (light = no class)
-  if(name !== 'light') document.documentElement.classList.add('theme-'+name);
+  if(name !== 'light') root.classList.add('theme-'+name);
   currentTheme = name;
+  localStorage.setItem('cf_theme', name);
+
   // Update UI
   document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('selected'));
   if(card) card.classList.add('selected');
@@ -3439,13 +3493,15 @@ function applyTheme(name, card, label) {
   if(badge) badge.textContent = label+' attivo';
   const indicator = document.getElementById('themeIndicator');
   if(indicator) indicator.textContent = label;
+
   showToast('✓ Tema '+label+' applicato!');
   addLog('info','Impostazioni','Tema cambiato: '+label);
+
   // Disable auto-theme if a manual theme is applied
   const autoThemeToggle = document.getElementById('autoThemeToggle');
-  if (autoThemeToggle && autoThemeToggle.classList.contains('on')) {
+  if (autoThemeToggle) {
     autoThemeToggle.classList.remove('on');
-    localStorage.setItem('cf_auto_theme_enabled', false);
+    localStorage.setItem('cf_auto_theme_enabled', 'false');
     if (window.WeatherEngine) WeatherEngine.stop();
   }
 }
@@ -4264,6 +4320,10 @@ function exportLog() {
 
 // Progress animation
 setInterval(()=>{const mb=document.getElementById('musicBar');if(mb){const w=parseFloat(mb.style.width)||72;if(w<99)mb.style.width=Math.min(99,w+0.3)+'%';}},500);
+
+// Initialize Everything
+syncTheme();
+renderQuickGuides();
 
 </script>
 
