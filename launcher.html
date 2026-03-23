@@ -90,6 +90,7 @@
 
   // ===== WIZARD & UI HELPERS =====
   let selectedType = { icon: '📖', name: 'Scrittore', color: '#1a1714' };
+  let selectedLayout = 'standard';
   let selectedColor = '#1a1714';
   let deleteTarget = null;
 
@@ -107,11 +108,26 @@
     document.getElementById('wizName').placeholder = 'es. Io, ' + name + ' · Il mio progetto...';
   };
 
+  window.selectLayout = (el, layout, name, desc) => {
+    document.querySelectorAll('.wlayout').forEach(l => l.classList.remove('sel'));
+    el.classList.add('sel');
+    selectedLayout = layout;
+    
+    // Update Preview Classes
+    const previewCard = document.getElementById('wizPreviewCard');
+    previewCard.className = 'wp-card'; // reset
+    if (layout !== 'standard') previewCard.classList.add('wp-' + layout);
+  };
+
   window.selectColor = (el, color) => {
     document.querySelectorAll('.cpick').forEach(c => c.classList.remove('sel'));
     el.classList.add('sel');
     selectedColor = color;
     selectedType.color = color;
+    
+    // Update Preview Hero Color
+    const wpHero = document.getElementById('wpHero');
+    if (wpHero) wpHero.style.background = color;
   };
 
   window.toggleAgent = (el) => el.classList.toggle('sel');
@@ -125,6 +141,7 @@
       id, name,
       icon: selectedType.icon,
       type: selectedType.name,
+      layout: selectedLayout,
       color: selectedColor,
       agents,
       hype: Math.floor(Math.random()*30 + 10),
@@ -195,12 +212,24 @@
 
   window.openFactory = (id, e) => {
     if(e) e.stopPropagation();
-    const names = { cmr: 'Io, Scrittore', apps: 'Io, Apps' };
-    const name = names[id] || id;
+    
+    // Find full factory data
+    const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
+    let factory = saved.find(f => f.id === id);
+    
+    // Fallback for legacy hardcoded IDs if any
+    if(!factory) {
+      const legacy = { cmr: { name: 'Io, Scrittore', layout: 'standard', color: '#1a1714' }, apps: { name: 'Io, Apps', layout: 'standard', color: '#1a2a2a' } };
+      factory = legacy[id] || { name: id, layout: 'standard', color: '#1a1714' };
+    }
+
     localStorage.setItem('cf_active_studio', id);
-    localStorage.setItem('cf_active_studio_name', name);
-    showToast('▶ Apertura ' + name + '...');
-    const card = document.getElementById('fc-' + id);
+    localStorage.setItem('cf_active_studio_name', factory.name);
+    localStorage.setItem('cf_active_studio_layout', factory.layout || 'standard');
+    localStorage.setItem('cf_active_studio_color', factory.color || '#1a1714');
+    
+    showToast('▶ Apertura ' + factory.name + '...');
+    const card = document.getElementById(id);
     if(card) { card.style.transform = 'scale(0.97)'; card.style.transition = 'transform 0.15s'; }
     setTimeout(() => { window.location.href = 'content-factory-v9.html'; }, 600);
   };
@@ -351,6 +380,37 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
 .cpick:hover{transform:scale(1.1);}
 .cpick.sel{border-color:var(--dark);box-shadow:0 0 0 2px rgba(0,0,0,0.1);}
 
+/* Layout picker */
+.wiz-layouts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
+.wlayout{padding:14px 10px;border-radius:14px;background:var(--bg3);border:2px solid var(--border);cursor:pointer;text-align:center;transition:all 0.2s;}
+.wlayout:hover{border-color:var(--border2);}
+.wlayout.sel{border-color:var(--dark);background:var(--bg2);box-shadow:var(--shadow);}
+.wlayout-icon{font-size:1.4rem;margin-bottom:6px;}
+.wlayout-name{font-size:0.74rem;font-weight:700;margin-bottom:2px;}
+.wlayout-desc{font-family:'DM Mono',monospace;font-size:0.48rem;color:var(--dim);line-height:1.3;}
+
+/* Preview area */
+.wiz-preview{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:22px;display:flex;flex-direction:column;gap:8px;}
+.wp-card{height:100px;background:var(--bg2);border-radius:10px;border:1px solid var(--border);position:relative;overflow:hidden;box-shadow:var(--shadow);}
+.wp-bar{height:12px;background:var(--bg4);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 6px;gap:3px;}
+.wp-dot{width:4px;height:4px;border-radius:50%;background:var(--dim);}
+.wp-body{display:grid;grid-template-columns:40px 1fr;height:calc(100% - 12px);}
+.wp-side{background:var(--bg3);border-right:1px solid var(--border);padding:4px;display:flex;flex-direction:column;gap:3px;}
+.wp-line{height:3px;background:var(--border2);border-radius:2px;width:100%;}
+.wp-main{padding:8px;display:flex;flex-direction:column;gap:6px;}
+.wp-hero{height:25px;background:var(--bg4);border-radius:4px;width:70%;}
+.wp-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.wp-box{height:15px;background:var(--bg4);border-radius:3px;}
+
+/* Focused variation */
+.wp-focused .wp-side{display:none;}
+.wp-focused .wp-body{grid-template-columns:1fr;}
+.wp-focused .wp-hero{width:100%;height:40px;}
+
+/* Creative variation */
+.wp-creative .wp-grid{grid-template-columns:1fr 1fr 1fr;}
+.wp-creative .wp-hero{background:linear-gradient(90deg,var(--bg4),var(--border2));}
+
 .wiz-actions{display:flex;gap:9px;margin-top:4px;}
 .wbtn{flex:1;padding:12px;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
 .wbtn.dark{background:var(--dark);color:#fff;}
@@ -427,6 +487,47 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
         <div class="wtype-icon">✦</div>
         <div class="wtype-name">Custom</div>
         <div class="wtype-desc">Costruisci il tuo studio da zero</div>
+      </div>
+    </div>
+
+    <!-- Layout Step -->
+    <div class="flabel">LAYOUT DELLO STUDIO</div>
+    <div class="wiz-layouts" id="wizLayouts">
+      <div class="wlayout sel" onclick="selectLayout(this,'standard','Completo','Il design V9 originale con tutti i widget.')">
+        <div class="wlayout-icon">🏢</div>
+        <div class="wlayout-name">Standard</div>
+        <div class="wlayout-desc">Tutti i widget e le stats</div>
+      </div>
+      <div class="wlayout" onclick="selectLayout(this,'focused','Focus','Ottimizzato per la scrittura e il lavoro profondo.')">
+        <div class="wlayout-icon">🎯</div>
+        <div class="wlayout-name">Focused</div>
+        <div class="wlayout-desc">Senza distrazioni laterali</div>
+      </div>
+      <div class="wlayout" onclick="selectLayout(this,'creative','Creative','Enfatizza l\'Orchestra e i Visualizers.')">
+        <div class="wlayout-icon">✨</div>
+        <div class="wlayout-name">Creative</div>
+        <div class="wlayout-desc">Visual e Audio in primo piano</div>
+      </div>
+    </div>
+
+    <!-- Preview Area -->
+    <div class="flabel">ANTEPRIMA STRUTTURA</div>
+    <div class="wiz-preview">
+      <div class="wp-card" id="wizPreviewCard">
+        <div class="wp-bar">
+          <div class="wp-dot"></div><div class="wp-dot"></div><div class="wp-dot"></div>
+        </div>
+        <div class="wp-body">
+          <div class="wp-side">
+            <div class="wp-line" style="width:80%"></div><div class="wp-line"></div><div class="wp-line" style="width:60%"></div>
+          </div>
+          <div class="wp-main">
+            <div class="wp-hero" id="wpHero"></div>
+            <div class="wp-grid" id="wpGrid">
+              <div class="wp-box"></div><div class="wp-box"></div><div class="wp-box"></div><div class="wp-box"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
