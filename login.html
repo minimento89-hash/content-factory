@@ -128,6 +128,29 @@ html,body{width:100%;height:100vh;background:var(--bg);font-family:'DM Sans',san
     <div class="ov-sub">Troppi tentativi errati<br>Gli agenti stanno guardando 👀</div>
   </div>
 
+  <!-- Standard Login (Email/Pass) -->
+  <div class="overlay" id="ovEmailAuth" style="display:none; padding: 40px;">
+    <div class="ov-title">Accesso Sicuro</div>
+    <div class="ov-sub">Inserisci le tue credenziali cloud</div>
+    
+    <div class="field" style="width:100%; margin-top: 20px;">
+      <div class="flabel">📧 Email</div>
+      <input class="finput" id="loginEmail" type="email" placeholder="tua@email.com">
+    </div>
+    
+    <div class="field" style="width:100%;">
+      <div class="flabel">🔐 Password</div>
+      <input class="finput" id="loginPass" type="password" placeholder="••••••••">
+    </div>
+    
+    <button class="btn-primary" onclick="handleEmailLogin()" id="btnLogin" style="width:100%; margin-top:10px;">
+      🚀 Accedi
+    </button>
+    <button class="btn-secondary" onclick="switchLoginMode('pin')" style="width:100%; margin-top:8px;">
+      ← Torna al PIN
+    </button>
+  </div>
+
   <!-- Logo -->
   <div class="logo-row">
     <div class="logo-icon">⚡</div>
@@ -141,143 +164,177 @@ html,body{width:100%;height:100vh;background:var(--bg);font-family:'DM Sans',san
     <div class="av-sub" id="avSub">Fondatore · Call Me River</div>
   </div>
 
-  <!-- PIN -->
-  <div class="pin-label">Inserisci il tuo PIN</div>
-  <div class="pin-dots">
-    <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
-    <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
-    <div class="dot" id="d4"></div><div class="dot" id="d5"></div>
-  </div>
+  <div id="pinMode">
+    <div class="pin-label">Inserisci il tuo PIN</div>
+    <div class="pin-dots">
+      <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
+      <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
+      <div class="dot" id="d4"></div><div class="dot" id="d5"></div>
+    </div>
 
-  <!-- Numpad -->
-  <div class="numpad">
-    <button class="nb" onclick="press('1')">1</button>
-    <button class="nb" onclick="press('2')">2<span class="nb-letters">ABC</span></button>
-    <button class="nb" onclick="press('3')">3<span class="nb-letters">DEF</span></button>
-    <button class="nb" onclick="press('4')">4<span class="nb-letters">GHI</span></button>
-    <button class="nb" onclick="press('5')">5<span class="nb-letters">JKL</span></button>
-    <button class="nb" onclick="press('6')">6<span class="nb-letters">MNO</span></button>
-    <button class="nb" onclick="press('7')">7<span class="nb-letters">PQRS</span></button>
-    <button class="nb" onclick="press('8')">8<span class="nb-letters">TUV</span></button>
-    <button class="nb" onclick="press('9')">9<span class="nb-letters">WXYZ</span></button>
-    <button class="nb special" onclick="openChangePinModal()">🔑<span class="nb-letters">Cambia PIN</span></button>
-    <button class="nb" onclick="press('0')">0</button>
-    <button class="nb del" onclick="del()">⌫</button>
-  </div>
+    <!-- Numpad -->
+    <div class="numpad">
+      <button class="nb" onclick="press('1')">1</button>
+      <button class="nb" onclick="press('2')">2<span class="nb-letters">ABC</span></button>
+      <button class="nb" onclick="press('3')">3<span class="nb-letters">DEF</span></button>
+      <button class="nb" onclick="press('4')">4<span class="nb-letters">GHI</span></button>
+      <button class="nb" onclick="press('5')">5<span class="nb-letters">JKL</span></button>
+      <button class="nb" onclick="press('6')">6<span class="nb-letters">MNO</span></button>
+      <button class="nb" onclick="press('7')">7<span class="nb-letters">PQRS</span></button>
+      <button class="nb" onclick="press('8')">8<span class="nb-letters">TUV</span></button>
+      <button class="nb" onclick="press('9')">9<span class="nb-letters">WXYZ</span></button>
+      <button class="nb special" onclick="switchLoginMode('email')">📧<span class="nb-letters">Password</span></button>
+      <button class="nb" onclick="press('0')">0</button>
+      <button class="nb del" onclick="del()">⌫</button>
+    </div>
 
-  <div class="msg hint" id="msgEl">PIN di default: <strong>1 2 3 4 5 6</strong> · cambialo subito!</div>
-  <div class="attempts-bar">
-    <div class="att" id="a0"></div>
-    <div class="att" id="a1"></div>
-    <div class="att" id="a2"></div>
+    <div class="msg hint" id="msgEl">PIN di default: <strong>1 2 3 4 5 6</strong></div>
+    <div class="attempts-bar">
+      <div class="att" id="a0"></div>
+      <div class="att" id="a1"></div>
+      <div class="att" id="a2"></div>
+    </div>
   </div>
   <div class="lock-row">🔒 Sessione locale · dati protetti · nessuna trasmissione</div>
 
 </div>
 
-<script>
-// Load saved profile
-const profile = JSON.parse(localStorage.getItem('cf_profile')||'{"name":"Il Capo","sub":"Fondatore · Call Me River","emoji":"🦁"}');
-document.getElementById('avEmoji').textContent = profile.emoji||'🦁';
-document.getElementById('avName').textContent  = profile.name||'Il Capo';
-document.getElementById('avSub').textContent   = profile.sub||'Fondatore · Call Me River';
+<script type="module">
+import { loginUser, onAuthChange } from "./auth-engine.js";
 
-let correctPin = localStorage.getItem('cf_pin')||'123456';
-let pin=[], attempts=0, locked=false;
-const MAX=3;
+// Load local profile for instant UI
+let profile = JSON.parse(localStorage.getItem('cf_profile') || '{"name":"Il Capo","sub":"Fondatore · Call Me River","emoji":"🦁"}');
+updateUIFromProfile(profile);
 
-function press(v){
-  if(locked) return;
-  if(pin.length>=6) return;
+let correctPin = profile.pin || localStorage.getItem('cf_pin') || '123456';
+let pin = [], attempts = 0, locked = false;
+const MAX = 3;
+
+// Global auth listener
+onAuthChange((user, cloudProfile) => {
+  if (user && cloudProfile) {
+    profile = cloudProfile;
+    updateUIFromProfile(profile);
+    correctPin = profile.pin || '123456';
+  }
+});
+
+function updateUIFromProfile(p) {
+  document.getElementById('avEmoji').textContent = p.emoji || '🦁';
+  document.getElementById('avName').textContent = p.name || 'Il Capo';
+  document.getElementById('avSub').textContent = p.sub || 'Fondatore · Call Me River';
+}
+
+window.switchLoginMode = function(mode) {
+  const pinArea = document.getElementById('pinMode');
+  const emailArea = document.getElementById('ovEmailAuth');
+  if (mode === 'email') {
+    pinArea.style.display = 'none';
+    emailArea.style.display = 'flex';
+  } else {
+    pinArea.style.display = 'block';
+    emailArea.style.display = 'none';
+  }
+}
+
+window.handleEmailLogin = async function() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const btn = document.getElementById('btnLogin');
+  
+  if(!email || !pass) { setMsg('Inserisci email e password', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Autenticazione...';
+
+  const res = await loginUser(email, pass);
+  if (res.success) {
+    // Session markers
+    sessionStorage.setItem('cf_logged', '1');
+    localStorage.setItem('cf_logged_email', email);
+    
+    // Redirect or show PIN
+    document.getElementById('ovSuccessMsg').textContent = 'Bentornato, ' + (res.user.displayName || email) + '!';
+    document.getElementById('ovSuccess').classList.add('show');
+    setTimeout(() => { window.location.href = 'launcher.html'; }, 1200);
+  } else {
+    setMsg('Errore: ' + res.error, 'error');
+    btn.disabled = false;
+    btn.textContent = '🚀 Accedi';
+  }
+}
+
+window.press = function(v) {
+  if (locked) return;
+  if (pin.length >= 6) return;
   pin.push(v);
   refreshDots();
-  setMsg('','hint');
-  if(pin.length===6) setTimeout(checkPin,200);
+  setMsg('', 'hint');
+  if (pin.length === 6) setTimeout(checkPin, 200);
 }
-function del(){
-  if(locked) return;
-  if(pin.length>0){pin.pop();refreshDots();setMsg('','hint');}
+
+window.del = function() {
+  if (locked) return;
+  if (pin.length > 0) { pin.pop(); refreshDots(); setMsg('', 'hint'); }
 }
-function refreshDots(){
-  for(let i=0;i<6;i++){
-    const d=document.getElementById('d'+i);
-    d.className='dot'+(i<pin.length?' filled':'');
+
+function refreshDots() {
+  for (let i = 0; i < 6; i++) {
+    const d = document.getElementById('d' + i);
+    d.className = 'dot' + (i < pin.length ? ' filled' : '');
   }
 }
-function checkPin(){
-  if(pin.join('')===correctPin){
-    for(let i=0;i<6;i++) document.getElementById('d'+i).className='dot ok';
-    setTimeout(()=>{
-      document.getElementById('ovSuccessMsg').textContent='Bentornato, '+profile.name+'! 🚀';
+
+function checkPin() {
+  if (pin.join('') === correctPin) {
+    for (let i = 0; i < 6; i++) document.getElementById('d' + i).className = 'dot ok';
+    setTimeout(() => {
+      document.getElementById('ovSuccessMsg').textContent = 'Accesso rapido confermato! 🚀';
       document.getElementById('ovSuccess').classList.add('show');
-      // Save session
-      sessionStorage.setItem('cf_logged','1');
-      setTimeout(()=>{
-        // Redirect to launcher — for demo shows alert
-        document.getElementById('ovSuccessMsg').textContent='Caricamento Launcher...';
-        setTimeout(()=>{ window.location.href = 'launcher.html'; },1200);
-      },1200);
-    },350);
+      sessionStorage.setItem('cf_logged', '1');
+      setTimeout(() => { window.location.href = 'launcher.html'; }, 1200);
+    }, 350);
   } else {
     attempts++;
-    for(let i=0;i<6;i++) document.getElementById('d'+i).className='dot error';
-    for(let i=0;i<attempts&&i<MAX;i++) document.getElementById('a'+(MAX-1-i)).classList.add('used');
-    if(attempts>=MAX){ setTimeout(lockScreen,500); }
+    for (let i = 0; i < 6; i++) document.getElementById('d' + i).className = 'dot error';
+    for (let i = 0; i < attempts && i < MAX; i++) document.getElementById('a' + (MAX - 1 - i)).classList.add('used');
+    if (attempts >= MAX) { setTimeout(lockScreen, 500); }
     else {
-      const rem=MAX-attempts;
-      setMsg('PIN errato · '+rem+' tentativ'+(rem===1?'o':'i')+' rimast'+(rem===1?'o':'i'),'error');
-      setTimeout(()=>{for(let i=0;i<6;i++)document.getElementById('d'+i).className='dot';},600);
+      const rem = MAX - attempts;
+      setMsg('PIN errato · ' + rem + ' tentativ' + (rem === 1 ? 'o' : 'i') + ' rimast' + (rem === 1 ? 'o' : 'i'), 'error');
+      setTimeout(() => { for (let i = 0; i < 6; i++) document.getElementById('d' + i).className = 'dot'; }, 600);
     }
-    pin=[];
+    pin = [];
   }
 }
-function lockScreen(){
-  locked=true;
-  document.getElementById('ovLocked').classList.add('show');
-  let t=30;
-  document.getElementById('countdownNum').textContent=t;
-  const iv=setInterval(()=>{
-    t--;
-    document.getElementById('countdownNum').textContent=t;
-    if(t<=0){
-      clearInterval(iv);
-      locked=false; attempts=0; pin=[];
-      document.getElementById('ovLocked').classList.remove('show');
-      for(let i=0;i<6;i++) document.getElementById('d'+i).className='dot';
-      for(let i=0;i<MAX;i++) document.getElementById('a'+i).classList.remove('used');
-      setMsg('PIN di default: <strong>1 2 3 4 5 6</strong> · cambialo subito!','hint');
-    }
-  },1000);
-}
-function resetAll(){pin=[];attempts=0;for(let i=0;i<6;i++)document.getElementById('d'+i).className='dot';}
-function setMsg(t,c){const m=document.getElementById('msgEl');m.innerHTML=t;m.className='msg '+c;}
 
-// Change PIN
-function openChangePinModal(){
-  document.getElementById('changePinModal').classList.add('show');
-  document.getElementById('np1').value='';
-  document.getElementById('np2').value='';
-  document.getElementById('pinChangeErr').textContent='';
-  setTimeout(()=>document.getElementById('np1').focus(),100);
+function lockScreen() {
+  locked = true;
+  document.getElementById('ovLocked').classList.add('show');
+  let t = 30;
+  document.getElementById('countdownNum').textContent = t;
+  const iv = setInterval(() => {
+    t--;
+    document.getElementById('countdownNum').textContent = t;
+    if (t <= 0) {
+      clearInterval(iv);
+      locked = false; attempts = 0; pin = [];
+      document.getElementById('ovLocked').classList.remove('show');
+      for (let i = 0; i < 6; i++) document.getElementById('d' + i).className = 'dot';
+      for (let i = 0; i < MAX; i++) document.getElementById('a' + i).classList.remove('used');
+      setMsg('Usa la tua password se hai dimenticato il PIN', 'hint');
+    }
+  }, 1000);
 }
-function savePin(){
-  const p1=document.getElementById('np1').value;
-  const p2=document.getElementById('np2').value;
-  const err=document.getElementById('pinChangeErr');
-  if(p1.length!==6||!/^\d+$/.test(p1)){err.textContent='⚠ PIN deve essere 6 cifre numeriche';return;}
-  if(p1!==p2){err.textContent='⚠ I due PIN non coincidono';return;}
-  if(p1==='123456'){err.textContent='⚠ Scegli un PIN diverso dal default';return;}
-  localStorage.setItem('cf_pin',p1);
-  correctPin=p1;
-  document.getElementById('changePinModal').classList.remove('show');
-  setMsg('✓ PIN cambiato con successo!','hint');
-  setTimeout(()=>setMsg('','hint'),3000);
-}
+
+function setMsg(t, c) { const m = document.getElementById('msgEl'); m.innerHTML = t; m.className = 'msg ' + c; }
 
 // Keyboard support
-document.addEventListener('keydown',e=>{
-  if(e.key>='0'&&e.key<='9') press(e.key);
-  else if(e.key==='Backspace') del();
+document.addEventListener('keydown', e => {
+  if (document.getElementById('pinMode').style.display !== 'none') {
+    if (e.key >= '0' && e.key <= '9') press(e.key);
+    else if (e.key === 'Backspace') del();
+  }
 });
 </script>
 

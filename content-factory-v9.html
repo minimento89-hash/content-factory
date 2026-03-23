@@ -5,27 +5,57 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Content Factory — Settings</title>
 <!-- Firebase SDK -->
+<!-- FIREBASE & AUTH ENGINE -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+  import { onAuthChange, logoutUser } from "./auth-engine.js";
+  import { db } from "./firebase-config.js";
+  import { doc, getDoc, setDoc, updateDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-  // Placeholder Config - User should replace this
-  const firebaseConfig = {
-    apiKey: "PLACEHOLDER_API_KEY",
-    authDomain: "content-factory-demo.firebaseapp.com",
-    projectId: "content-factory-demo",
-    storageBucket: "content-factory-demo.firebasestorage.app",
-    messagingSenderId: "PLACEHOLDER_SENDER_ID",
-    appId: "PLACEHOLDER_APP_ID"
-  };
+  // Global protection & Profile sync
+  onAuthChange(async (user, profile) => {
+    if (!user) {
+      console.log("🚫 Not authenticated, redirecting to login...");
+      window.location.href = "login.html";
+      return;
+    }
+    
+    if (profile) {
+      console.log("✅ Studio authenticated as:", profile.name);
+      const name = profile.name || 'Il Capo';
+      const emoji = profile.emoji || '🦁';
+      
+      // Update Topbar (via global IDs or selectors)
+      const topAv = document.getElementById('topAv');
+      const topName = document.getElementById('topName');
+      if (topAv) topAv.textContent = emoji;
+      if (topName) topName.textContent = name;
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+      // Dashboard Greeting
+      const dashGreet = document.getElementById('dashboardGreeting');
+      if (dashGreet) {
+        const h = new Date().getHours();
+        const greet = h < 12 ? 'Buongiorno' : h < 18 ? 'Buon pomeriggio' : 'Buonasera';
+        dashGreet.textContent = `${greet} ${name} 👋`;
+      }
 
-  // Expose to window for global access
+      // Chief Card sync
+      const chiefCardTitle = document.getElementById('chiefCardTitle');
+      if (chiefCardTitle) chiefCardTitle.textContent = `${name} ti parla`;
+
+      // Sidebar Workspace pill
+      const activeStudioName = localStorage.getItem('cf_active_studio_name') || 'Il mio studio';
+      const univPill = document.querySelector('.universe-pill > div:first-child');
+      if (univPill) univPill.textContent = activeStudioName;
+    }
+  });
+
+  // Expose for legacy compatibility if needed
   window.db = db;
   window.fs = { doc, setDoc, getDoc, updateDoc, onSnapshot, collection };
-  console.log("🔥 Firebase Initialized");
+  window.logout = async () => {
+    const res = await logoutUser();
+    if (res.success) window.location.href = "login.html";
+  };
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -987,7 +1017,7 @@ html, body {
 
     <!-- DASHBOARD -->
     <div class="page active" id="page-home">
-      <div><div class="page-greeting">Buongiorno 👋</div><div class="page-sub">Il Capo Redattore ha 3 decisioni per te · Call Me River Universe</div></div>
+      <div><div class="page-greeting" id="dashboardGreeting">Buongiorno 👋</div><div class="page-sub">L'Editor in Capo ha 3 decisioni per te · Workspace</div></div>
       <div class="stats-row">
         <div class="stat-card dark"><div class="stat-label">🔥 Hype Score</div><div class="stat-value">94</div><div class="stat-change">↑ In crescita</div><div class="stat-icon">🔥</div></div>
         <div class="stat-card accent"><div class="stat-label">💰 Guadagni</div><div class="stat-value">€31</div><div class="stat-change">↑ +€12 sett.</div><div class="stat-icon">💰</div></div>
@@ -998,7 +1028,7 @@ html, body {
       <div class="grid-main">
         <div class="chief-card">
           <div class="chief-eyebrow">👑 CAPO REDATTORE · DECISIONE URGENTE</div>
-          <div class="chief-title">Director ti parla</div>
+          <div class="chief-title" id="chiefCardTitle">Director ti parla</div>
           <div class="chief-sub">Coordina tutti gli agenti · Call Me River</div>
           <div class="chief-decision">
             <div class="chief-dec-label">📊 ANALISI COMPLETATA</div>

@@ -228,21 +228,34 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
     </button>
   </div>
 
-  <!-- ===== STEP 2: EMAIL ===== -->
+  <!-- ===== STEP 2: EMAIL & PASSWORD ===== -->
   <div class="step-content" id="step2">
-    <div class="step-title">La tua email</div>
-    <div class="step-sub">Serve per recuperare il PIN se lo dimentichi · non viene usata per altro</div>
+    <div class="step-title">Accesso sicuro</div>
+    <div class="step-sub">Scegli una email e una password forte per proteggere i tuoi progetti</div>
 
     <div class="field">
       <div class="flabel">📧 Email</div>
-      <input class="finput" id="f2email" type="email" placeholder="tua@email.com" oninput="validateEmail()">
+      <input class="finput" id="f2email" type="email" placeholder="tua@email.com" oninput="validateStep2()">
       <div class="field-hint" id="f2emailHint"></div>
     </div>
 
     <div class="field">
-      <div class="flabel">📧 Conferma email</div>
-      <input class="finput" id="f2email2" type="email" placeholder="ripeti la tua email" oninput="validateEmail()">
-      <div class="field-hint" id="f2email2Hint"></div>
+      <div class="flabel">🔐 Password sicura</div>
+      <div class="input-wrap">
+        <input class="finput" id="f2pass" type="password" placeholder="Minimo 8 caratteri..." oninput="validateStep2()">
+        <button type="button" class="pw-toggle" onclick="togglePass('f2pass')">👁️</button>
+      </div>
+      <div class="strength-bar"><div class="strength-fill" id="passStrength"></div></div>
+      <div class="field-hint" id="f2passHint"></div>
+    </div>
+
+    <div class="field">
+      <div class="flabel">🔐 Conferma password</div>
+      <div class="input-wrap">
+        <input class="finput" id="f2pass2" type="password" placeholder="Ripeti la password..." oninput="validateStep2()">
+        <button type="button" class="pw-toggle" onclick="togglePass('f2pass2')">👁️</button>
+      </div>
+      <div class="field-hint" id="f2pass2Hint"></div>
     </div>
 
     <!-- What email is used for -->
@@ -360,51 +373,34 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
           <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:0.58rem;">
             <span style="color:var(--dim);">🛡️ Sicurezza</span>
             <span style="color:var(--green);">✓ Attiva</span>
-          </div>
-        </div>
-      </div>
+    <button class="btn-primary" onclick="finishRegistration()" style="width:100%;">
+        ▶ Entra nel Conte<script type="module">
+import { registerUser } from "./auth-engine.js";
 
-      <button class="btn-primary" onclick="finishRegistration()" style="width:100%;">
-        ▶ Entra nel Content Factory
-      </button>
-    </div>
-  </div>
-
-  <!-- Login link -->
-  <div class="login-link">
-    Hai già un account? <a onclick="goToLogin()">Accedi →</a>
-  </div>
-
-</div>
-
-<script>
 // ===== STATE =====
 let currentStep = 1;
-let profileData = {
+window.profileData = {
   emoji: '🦁',
   avatarImg: null,
   name: '',
   tag: 'Fondatore · Call Me River',
   pronomi: 'lui/lui'
 };
-let emailData = { email: '', confirmed: false };
+let authData = { email: '', password: '' };
 let pin1 = [], pin2 = [];
 let pinConfirmed = false;
 
 // ===== STEP NAVIGATION =====
-function goStep(n) {
-  // Validate before proceeding
+window.goStep = function(n) {
   if(n > currentStep) {
     if(currentStep === 1 && !validateStep1()) return;
-    if(currentStep === 2 && !validateEmailFull()) return;
+    if(currentStep === 2 && !validateStep2()) return;
   }
 
   document.getElementById('step'+currentStep).classList.remove('active');
   currentStep = n;
   document.getElementById('step'+n).classList.add('active');
   updateStepsBar();
-
-  // Scroll to top
   window.scrollTo(0, 0);
 }
 
@@ -425,7 +421,6 @@ function updateStepsBar() {
       circle.textContent = i < 4 ? i : '✓';
       label.className = 'step-label';
     }
-    // Lines
     if(i <= 3) {
       const line = document.getElementById('line'+i);
       if(line) line.className = i < currentStep ? 'step-line done' : 'step-line';
@@ -434,7 +429,7 @@ function updateStepsBar() {
 }
 
 // ===== STEP 1: PROFILE =====
-function pickEmoji(el, emoji) {
+window.pickEmoji = function(el, emoji) {
   document.querySelectorAll('.eg-opt').forEach(e => e.classList.remove('sel'));
   el.classList.add('sel');
   profileData.emoji = emoji;
@@ -442,7 +437,7 @@ function pickEmoji(el, emoji) {
   document.getElementById('avatarEmoji').textContent = emoji;
   document.getElementById('avatarBig').innerHTML = '<span id="avatarEmoji">'+emoji+'</span><input type="file" id="avatarFileInput" accept="image/*" style="display:none" onchange="setAvatarFile(this)">';
 }
-function setAvatarFile(input) {
+window.setAvatarFile = function(input) {
   const file = input.files[0]; if(!file) return;
   const r = new FileReader();
   r.onload = e => {
@@ -453,12 +448,12 @@ function setAvatarFile(input) {
   };
   r.readAsDataURL(file);
 }
-function pickPronome(el) {
+window.pickPronome = function(el) {
   document.querySelectorAll('.eg-opt[onclick*="pickPronome"]').forEach(p => p.classList.remove('sel'));
   el.classList.add('sel');
   profileData.pronomi = el.textContent;
 }
-function validateStep1() {
+window.validateStep1 = function() {
   const name = document.getElementById('f1name').value.trim();
   const hint = document.getElementById('f1nameHint');
   const btn = document.getElementById('btn1');
@@ -476,159 +471,159 @@ function validateStep1() {
   btn.disabled = false; return true;
 }
 
-// ===== STEP 2: EMAIL =====
-function validateEmail() {
+// ===== STEP 2: EMAIL & PASSWORD =====
+window.togglePass = function(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+window.validateStep2 = function() {
   const email = document.getElementById('f2email').value.trim();
-  const email2 = document.getElementById('f2email2').value.trim();
-  const h1 = document.getElementById('f2emailHint');
-  const h2 = document.getElementById('f2email2Hint');
+  const pass = document.getElementById('f2pass').value;
+  const pass2 = document.getElementById('f2pass2').value;
+  const hEmail = document.getElementById('f2emailHint');
+  const hPass = document.getElementById('f2passHint');
+  const hPass2 = document.getElementById('f2pass2Hint');
   const btn = document.getElementById('btn2');
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if(!email) { h1.className='field-hint'; h1.textContent=''; btn.disabled=true; return false; }
-  if(!emailRe.test(email)) {
-    h1.className='field-hint error'; h1.textContent='⚠ Email non valida';
-    btn.disabled=true; return false;
-  }
-  h1.className='field-hint ok'; h1.textContent='✓ Formato corretto';
+  let ok = true;
 
-  if(!email2) { h2.className='field-hint'; h2.textContent=''; btn.disabled=true; return false; }
-  if(email !== email2) {
-    h2.className='field-hint error'; h2.textContent='⚠ Le email non coincidono';
-    btn.disabled=true; return false;
-  }
-  h2.className='field-hint ok'; h2.textContent='✓ Email confermata';
-  emailData.email = email; emailData.confirmed = true;
-  btn.disabled=false; return true;
+  // Email
+  if(!emailRe.test(email)) { hEmail.className='field-hint error'; hEmail.textContent='⚠ Email non valida'; ok=false; }
+  else { hEmail.className='field-hint ok'; hEmail.textContent='✓ Email valida'; }
+
+  // Password Strength
+  let strength = 0;
+  if(pass.length >= 8) strength += 25;
+  if(/[A-Z]/.test(pass)) strength += 25;
+  if(/[0-9]/.test(pass)) strength += 25;
+  if(/[^A-Za-z0-9]/.test(pass)) strength += 25;
+  
+  const bar = document.getElementById('passStrength');
+  bar.style.width = strength + '%';
+  bar.style.background = strength < 50 ? 'var(--red)' : strength < 100 ? 'var(--accent)' : 'var(--green)';
+  
+  if(pass.length < 8) { hPass.className='field-hint error'; hPass.textContent='⚠ Minimo 8 caratteri'; ok=false; }
+  else { hPass.className='field-hint ok'; hPass.textContent='✓ Password valida'; }
+
+  // Confirm
+  if(pass !== pass2) { hPass2.className='field-hint error'; hPass2.textContent='⚠ Le password non coincidono'; ok=false; }
+  else if(pass2) { hPass2.className='field-hint ok'; hPass2.textContent='✓ Password confermata'; }
+  else { ok = false; }
+
+  authData.email = email;
+  authData.password = pass;
+  btn.disabled = !ok;
+  return ok;
 }
-function validateEmailFull() { return validateEmail(); }
 
 // ===== STEP 3: PIN =====
-function pinPress(phase, val) {
+window.pinPress = function(phase, val) {
   const arr = phase === 1 ? pin1 : pin2;
   if(arr.length >= 6) return;
   arr.push(val);
   updatePinDots(phase);
   if(arr.length === 6) {
     if(phase === 1) {
-      // Check it's not 123456
       if(arr.join('') === '123456') {
         const h = document.getElementById('pinHint1');
         h.className='field-hint error'; h.textContent='⚠ Scegli un PIN diverso da 123456';
         setTimeout(() => { pin1 = []; updatePinDots(1); h.textContent=''; }, 1200);
         return;
       }
-      // Move to phase 2
       setTimeout(() => {
         document.getElementById('pinPhase1').style.display='none';
         document.getElementById('pinPhase2').style.display='block';
       }, 300);
     } else {
-      // Confirm
       setTimeout(() => checkPinConfirm(), 200);
     }
   }
 }
-function pinDel(phase) {
+window.pinDel = function(phase) {
   const arr = phase === 1 ? pin1 : pin2;
   if(arr.length > 0) arr.pop();
-  if(phase===1) updatePinDots(1);
-  else updatePinDots(2);
+  updatePinDots(phase);
 }
 function updatePinDots(phase) {
   const arr = phase === 1 ? pin1 : pin2;
   const prefix = phase === 1 ? 'p1d' : 'p2d';
   for(let i=0;i<6;i++) {
     const d = document.getElementById(prefix+i);
-    if(!d) return;
-    d.className = 'dot' + (i < arr.length ? ' filled' : '');
+    if(d) d.className = 'dot' + (i < arr.length ? ' filled' : '');
   }
 }
 function checkPinConfirm() {
   const h = document.getElementById('pinHint2');
   if(pin1.join('') === pin2.join('')) {
-    // Success - mark all dots green
     for(let i=0;i<6;i++) document.getElementById('p2d'+i).className='dot ok';
     h.className='field-hint ok'; h.textContent='✓ PIN confermato!';
     pinConfirmed = true;
-    // Save and go to step 4
     setTimeout(() => completeRegistration(), 700);
   } else {
     for(let i=0;i<6;i++) document.getElementById('p2d'+i).className='dot error';
     h.className='field-hint error'; h.textContent='⚠ I PIN non coincidono · riprova';
     setTimeout(() => {
-      pin2=[];
+      pin2=[]; pin1=[];
       document.getElementById('pinPhase2').style.display='none';
       document.getElementById('pinPhase1').style.display='block';
-      pin1=[];
-      for(let i=0;i<6;i++) {
-        document.getElementById('p1d'+i).className='dot';
-        document.getElementById('p2d'+i).className='dot';
-      }
+      for(let i=0;i<6;i++) { document.getElementById('p1d'+i).className='dot'; document.getElementById('p2d'+i).className='dot'; }
       h.textContent='';
     }, 1200);
   }
 }
 
-// ===== COMPLETE =====
-function completeRegistration() {
-  // Save everything to localStorage
+// ===== COMPLETE & CLOUD SYNC =====
+async function completeRegistration() {
+  // Show "Processing" state
+  const h = document.getElementById('pinHint2');
+  h.innerHTML = '<span style="color:var(--blue)">☁ Sincronizzazione cloud in corso...</span>';
+
   const profile = {
-    name: profileData.name,
-    sub: profileData.tag,
-    emoji: profileData.avatarImg || profileData.emoji,
-    pronomi: profileData.pronomi,
-    status: { icon:'🟢', text:'online' },
-    statusMsg: 'Appena entrato nel team! 🎉'
+    ...profileData,
+    pin: pin1.join('')
   };
-  localStorage.setItem('cf_profile', JSON.stringify(profile));
-  localStorage.setItem('cf_pin', pin1.join(''));
-  localStorage.setItem('cf_email', emailData.email);
-  localStorage.setItem('cf_registered', '1');
 
-  // Update summary
-  document.getElementById('summaryName').textContent = profileData.name;
-  document.getElementById('summaryTag').textContent = profileData.tag;
-  document.getElementById('summaryEmail').textContent = emailData.email;
-  document.getElementById('welcomeName').textContent = 'Benvenuto, ' + profileData.name + '!';
-  const av = document.getElementById('summaryAv');
-  if(profileData.avatarImg) {
-    av.innerHTML = '<img src="'+profileData.avatarImg+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+  const res = await registerUser(authData.email, authData.password, profile);
+
+  if(res.success) {
+    // Update summary UI
+    document.getElementById('summaryName').textContent = profileData.name;
+    document.getElementById('summaryTag').textContent = profileData.tag;
+    document.getElementById('summaryEmail').textContent = authData.email;
+    document.getElementById('welcomeName').textContent = 'Benvenuto, ' + profileData.name + '!';
+    const av = document.getElementById('summaryAv');
+    if(profileData.avatarImg) av.innerHTML = '<img src="'+profileData.avatarImg+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+    else av.textContent = profileData.emoji || '🦁';
+
+    goStep(4);
   } else {
-    av.textContent = profileData.emoji || '🦁';
+    h.className='field-hint error';
+    h.textContent = '⚠ Errore Cloud: ' + res.error;
+    // Allow retry
+    setTimeout(() => {
+      pin2=[]; updatePinDots(2);
+      h.textContent = 'Riprova la conferma PIN per tentare nuovamente';
+    }, 3000);
   }
-
-  // Go to step 4
-  goStep(4);
 }
 
-function finishRegistration() {
+window.finishRegistration = function() {
   document.getElementById('ovSuccess').classList.add('show');
   document.querySelector('.login-link').style.display = 'none';
-  setTimeout(() => {
-    window.location.href = 'login.html';
-  }, 1800);
+  setTimeout(() => { window.location.href = 'login.html'; }, 1800);
 }
+window.goToLogin = function() { window.location.href = 'login.html'; }
 
-function goToLogin() {
-  window.location.href = 'login.html';
-}
-
-// Keyboard support for PIN
+// Keyboard support
 document.addEventListener('keydown', e => {
-  if(currentStep !== 3) return;
-  const phase = document.getElementById('pinPhase2').style.display === 'none' ? 1 : 2;
-  if(e.key >= '0' && e.key <= '9') pinPress(phase, e.key);
-  else if(e.key === 'Backspace') pinDel(phase);
-});
-
-// Keyboard support for name
-document.addEventListener('keydown', e => {
-  if(currentStep === 1 && e.key === 'Enter') {
-    if(!document.getElementById('btn1').disabled) goStep(2);
-  }
-  if(currentStep === 2 && e.key === 'Enter') {
-    if(!document.getElementById('btn2').disabled) goStep(3);
+  if(currentStep === 1 && e.key === 'Enter') { if(!document.getElementById('btn1').disabled) goStep(2); }
+  if(currentStep === 2 && e.key === 'Enter') { if(!document.getElementById('btn2').disabled) goStep(3); }
+  if(currentStep === 3) {
+    const phase = document.getElementById('pinPhase2').style.display === 'none' ? 1 : 2;
+    if(e.key >= '0' && e.key <= '9') pinPress(phase, e.key);
+    else if(e.key === 'Backspace') pinDel(phase);
   }
 });
 </script>

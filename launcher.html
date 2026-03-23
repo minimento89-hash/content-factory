@@ -6,30 +6,219 @@
 <title>Content Factory — Launcher</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<!-- FIREBASE SDK (v11.0.2) -->
+<!-- FIREBASE & AUTH ENGINE -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, mergeExternalConfig } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+  import { onAuthChange, logoutUser } from "./auth-engine.js";
+  import { db } from "./firebase-config.js";
+  import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-  // TODO: REPLACE WITH YOUR ACTUAL FIREBASE CONFIG
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  let currentUser = null;
+
+  // Global protection & Profile sync
+  onAuthChange(async (user, profile) => {
+    if (!user) {
+      console.log("🚫 Not authenticated, redirecting to login...");
+      window.location.href = "login.html";
+      return;
+    }
+
+    currentUser = user;
+    if (profile) {
+      console.log("✅ Authenticated as:", profile.name);
+      
+      // Sync UI
+      document.getElementById('topAv').textContent = profile.emoji || '🦁';
+      document.getElementById('topName').textContent = profile.name || 'Il Capo';
+      
+      const h = new Date().getHours();
+      const greet = h < 12 ? 'Buongiorno' : h < 18 ? 'Buon pomeriggio' : 'Buonasera';
+      document.getElementById('greetingTxt').textContent = `${greet} ${profile.name} 👋`;
+      
+      // Load Factories for this specific user
+      await loadSavedFactories(user.uid);
+      document.getElementById('greetingSub').textContent = `Hai ${getFactoryCount()} studi attivi · scegli dove lavorare oggi`;
+    }
+  });
+
+  window.logout = async () => {
+    const res = await logoutUser();
+    if (res.success) window.location.href = "login.html";
   };
 
-  try {
-    const app = initializeApp(firebaseConfig);
-    window.db = getFirestore(app);
-    window.fs = { doc, setDoc, getDoc, collection };
-    console.log("🔥 Firebase Initialized in Launcher");
-  } catch (e) {
-    console.error("Firebase Init Error:", e);
+  // ===== STUDIO MANAGEMENT =====
+  async function loadSavedFactories(uid) {
+    // 1. Local Load (instant)
+    const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
+    renderInitialFactories(saved);
+
+    // 2. Cloud Load (canonical)
+    try {
+      const userRef = doc(db, "users", uid);
+      const snap = await getDoc(userRef);
+      if (snap.exists() && snap.data().factories) {
+        const cloudFactories = snap.data().factories;
+        localStorage.setItem('cf_factories', JSON.stringify(cloudFactories));
+        renderInitialFactories(cloudFactories);
+        console.log("☁ Studi sincronizzati dal cloud");
+      }
+    } catch (e) { console.error("Cloud Load Error:", e); }
+  }
+
+  function renderInitialFactories(factories) {
+    const grid = document.getElementById('factoriesGrid');
+    const staticIds = ['fc-cmr', 'fc-apps', 'newCard'];
+    Array.from(grid.children).forEach(child => {
+      if (!staticIds.includes(child.id)) child.remove();
+    });
+    factories.forEach(f => renderFactoryCard(f));
+  }
+
+  async function syncFactoriesToCloud() {
+    if (!currentUser) return;
+    try {
+      const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
+      const userRef = doc(db, "users", currentUser.uid);
+      await setDoc(userRef, { factories: saved }, { merge: true });
+      console.log("☁ Cloud Sync: Studi aggiornati");
+    } catch (e) { console.error("Cloud Sync Error:", e); }
+  }
+
+  function getFactoryCount() {
+    const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
+    return 2 + saved.length;
+  }
+
+  // ===== WIZARD & UI HELPERS =====
+  let selectedType = { icon: '📖', name: 'Scrittore', color: '#1a1714' };
+  let selectedColor = '#1a1714';
+  let deleteTarget = null;
+
+  window.openWizard = () => document.getElementById('wizardModal').classList.add('open');
+  window.closeWizard = () => document.getElementById('wizardModal').classList.remove('open');
+  window.closeWizardBg = (e) => {
+    if(e.target === document.getElementById('wizardModal')) window.closeWizard();
+    if(e.target === document.getElementById('confirmModal')) document.getElementById('confirmModal').classList.remove('open');
+  };
+
+  window.selectType = (el, icon, name, desc) => {
+    document.querySelectorAll('.wtype').forEach(t => t.classList.remove('sel'));
+    el.classList.add('sel');
+    selectedType = { icon, name, color: selectedColor };
+    document.getElementById('wizName').placeholder = 'es. Io, ' + name + ' · Il mio progetto...';
+  };
+
+  window.selectColor = (el, color) => {
+    document.querySelectorAll('.cpick').forEach(c => c.classList.remove('sel'));
+    el.classList.add('sel');
+    selectedColor = color;
+    selectedType.color = color;
+  };
+
+  window.toggleAgent = (el) => el.classList.toggle('sel');
+
+  window.createFactory = async () => {
+    const name = document.getElementById('wizName').value.trim();
+    if(!name) { showToast('⚠ Dai un nome allo studio!'); return; }
+    const agents = Array.from(document.querySelectorAll('.agent-chip.sel')).map(c => c.textContent);
+    const id = 'fc-' + Date.now();
+    const factory = {
+      id, name,
+      icon: selectedType.icon,
+      type: selectedType.name,
+      color: selectedColor,
+      agents,
+      hype: Math.floor(Math.random()*30 + 10),
+      created: new Date().toLocaleDateString('it-IT')
+    };
+    
+    const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
+    saved.push(factory);
+    localStorage.setItem('cf_factories', JSON.stringify(saved));
+    
+    await syncFactoriesToCloud();
+    renderFactoryCard(factory);
+    window.closeWizard();
+    showToast('✓ Studio "' + name + '" creato!');
+    document.getElementById('greetingSub').textContent = `Hai ${getFactoryCount()} studi attivi · scegli dove lavorare oggi`;
+  };
+
+  function renderFactoryCard(f) {
+    const grid = document.getElementById('factoriesGrid');
+    const newCard = document.getElementById('newCard');
+    const agentChips = f.agents.slice(0,3).map(a => `<span class="chip">${a}</span>`).join('');
+    const extra = f.agents.length > 3 ? `<span class="chip">+${f.agents.length-3}</span>` : '';
+
+    const card = document.createElement('div');
+    card.className = 'fc'; card.id = f.id;
+    card.innerHTML = `
+      <div class="fc-banner" style="background:linear-gradient(135deg,${f.color},${f.color}aa,${f.color}66);">
+        <div class="fc-bigicon">${f.icon}</div>
+        <div class="fc-hype new">✦ nuovo</div>
+        <div class="fc-title">${f.name}</div>
+      </div>
+      <div class="fc-body">
+        <div class="fc-desc">Studio ${f.type} · creato il ${f.created}</div>
+        <div class="fc-chips">${agentChips}${extra}</div>
+        <div class="fc-stats">
+          <div class="fc-stat"><div class="fc-stat-val">${f.agents.length}</div><div class="fc-stat-lbl">🤖 Agenti</div></div>
+          <div class="fc-stat"><div class="fc-stat-val">0</div><div class="fc-stat-lbl">📦 Progetti</div></div>
+          <div class="fc-stat"><div class="fc-stat-val">${f.hype}</div><div class="fc-stat-lbl">⚡ Hype</div></div>
+        </div>
+        <div style="display:flex;gap:7px;margin-top:14px">
+          <button class="fc-btn" style="flex:3" onclick="openFactory('${f.id}',event)">▶ Apri studio</button>
+          <button class="fc-btn" style="flex:1;background:rgba(239,68,68,0.1);color:var(--red);" onclick="askDelete('${f.id}','${f.name}',event)">🗑️</button>
+        </div>
+      </div>`;
+    grid.insertBefore(card, newCard);
+  }
+
+  window.askDelete = (id, name, e) => {
+    e.stopPropagation();
+    deleteTarget = id;
+    document.getElementById('confirmText').innerHTML = `Vuoi eliminare <strong>"${name}"</strong>?<br>Tutti i dati andranno persi.`;
+    document.getElementById('confirmModal').classList.add('open');
+  };
+
+  window.confirmDelete = async () => {
+    if(!deleteTarget) return;
+    const card = document.getElementById(deleteTarget);
+    if(card) card.remove();
+    const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]').filter(f => f.id !== deleteTarget);
+    localStorage.setItem('cf_factories', JSON.stringify(saved));
+    await syncFactoriesToCloud();
+
+    document.getElementById('confirmModal').classList.remove('open');
+    showToast('🗑️ Studio eliminato');
+    deleteTarget = null;
+    document.getElementById('greetingSub').textContent = `Hai ${getFactoryCount()} studi attivi · scegli dove lavorare oggi`;
+  };
+
+  window.openFactory = (id, e) => {
+    if(e) e.stopPropagation();
+    const names = { cmr: 'Io, Scrittore', apps: 'Io, Apps' };
+    const name = names[id] || id;
+    localStorage.setItem('cf_active_studio', id);
+    localStorage.setItem('cf_active_studio_name', name);
+    showToast('▶ Apertura ' + name + '...');
+    const card = document.getElementById('fc-' + id);
+    if(card) { card.style.transform = 'scale(0.97)'; card.style.transition = 'transform 0.15s'; }
+    setTimeout(() => { window.location.href = 'content-factory-v9.html'; }, 600);
+  };
+
+  window.goToPage = (url) => { showToast('▶ Apertura...'); setTimeout(() => { window.location.href = url; }, 400); };
+  window.goToFactory = (pageName) => {
+    localStorage.setItem('cf_open_page', pageName);
+    showToast('▶ Apertura...');
+    setTimeout(() => { window.location.href = 'content-factory-v9.html'; }, 400);
+  };
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
   }
 </script>
+
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -89,7 +278,6 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
 .fc-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;}
 .chip{font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 8px;border-radius:20px;background:var(--bg4);color:var(--dim);}
 
-/* Stats row inside card */
 .fc-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);margin:0 -18px;padding:0 18px;}
 .fc-stat{padding:10px 0;text-align:center;border-right:1px solid var(--border);}
 .fc-stat:last-child{border-right:none;}
@@ -132,7 +320,7 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
 .ql-title{font-size:0.76rem;font-weight:700;margin-bottom:2px;}
 .ql-sub{font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);}
 
-/* WIZARD MODAL */
+/* MODALS */
 .modal-bg{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.22);backdrop-filter:blur(7px);align-items:center;justify-content:center;}
 .modal-bg.open{display:flex;}
 .wizard{background:var(--bg2);border-radius:26px;padding:34px;width:500px;box-shadow:var(--shadow-lg);animation:modalIn 0.3s cubic-bezier(0.4,0,0.2,1);}
@@ -140,7 +328,6 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
 .wiz-title{font-family:'Instrument Serif',serif;font-size:1.5rem;letter-spacing:-0.02em;margin-bottom:4px;}
 .wiz-sub{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);margin-bottom:26px;}
 
-/* Type selector */
 .wiz-types{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
 .wtype{padding:16px 10px;border-radius:14px;background:var(--bg3);border:2px solid var(--border);cursor:pointer;text-align:center;transition:all 0.2s;}
 .wtype:hover{border-color:var(--border2);}
@@ -149,19 +336,16 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
 .wtype-name{font-size:0.78rem;font-weight:700;margin-bottom:2px;}
 .wtype-desc{font-family:'DM Mono',monospace;font-size:0.5rem;color:var(--dim);line-height:1.4;}
 
-/* Agent picker */
 .agents-pool{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:var(--bg3);border-radius:12px;border:1px solid var(--border);}
 .agent-chip{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;background:var(--bg2);border:1.5px solid var(--border);font-size:0.72rem;font-weight:500;cursor:pointer;transition:all 0.15s;user-select:none;}
 .agent-chip:hover{border-color:var(--border2);}
 .agent-chip.sel{background:var(--dark);color:#fff;border-color:var(--dark);}
 
-/* Form */
 .flabel{font-family:'DM Mono',monospace;font-size:0.56rem;color:var(--dim);letter-spacing:0.06em;margin-bottom:5px;display:block;}
 .finput{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:0.84rem;color:var(--text);outline:none;transition:border-color 0.2s;margin-bottom:14px;}
 .finput:focus{border-color:var(--border2);}
 .finput::placeholder{color:var(--dim);}
 
-/* Color picker */
 .color-picks{display:flex;gap:8px;margin-bottom:18px;}
 .cpick{width:32px;height:32px;border-radius:9px;cursor:pointer;border:3px solid transparent;transition:all 0.15s;}
 .cpick:hover{transform:scale(1.1);}
@@ -173,11 +357,9 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
 .wbtn.dark:hover{background:#2a2520;}
 .wbtn.light{background:var(--bg4);color:var(--mid);}
 
-/* Toast */
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;font-size:0.78rem;font-weight:500;padding:10px 20px;border-radius:30px;z-index:1000;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-lg);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-/* Confirm delete modal */
 .confirm-modal{background:var(--bg2);border-radius:22px;padding:28px;width:360px;box-shadow:var(--shadow-lg);}
 .cm-icon{font-size:2.2rem;text-align:center;margin-bottom:10px;}
 .cm-title{font-family:'Instrument Serif',serif;font-size:1.2rem;text-align:center;margin-bottom:6px;}
@@ -204,7 +386,6 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
 .season-autumn{--accent:#d97706;--accent2:#b45309;}
 .season-winter{--accent:#3b82f6;--accent2:#2563eb;}
 .season-spring{--accent:#ec4899;--accent2:#db2777;}
-
 </style>
 </head>
 <body>
@@ -215,7 +396,6 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
     <div class="wiz-title">Nuovo Studio</div>
     <div class="wiz-sub">Scegli il tipo, dagli un nome e seleziona gli agenti</div>
 
-    <!-- Step 1: Type -->
     <div class="flabel">TIPO DI STUDIO</div>
     <div class="wiz-types" id="wizTypes">
       <div class="wtype sel" onclick="selectType(this,'📖','Scrittore','Libri, narrativa, universi')">
@@ -250,7 +430,6 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
       </div>
     </div>
 
-    <!-- Step 2: Name + color -->
     <div class="flabel">NOME DELLO STUDIO</div>
     <input class="finput" id="wizName" placeholder="es. Io, Giochi 2D · Call Me River 2 · The App...">
 
@@ -265,8 +444,7 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
       <div class="cpick" style="background:#1a2a2a;" onclick="selectColor(this,'#1a2a2a')"></div>
     </div>
 
-    <!-- Step 3: Agents -->
-    <div class="flabel">AGENTI DA INCLUDERE <span style="color:var(--dim);font-weight:400">(clicca per selezionare)</span></div>
+    <div class="flabel">AGENTI DA INCLUDERE</div>
     <div class="agents-pool" id="agentsPool">
       <div class="agent-chip sel" onclick="toggleAgent(this)">👑 Director</div>
       <div class="agent-chip sel" onclick="toggleAgent(this)">✍️ Scrittore</div>
@@ -308,21 +486,13 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="tlogo">
-    <div class="tlogo-icon">⚡</div>
-    Content Factory
-  </div>
+  <div class="tlogo"><div class="tlogo-icon">⚡</div>Content Factory</div>
   <div class="tsep"></div>
-  
-
-  <div class="tuser" onclick="showToast('Profilo · prossimamente!')">
+  <div class="tuser">
     <div class="tuser-av" id="topAv">🦁</div>
     <div>
       <div class="tuser-name" id="topName">Il Capo</div>
-      <div class="tuser-status">
-        <div class="status-dot"></div>
-        <div class="status-txt" id="topStatusTxt">online</div>
-      </div>
+      <div class="tuser-status"><div class="status-dot"></div><div class="status-txt" id="topStatusTxt">online</div></div>
     </div>
   </div>
   <div class="tlogout" onclick="logout()">🔐 Esci</div>
@@ -330,11 +500,9 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
 
 <!-- BODY -->
 <div class="body">
-
   <div class="greeting" id="greetingTxt">Buongiorno 👋</div>
   <div class="greeting-sub" id="greetingSub">Scegli il tuo studio · o creane uno nuovo</div>
 
-  <!-- Quick links -->
   <div class="section-lbl">Accesso rapido</div>
   <div class="quick-grid">
     <div class="ql-card" onclick="goToPage('roadmap.html')">
@@ -359,11 +527,8 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
     </div>
   </div>
 
-  <!-- Studios -->
   <div class="section-lbl">I tuoi studi</div>
   <div class="factories" id="factoriesGrid">
-
-    <!-- CARD: Io Scrittore -->
     <div class="fc" id="fc-cmr">
       <div class="fc-banner" style="background:linear-gradient(135deg,#0a0e1a,#1a0a2e,#0e1a2e);">
         <div class="fc-bigicon">📖</div>
@@ -371,13 +536,8 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
         <div class="fc-title">Io, Scrittore</div>
       </div>
       <div class="fc-body">
-        <div class="fc-desc">Libri, serie video, musica AI, podcast. L'universo Call Me River e tutto quello che verrà.</div>
-        <div class="fc-chips">
-          <span class="chip">👑 Director</span>
-          <span class="chip">✍️ Scrittore</span>
-          <span class="chip">🎵 Musicale</span>
-          <span class="chip">+10 agenti</span>
-        </div>
+        <div class="fc-desc">Libri, serie video, musica AI, podcast. L'universo Call Me River.</div>
+        <div class="fc-chips"><span class="chip">👑 Director</span><span class="chip">✍️ Scrittore</span><span class="chip">+10 agenti</span></div>
         <div class="fc-stats">
           <div class="fc-stat"><div class="fc-stat-val">13</div><div class="fc-stat-lbl">🤖 Agenti</div></div>
           <div class="fc-stat"><div class="fc-stat-val">€31</div><div class="fc-stat-lbl">💰 Earn</div></div>
@@ -386,8 +546,6 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
         <button class="fc-btn" onclick="openFactory('cmr',event)">▶ Apri studio</button>
       </div>
     </div>
-
-    <!-- CARD: Io Apps -->
     <div class="fc" id="fc-apps">
       <div class="fc-banner" style="background:linear-gradient(135deg,#0a1a28,#0e2840,#061828);">
         <div class="fc-bigicon">📱</div>
@@ -395,13 +553,8 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
         <div class="fc-title">Io, Apps</div>
       </div>
       <div class="fc-body">
-        <div class="fc-desc">Sviluppo app, automazioni, strumenti digitali. Un team dedicato al mondo tech.</div>
-        <div class="fc-chips">
-          <span class="chip">🧠 Cervello</span>
-          <span class="chip">💻 Dev</span>
-          <span class="chip">🎨 UI/UX</span>
-          <span class="chip">+5 agenti</span>
-        </div>
+        <div class="fc-desc">Sviluppo app, automazioni, strumenti digitali. Team tech dedicato.</div>
+        <div class="fc-chips"><span class="chip">🧠 Cervello</span><span class="chip">💻 Dev</span><span class="chip">+5 agenti</span></div>
         <div class="fc-stats">
           <div class="fc-stat"><div class="fc-stat-val">8</div><div class="fc-stat-lbl">🤖 Agenti</div></div>
           <div class="fc-stat"><div class="fc-stat-val">3</div><div class="fc-stat-lbl">📱 App</div></div>
@@ -410,17 +563,13 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
         <button class="fc-btn" onclick="openFactory('apps',event)">▶ Apri studio</button>
       </div>
     </div>
-
-    <!-- NEW -->
     <div class="fc-new" id="newCard" onclick="openWizard()">
       <div class="fc-new-icon">✦</div>
       <div class="fc-new-title">Nuovo studio</div>
-      <div class="fc-new-sub">Scegli il tipo, seleziona gli agenti<br>e inizia a creare</div>
+      <div class="fc-new-sub">Scegli il tipo e inizia a creare</div>
     </div>
-
   </div>
 
-  <!-- Recent activity -->
   <div class="section-lbl">Attività recente</div>
   <div class="recent-card">
     <div class="recent-hdr">
@@ -429,260 +578,14 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
     </div>
     <div class="ra-row">
       <div class="ra-ico" style="background:linear-gradient(135deg,#0a0e1a,#1a0a2e)">📖</div>
-      <div class="ra-info"><div class="ra-name">Io, Scrittore — Cap.7 POV River approvato</div><div class="ra-detail">Agente Scrittore · Claude API</div></div>
+      <div class="ra-info"><div class="ra-name">Io, Scrittore — Cap.7 POV River approvato</div><div class="ra-detail">Agente Scrittore</div></div>
       <div class="ra-badge done">✓ fatto</div>
       <div class="ra-time">10:42</div>
     </div>
-    <div class="ra-row">
-      <div class="ra-ico" style="background:linear-gradient(135deg,#0a0e1a,#1a0a2e)">🎵</div>
-      <div class="ra-info"><div class="ra-name">Io, Scrittore — "Pulse Night" generata · 3:42</div><div class="ra-detail">Agente Musicale · Suno AI</div></div>
-      <div class="ra-badge done">✓ fatto</div>
-      <div class="ra-time">10:30</div>
-    </div>
-    <div class="ra-row">
-      <div class="ra-ico" style="background:linear-gradient(135deg,#0a1a28,#0e2840)">💻</div>
-      <div class="ra-info"><div class="ra-name">Io, Apps — Nuovo modulo automazione avviato</div><div class="ra-detail">Agente Dev · Make.com</div></div>
-      <div class="ra-badge run">● attivo</div>
-      <div class="ra-time">09:15</div>
-    </div>
-    <div class="ra-row">
-      <div class="ra-ico" style="background:var(--bg3)">🔧</div>
-      <div class="ra-info"><div class="ra-name">Sistema — Runway ML sostituito con Kling AI</div><div class="ra-detail">Agente Sistema · switch automatico</div></div>
-      <div class="ra-badge done">✓ fatto</div>
-      <div class="ra-time">ieri</div>
-    </div>
   </div>
-
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script>
-// Load profile
-const profile = JSON.parse(localStorage.getItem('cf_profile')||'{"name":"Il Capo","sub":"Fondatore · Call Me River","emoji":"🦁","status":"online"}');
-document.getElementById('topAv').textContent = profile.emoji || '🦁';
-document.getElementById('topName').textContent = profile.name || 'Il Capo';
-document.getElementById('topStatusTxt').textContent = profile.status || 'online';
-
-// Greeting based on time
-const h = new Date().getHours();
-const greet = h < 12 ? 'Buongiorno' : h < 18 ? 'Buon pomeriggio' : 'Buonasera';
-document.getElementById('greetingTxt').textContent = greet + ' ' + (profile.name || 'Il Capo') + ' 👋';
-document.getElementById('greetingSub').textContent = 'Hai ' + getFactoryCount() + ' studi attivi · scegli dove lavorare oggi';
-
-function getFactoryCount() {
-  const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
-  return 2 + saved.length;
-}
-
-// Load saved factories from LocalStorage & Firebase
-async function loadSavedFactories() {
-  // 1. Local Load
-  const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
-  saved.forEach(f => renderFactoryCard(f));
-
-  // 2. Cloud Load
-  if (window.db && window.fs) {
-    try {
-      const userRef = window.fs.doc(window.db, "users", "default_user");
-      const snap = await window.fs.getDoc(userRef);
-      if (snap.exists() && snap.data().factories) {
-        const cloudFactories = snap.data().factories;
-        // Merge or replace (here we replace for simplicity since it's a launcher)
-        localStorage.setItem('cf_factories', JSON.stringify(cloudFactories));
-        
-        // Refresh UI if cloud data is different/newer
-        const grid = document.getElementById('factoriesGrid');
-        // Clear dynamically added cards (keep Io Scrittore, Io Apps, and New Card)
-        const staticIds = ['fc-cmr', 'fc-apps', 'newCard'];
-        Array.from(grid.children).forEach(child => {
-          if (!staticIds.includes(child.id)) child.remove();
-        });
-        cloudFactories.forEach(f => renderFactoryCard(f));
-        console.log("☁ Studi caricati da Firebase");
-      }
-    } catch (e) { console.error("Cloud Load Error:", e); }
-  }
-}
-
-async function syncFactoriesToCloud() {
-  if (window.db && window.fs) {
-    try {
-      const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
-      const userRef = window.fs.doc(window.db, "users", "default_user");
-      await window.fs.setDoc(userRef, { factories: saved }, { merge: true });
-      console.log("☁ Cloud Sync: Studi aggiornati");
-    } catch (e) { console.error("Cloud Sync Error:", e); }
-  }
-}
-
-// ===== WIZARD =====
-let selectedType = { icon: '📖', name: 'Scrittore', color: '#1a1714' };
-let selectedColor = '#1a1714';
-let deleteTarget = null;
-
-function openWizard() { document.getElementById('wizardModal').classList.add('open'); }
-function closeWizard() { document.getElementById('wizardModal').classList.remove('open'); }
-function closeWizardBg(e) {
-  if(e.target === document.getElementById('wizardModal')) closeWizard();
-  if(e.target === document.getElementById('confirmModal')) document.getElementById('confirmModal').classList.remove('open');
-}
-
-function selectType(el, icon, name, desc) {
-  document.querySelectorAll('.wtype').forEach(t => t.classList.remove('sel'));
-  el.classList.add('sel');
-  selectedType = { icon, name, color: selectedColor };
-  document.getElementById('wizName').placeholder = 'es. Io, ' + name + ' · Il mio progetto...';
-}
-function selectColor(el, color) {
-  document.querySelectorAll('.cpick').forEach(c => c.classList.remove('sel'));
-  el.classList.add('sel');
-  selectedColor = color;
-  selectedType.color = color;
-}
-function toggleAgent(el) { el.classList.toggle('sel'); }
-
-function createFactory() {
-  const name = document.getElementById('wizName').value.trim();
-  if(!name) { showToast('⚠ Dai un nome allo studio!'); return; }
-  const agents = Array.from(document.querySelectorAll('.agent-chip.sel')).map(c => c.textContent);
-  const id = 'fc-' + Date.now();
-  const factory = {
-    id, name,
-    icon: selectedType.icon,
-    type: selectedType.name,
-    color: selectedColor,
-    agents,
-    hype: Math.floor(Math.random()*30 + 10),
-    created: new Date().toLocaleDateString('it-IT')
-  };
-  // Save locally
-  const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]');
-  saved.push(factory);
-  localStorage.setItem('cf_factories', JSON.stringify(saved));
-  
-  // Save to Cloud
-  syncFactoriesToCloud();
-
-  // Render
-  renderFactoryCard(factory);
-  closeWizard();
-  showToast('✓ Studio "' + name + '" creato!');
-  // Update greeting
-  document.getElementById('greetingSub').textContent = 'Hai ' + getFactoryCount() + ' studi attivi · scegli dove lavorare oggi';
-}
-
-function renderFactoryCard(f) {
-  const grid = document.getElementById('factoriesGrid');
-  const newCard = document.getElementById('newCard');
-  const agentChips = f.agents.slice(0,3).map(a => `<span class="chip">${a}</span>`).join('');
-  const extra = f.agents.length > 3 ? `<span class="chip">+${f.agents.length-3}</span>` : '';
-
-  const card = document.createElement('div');
-  card.className = 'fc';
-  card.id = f.id;
-  card.innerHTML = `
-    <div class="fc-banner" style="background:linear-gradient(135deg,${f.color},${f.color}aa,${f.color}66);">
-      <div class="fc-bigicon">${f.icon}</div>
-      <div class="fc-hype new">✦ nuovo</div>
-      <div class="fc-title">${f.name}</div>
-    </div>
-    <div class="fc-body">
-      <div class="fc-desc">Studio ${f.type} · creato il ${f.created}</div>
-      <div class="fc-chips">${agentChips}${extra}</div>
-      <div class="fc-stats">
-        <div class="fc-stat"><div class="fc-stat-val">${f.agents.length}</div><div class="fc-stat-lbl">🤖 Agenti</div></div>
-        <div class="fc-stat"><div class="fc-stat-val">0</div><div class="fc-stat-lbl">📦 Progetti</div></div>
-        <div class="fc-stat"><div class="fc-stat-val">${f.hype}</div><div class="fc-stat-lbl">⚡ Hype</div></div>
-      </div>
-      <div style="display:flex;gap:7px;margin-top:14px">
-        <button class="fc-btn" style="flex:3" onclick="openFactory('${f.id}',event)">▶ Apri studio</button>
-        <button class="fc-btn" style="flex:1;background:rgba(239,68,68,0.1);color:var(--red);" onclick="askDelete('${f.id}','${f.name}',event)">🗑️</button>
-      </div>
-    </div>`;
-  grid.insertBefore(card, newCard);
-}
-
-// Delete
-function askDelete(id, name, e) {
-  e.stopPropagation();
-  deleteTarget = id;
-  document.getElementById('confirmText').innerHTML = `Vuoi eliminare <strong>"${name}"</strong>?<br>Tutti i dati andranno persi.`;
-  document.getElementById('confirmModal').classList.add('open');
-}
-function confirmDelete() {
-  if(!deleteTarget) return;
-  const card = document.getElementById(deleteTarget);
-  if(card) card.remove();
-  const saved = JSON.parse(localStorage.getItem('cf_factories') || '[]').filter(f => f.id !== deleteTarget);
-  localStorage.setItem('cf_factories', JSON.stringify(saved));
-  
-  // Sync Cloud
-  syncFactoriesToCloud();
-
-  document.getElementById('confirmModal').classList.remove('open');
-  showToast('🗑️ Studio eliminato');
-  deleteTarget = null;
-  document.getElementById('greetingSub').textContent = 'Hai ' + getFactoryCount() + ' studi attivi · scegli dove lavorare oggi';
-}
-
-// Open factory — maps studio IDs to their HTML files
-const FACTORY_FILES = {
-  cmr:  'content-factory-v9.html',
-  apps: 'content-factory-v9.html',  // future: content-factory-apps.html
-};
-
-function openFactory(id, e) {
-  if(e) e.stopPropagation();
-  const names = { cmr: 'Io, Scrittore', apps: 'Io, Apps' };
-  const name = names[id] || id;
-
-  // Save which studio is active so the factory knows
-  localStorage.setItem('cf_active_studio', id);
-  localStorage.setItem('cf_active_studio_name', name);
-
-  showToast('▶ Apertura ' + name + '...');
-
-  // Visual feedback then open
-  const card = document.getElementById('fc-' + id);
-  if(card) {
-    card.style.transform = 'scale(0.97)';
-    card.style.transition = 'transform 0.15s';
-  }
-
-  const file = FACTORY_FILES[id] || 'content-factory-v9.html';
-  setTimeout(() => { window.location.href = file; }, 600);
-}
-
-// Navigate to a standalone page
-function goToPage(url) {
-  showToast('▶ Apertura...');
-  setTimeout(() => { window.location.href = url; }, 400);
-}
-
-// Navigate to content-factory-v9 opening a specific page
-function goToFactory(pageName) {
-  localStorage.setItem('cf_open_page', pageName);
-  showToast('▶ Apertura...');
-  setTimeout(() => { window.location.href = 'content-factory-v9.html'; }, 400);
-}
-
-// Logout
-function logout() {
-  sessionStorage.removeItem('cf_logged');
-  showToast('🔐 Uscita...');
-  setTimeout(() => { window.location.href = 'login.html'; }, 1000);
-}
-
-// Toast
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-// Init
-loadSavedFactories();
-</script>
 </body>
 </html>
