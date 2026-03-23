@@ -2783,7 +2783,7 @@ function renderAgentsByCategory() {
       
       let statusHTML = '';
       if (!agent.manualOn) {
-        statusHTML = `<div class="st-anim"><div class="ar-decorator glow-red" style="width:8px;height:8px;"></div></div>`;
+        statusHTML = `<div class="st-anim"><div style="width:6px;height:6px;border-radius:50%;background:var(--red);opacity:0.4;"></div></div>`;
       } else {
         const colorMap = { pink:'pk', green:'g', orange:'o', purple:'p', blue:'' };
         const cShort = colorMap[agent.color] || '';
@@ -2800,22 +2800,23 @@ function renderAgentsByCategory() {
             break;
           case 'done':
           default:
-            statusHTML = `<div class="st-anim"><div class="ar-decorator glow-${agent.color || 'green'}" style="width:8px;height:8px;"></div></div>`;
+            statusHTML = `<div class="st-anim"><div style="width:6px;height:6px;border-radius:50%;background:var(--green);opacity:0.8;box-shadow:0 0 6px var(--green);"></div></div>`;
             break;
         }
       }
 
       row.innerHTML = `
         <div class="ar-left">
-          <div class="ar-decorator glow-${agent.color || 'pink'}"></div>
           <div class="ar-icon">${agent.icon}</div>
           <div class="ar-info">
-            <div class="ar-name">${agent.role}</div>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="ar-name">${agent.role}</div>
+              ${statusHTML}
+            </div>
             <div class="ar-role">${agent.tool}</div>
           </div>
         </div>
         <div class="ar-right">
-          <div class="ar-status-wrap">${statusHTML}</div>
           <div class="ar-toggle ${agent.manualOn ? 'on' : 'off'}" onclick="event.stopPropagation(); toggleAgentStatus('${agent.id}')"></div>
         </div>
       `;
