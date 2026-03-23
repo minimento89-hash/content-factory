@@ -39,7 +39,35 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
 .roadmap-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;}
 .rm-card{background:var(--bg2);border-radius:var(--radius);padding:20px;border:1px solid var(--border);box-shadow:var(--shadow);transition:all 0.4s cubic-bezier(0.16,1,0.3,1);cursor:pointer;position:relative;overflow:hidden;min-height:220px;display:flex;flex-direction:column;}
 .rm-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.06);border-color:var(--border2);}
-.rm-card.expanded { grid-column: 1 / -1; min-height: auto; cursor: default; transform: none !important; }
+.rm-card.expanded { 
+  position: fixed; 
+  top: 50%; left: 50%; 
+  transform: translate(-50%, -50%) scale(1) !important; 
+  width: 90%; max-width: 800px; 
+  height: auto; 
+  max-height: 90vh; 
+  z-index: 1001; 
+  cursor: default; 
+  box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+  border-color: var(--border2);
+  overflow-y: auto;
+  animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.roadmap-overlay {
+  position: fixed; inset: 0;
+  background: rgba(240, 237, 232, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.roadmap-overlay.active { opacity: 1; pointer-events: all; }
+@keyframes modalIn {
+  from { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
 
 .card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
 .card-icon{font-size:1.8rem;}
@@ -104,6 +132,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
 </head>
 <body>
 
+<div class="roadmap-overlay" id="roadmapOverlay" onclick="closeAllCards()"></div>
 <div class="container">
   
   <header class="header">
@@ -260,6 +289,28 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
       </div>
     </div>
 
+    <!-- PHASE 6: NEW -->
+    <div class="rm-card" onclick="toggleCard(this)">
+      <div class="close-btn">Torna Indietro</div>
+      <div class="card-hdr">
+        <div class="card-icon">📐</div>
+        <div class="card-status-indicator"><div class="p-grey"></div></div>
+      </div>
+      <h2 class="card-title">Layout & Project Wizard</h2>
+      <p class="card-desc">Selezione layout dinamica per i nuovi progetti.</p>
+
+      <div class="task-list">
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Sistema di Templating Layout</div></div>
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Wizard di Creazione v2</div></div>
+        <div class="task-item"><div class="task-dot todo"></div><div class="task-text">Preview Real-time</div></div>
+      </div>
+
+      <div class="card-footer">
+        <span class="tag">DESIGN</span>
+        <span class="progress-val">In Coda</span>
+      </div>
+    </div>
+
     <!-- FUTURE 1 -->
     <div class="rm-card" onclick="toggleCard(this)">
       <div class="close-btn">Torna Indietro</div>
@@ -331,18 +382,20 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
 <script>
 function toggleCard(card) {
   if (card.classList.contains('expanded')) {
-    card.classList.remove('expanded');
+    closeAllCards();
     return;
   }
   
-  // Close others
-  document.querySelectorAll('.rm-card').forEach(c => c.classList.remove('expanded'));
+  closeAllCards();
   card.classList.add('expanded');
-  
-  // Scroll into view if needed
-  setTimeout(() => {
-    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 300);
+  document.getElementById('roadmapOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden'; // Prevent scroll
+}
+
+function closeAllCards() {
+  document.querySelectorAll('.rm-card').forEach(c => c.classList.remove('expanded'));
+  document.getElementById('roadmapOverlay').classList.remove('active');
+  document.body.style.overflow = '';
 }
 </script>
 
