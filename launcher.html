@@ -35,6 +35,12 @@
       document.getElementById('greetingTxt').textContent = `${greet} ${profile.name} 👋`;
       
       // Load Factories
+      const hidden = JSON.parse(localStorage.getItem('cf_hidden_studios') || '[]');
+      hidden.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.style.display = 'none';
+      });
+
       if (user) {
         await loadSavedFactories(user.uid);
       } else {
@@ -133,7 +139,11 @@
     
     // Update Preview Hero Color
     const wpHero = document.getElementById('wpHero');
+    const wpCard = document.getElementById('wizPreviewCard');
+    const wpBoxes = document.querySelectorAll('.wp-box');
     if (wpHero) wpHero.style.background = color;
+    if (wpCard) wpCard.style.borderColor = color + '44';
+    wpBoxes.forEach(b => b.style.background = color + '11');
   };
 
   window.toggleAgent = (el) => el.classList.toggle('sel');
@@ -212,6 +222,14 @@
 
     document.getElementById('confirmModal').classList.remove('open');
     showToast('🗑️ Studio eliminato');
+    
+    // Handle hardcoded studios
+    if (deleteTarget.startsWith('fc-')) {
+      const hidden = JSON.parse(localStorage.getItem('cf_hidden_studios') || '[]');
+      hidden.push(deleteTarget);
+      localStorage.setItem('cf_hidden_studios', JSON.stringify(hidden));
+    }
+
     deleteTarget = null;
     document.getElementById('greetingSub').textContent = `Hai ${getFactoryCount()} studi attivi · scegli dove lavorare oggi`;
   };
@@ -358,7 +376,7 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
 /* MODALS */
 .modal-bg{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.22);backdrop-filter:blur(7px);align-items:center;justify-content:center;}
 .modal-bg.open{display:flex;}
-.wizard{background:var(--bg2);border-radius:26px;padding:34px;width:500px;box-shadow:var(--shadow-lg);animation:modalIn 0.3s cubic-bezier(0.4,0,0.2,1);}
+.wizard{background:var(--bg2);border-radius:26px;padding:34px;width:500px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:modalIn 0.3s cubic-bezier(0.4,0,0.2,1);}
 @keyframes modalIn{from{opacity:0;transform:scale(0.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .wiz-title{font-family:'Instrument Serif',serif;font-size:1.5rem;letter-spacing:-0.02em;margin-bottom:4px;}
 .wiz-sub{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--dim);margin-bottom:26px;}
@@ -517,7 +535,6 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
     </div>
 
     <!-- Preview Area -->
-    <div class="flabel">ANTEPRIMA STRUTTURA</div>
     <div class="wiz-preview">
       <div class="wp-card" id="wizPreviewCard">
         <div class="wp-bar">
@@ -535,6 +552,7 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
           </div>
         </div>
       </div>
+      <button class="wbtn light" style="margin-top: 5px; margin-bottom: 5px; font-size: 0.65rem;" onclick="showToast('🔍 Anteprime Pro: disponibile nella V10')">🔍 Vedi tutte le 10 anteprime</button>
     </div>
 
     <div class="flabel">NOME DELLO STUDIO</div>
@@ -650,7 +668,10 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
           <div class="fc-stat"><div class="fc-stat-val">€31</div><div class="fc-stat-lbl">💰 Earn</div></div>
           <div class="fc-stat"><div class="fc-stat-val">110K</div><div class="fc-stat-lbl">👁 Views</div></div>
         </div>
-        <button class="fc-btn" onclick="openFactory('cmr',event)">▶ Apri studio</button>
+        <div style="display:flex;gap:7px;margin-top:14px">
+          <button class="fc-btn" style="flex:3" onclick="openFactory('cmr',event)">▶ Apri studio</button>
+          <button class="fc-btn" style="flex:1;background:rgba(239,68,68,0.1);color:var(--red);" onclick="askDelete('fc-cmr','Io, Scrittore',event)">🗑️</button>
+        </div>
       </div>
     </div>
     <div class="fc" id="fc-apps">
@@ -667,7 +688,10 @@ html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'DM Sans'
           <div class="fc-stat"><div class="fc-stat-val">3</div><div class="fc-stat-lbl">📱 App</div></div>
           <div class="fc-stat"><div class="fc-stat-val">—</div><div class="fc-stat-lbl">💰 Earn</div></div>
         </div>
-        <button class="fc-btn" onclick="openFactory('apps',event)">▶ Apri studio</button>
+        <div style="display:flex;gap:7px;margin-top:14px">
+          <button class="fc-btn" style="flex:3" onclick="openFactory('apps',event)">▶ Apri studio</button>
+          <button class="fc-btn" style="flex:1;background:rgba(239,68,68,0.1);color:var(--red);" onclick="askDelete('fc-apps','Io, Apps',event)">🗑️</button>
+        </div>
       </div>
     </div>
     <div class="fc-new" id="newCard" onclick="openWizard()">

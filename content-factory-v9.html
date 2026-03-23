@@ -2441,6 +2441,8 @@ function switchPage(name, btn) {
   if(pg) pg.classList.add('active');
   if(btn) btn.classList.add('active');
   
+  if (window.WeatherEngine) WeatherEngine.stop();
+
   // Custom renders
   if(name === 'agents') renderAgentsByCategory();
 }
@@ -2970,8 +2972,17 @@ document.addEventListener('DOMContentLoaded', () => {
   renderPublishedFeed();
 });
 
-function openDrawer(id){ console.log('Opening drawer:', id); document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
-function closeDrawer(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+function openDrawer(id){ 
+  console.log('Opening drawer:', id); 
+  document.getElementById(id).classList.add('open'); 
+  document.body.style.overflow='hidden'; 
+  if (id === 'drawer-roadmap' && window.WeatherEngine) WeatherEngine.init();
+}
+function closeDrawer(id){
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow='';
+  if (id === 'drawer-roadmap' && window.WeatherEngine) WeatherEngine.stop();
+}
 function closeOnBg(e,id){if(e.target===document.getElementById(id))closeDrawer(id);}
 
 // ===== THEMES =====
@@ -3393,12 +3404,11 @@ function loadSumoScript(siteId) {
     updateSumoStatus();
     if(sumoId) loadSumoScript(sumoId);
     
-    // Auto-theme toggle init
+    // Auto-theme toggle init (scoped to Roadmap Drawer)
     const autoTheme = localStorage.getItem('cf_auto_theme_enabled') === 'true';
     const att = document.getElementById('autoThemeToggle');
     if(att && autoTheme) {
       att.classList.add('on');
-      if (window.WeatherEngine) WeatherEngine.init();
     }
   }, 200);
 })();
@@ -3516,6 +3526,10 @@ let AGENTS_DATA = [
   { id:'beta_reader', icon:'🤓', role:'Beta Reader', tool:'Feedback Lettore', category:'production', status:'wait', manualOn:true, color:'blue' },
   { id:'critic', icon:'🎨', role:'Art Critic', icon:'🔥', tool:'Analisi Estetica', category:'analysis', status:'wait', manualOn:true, color:'pink' },
   { id:'video_analyst', icon:'📺', role:'Video Analyst', tool:'Media Summary', category:'analysis', status:'wait', manualOn:true, color:'orange' },
+  { id:'dev', icon:'💻', role:'Developer AI', tool:'Code Architect', category:'production', status:'done', manualOn:true, color:'blue' },
+  { id:'game_design', icon:'🎮', role:'Game Designer', tool:'Game Architect', category:'production', status:'done', manualOn:true, color:'purple' },
+  { id:'traduttore', icon:'🌐', role:'Traduttore', tool:'Multi-language', category:'production', status:'done', manualOn:true, color:'green' },
+  { id:'social', icon:'📱', role:'Social Manager', tool:'Post Scheduler', category:'analysis', status:'done', manualOn:true, color:'yellow' },
 ];
 
 const CATEGORIES = {
@@ -3530,8 +3544,25 @@ function renderAgentsByCategory() {
   if(!grid) return;
   grid.innerHTML = '';
 
+  // Filter based on Wizard selection
+  let selected = null;
+  try {
+    const raw = localStorage.getItem('cf_active_studio_agents');
+    if (raw) selected = JSON.parse(raw);
+    else {
+      // Defaults for hardcoded studios
+      const studioId = localStorage.getItem('cf_active_studio');
+      if (studioId === 'cmr') selected = ['director','scrittore','musicale','consulente','visual','prezzi','sistema','cipher','bughunter','personaggi','orchestra','beta_reader','critic'];
+      if (studioId === 'apps') selected = ['director','sistema','cipher','bughunter_fixer','visual','dev','consulente','video_analyst'];
+    }
+  } catch(e) {}
+
   for (const [catId, catInfo] of Object.entries(CATEGORIES)) {
-    const agents = AGENTS_DATA.filter(a => a.category === catId);
+    const agents = AGENTS_DATA.filter(a => {
+      const matchCat = a.category === catId;
+      const isSelected = selected ? selected.includes(a.id) : true;
+      return matchCat && isSelected;
+    });
     
     const card = document.createElement('div');
     card.className = 'agent-cat-card';
