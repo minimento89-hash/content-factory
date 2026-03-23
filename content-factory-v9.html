@@ -960,6 +960,7 @@ html, body {
 
 </style>
 </head>
+<script src="analytics-engine.js"></script>
 <body class="theme-dark">
 <script>
   // Dynamic Layout & Theme Initialization
@@ -989,6 +990,7 @@ html, body {
     <button class="top-nav-item active" onclick="switchPage('home',this)">Dashboard</button>
     <button class="top-nav-item" onclick="switchPage('agents',this)">Agenti</button>
     <button class="top-nav-item" onclick="switchPage('social',this)">Social</button>
+    <button class="top-nav-item" onclick="switchPage('analytics',this)">📊 Analytics</button>
     <button class="top-nav-item" onclick="switchPage('archive',this)">Archivio</button>
     <button class="top-nav-item" onclick="switchPage('cyber',this)">🛡️ Sicurezza</button>
     <button class="top-nav-item" onclick="switchPage('lounge',this)">☕ Sala Relax</button>
@@ -1035,6 +1037,7 @@ html, body {
     <div class="sidebar-item" onclick="openDrawer('drawer-music')"><div class="si-icon">🎵</div>Musica<span class="si-badge hot">6</span></div>
     <div class="sidebar-section">Distribuzione</div>
     <div class="sidebar-item" onclick="switchSidebar(this,'social')"><div class="si-icon">📱</div>Social & Hype</div>
+    <div class="sidebar-item" onclick="switchSidebar(this,'analytics')"><div class="si-icon">📊</div>Analytics</div>
     <div class="sidebar-item" onclick="switchSidebar(this,'archive')"><div class="si-icon">📦</div>Archivio</div>
     <div class="sidebar-item" onclick="switchSidebar(this,'approva')"><div class="si-icon">✅</div>Approva<span class="si-badge hot">3</span></div>
     <div class="sidebar-section">App</div>
@@ -1199,6 +1202,49 @@ html, body {
         <div class="platform-row" onclick="showPlatformDetails('tiktok')"><div class="plat-icon" style="background:rgba(255,0,80,0.08)">🎵</div><div><div class="plat-name">TikTok</div><div class="plat-handle">@callmeriver</div></div><div class="live-dot"></div><div class="plat-stats"><div><div class="plat-stat-val">98K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">14.2K</div><div class="plat-stat-label">❤️</div></div><div><div class="plat-stat-val">341</div><div class="plat-stat-label">💬</div></div></div></div>
         <div class="platform-row" onclick="showPlatformDetails('instagram')"><div class="plat-icon" style="background:rgba(225,48,108,0.08)">📸</div><div><div class="plat-name">Instagram</div><div class="plat-handle">@callmeriver</div></div><div class="plat-stats"><div><div class="plat-stat-val">41K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">6.8K</div><div class="plat-stat-label">❤️</div></div><div><div class="plat-stat-val">128</div><div class="plat-stat-label">💬</div></div></div></div>
         <div class="platform-row" onclick="showPlatformDetails('youtube')"><div class="plat-icon" style="background:rgba(255,0,0,0.08)">▶️</div><div><div class="plat-name">YouTube</div><div class="plat-handle">Call Me River</div></div><div class="plat-stats"><div><div class="plat-stat-val">12K</div><div class="plat-stat-label">👁</div></div><div><div class="plat-stat-val">1.2K</div><div class="plat-stat-label">👍</div></div><div><div class="plat-stat-val">67</div><div class="plat-stat-label">💬</div></div></div></div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="page" id="page-analytics">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;">
+        <div>
+          <div class="page-greeting">Live Analytics</div>
+          <div class="page-sub">Performance globale in tempo reale</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="drawer-btn db-dark" onclick="AnalyticsEngine.init(localStorage.getItem('cf_active_studio')||'cmr'); renderAnalytics();">🔄 Refresh Dati</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:24px; padding:20px;">
+        <div class="card-hdr" style="margin-bottom:15px;">
+            <div class="card-title">📈 Hype Globale (30gg)</div>
+            <span class="card-tag live">live</span>
+        </div>
+        <div id="chartHype" style="height:220px; width:100%; background:rgba(0,0,0,0.05); border-radius:12px; overflow:hidden;"></div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:24px;">
+        <div class="card" style="padding:20px;">
+            <div class="card-hdr" style="margin-bottom:15px;">
+                <div class="card-title">👁 Views Totali</div>
+            </div>
+            <div id="chartViews" style="height:150px; width:100%; background:rgba(0,0,0,0.05); border-radius:12px;"></div>
+        </div>
+        <div class="card" style="padding:20px;">
+            <div class="card-hdr" style="margin-bottom:15px;">
+                <div class="card-title">💰 Earnings (Est.)</div>
+            </div>
+            <div id="chartEarnings" style="height:150px; width:100%; background:rgba(0,0,0,0.05); border-radius:12px;"></div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:20px;">
+        <div class="card-hdr" style="margin-bottom:15px;">
+            <div class="card-title">🎯 Distribuzione Attività Agenti</div>
+        </div>
+        <div id="chartAgents" style="height:180px; width:100%;"></div>
       </div>
     </div>
 
@@ -2423,7 +2469,7 @@ function goToExternalPage(url) {
         if(i.getAttribute('onclick') && i.getAttribute('onclick').includes("'"+openPage+"'")) i.classList.add('active');
       });
       // Sync topbar
-      const map = ['home','agents','social','archive','cyber','lounge','settings'];
+      const map = ['home','agents','social','analytics','archive','cyber','lounge','settings'];
       const idx = map.indexOf(openPage);
       document.querySelectorAll('.top-nav-item').forEach((b,i) => {
         b.classList.remove('active');
@@ -2445,11 +2491,29 @@ function switchPage(name, btn) {
 
   // Custom renders
   if(name === 'agents') renderAgentsByCategory();
+  if(name === 'analytics') renderAnalytics();
+}
+
+function renderAnalytics() {
+    const studio = localStorage.getItem('cf_active_studio') || 'cmr';
+    AnalyticsEngine.init(studio);
+    
+    // Render Line Charts
+    AnalyticsEngine.renderLineChart('chartHype', AnalyticsEngine.data.hype, 'var(--accent)');
+    AnalyticsEngine.renderLineChart('chartViews', AnalyticsEngine.data.views, 'var(--blue)');
+    AnalyticsEngine.renderLineChart('chartEarnings', AnalyticsEngine.data.earnings, 'var(--green)');
+    
+    // Render Agent Bar Chart (static example distribution)
+    AnalyticsEngine.renderBarChart('chartAgents', 
+        ['Coord', 'Prod', 'Analisi', 'Sec'], 
+        [15, 42, 28, 12], 
+        ['var(--accent)', 'var(--purple)', 'var(--blue)', 'var(--green)']
+    );
 }
 function switchSidebar(el, name) {
   document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
   el.classList.add('active');
-  const map = ['home','agents','social','archive','cyber','lounge','settings'];
+  const map = ['home','agents','social','analytics','archive','cyber','lounge','settings'];
   document.querySelectorAll('.top-nav-item').forEach(b=>b.classList.remove('active'));
   const idx = map.indexOf(name);
   if(idx>=0) document.querySelectorAll('.top-nav-item')[idx]?.classList.add('active');
