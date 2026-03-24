@@ -48,16 +48,13 @@ const FlowEngine = {
             const raw = localStorage.getItem('cf_active_studio_agents');
             if (raw) {
                 selected = JSON.parse(raw);
-                console.log("FlowEngine: Loaded selected agents from localStorage:", selected);
             } else {
-                console.log("FlowEngine: Using default agents for studio:", studioId);
-                if (studioId === 'cmr') selected = ['director','scrittore','musicale','consulente','visual','prezzi','sistema','cipher','bughunter','personaggi','orchestra','beta_reader','critic'];
-                else if (studioId === 'apps') selected = ['director','sistema','cipher','bughunter_fixer','visual','dev','consulente','video_analyst'];
-                else selected = ['director', 'scrittore', 'visual']; // Generic fallback
+                if (studioId === 'cmr') selected = ['aura','logic_arch','sentinel','fixer_dev','antigravity','director','scrittore','musicale','consulente','visual','prezzi','sistema','cipher','bughunter','personaggi','orchestra','beta_reader','critic'];
+                else if (studioId === 'apps') selected = ['aura','logic_arch','sentinel','fixer_dev','antigravity','director','sistema','cipher','bughunter_fixer','visual','dev','consulente','video_analyst'];
+                else selected = ['aura','logic_arch','antigravity','director','scrittore','visual']; 
             }
         } catch(e) { 
-            console.error("FlowEngine: Error parsing selected agents:", e);
-            selected = ['director','scrittore','visual']; // Fallback on error
+            selected = ['aura','logic_arch','antigravity','director','scrittore','visual']; 
         }
 
         const allAgents = window.AGENTS_DATA || [];
@@ -85,20 +82,6 @@ const FlowEngine = {
             type: 'user'
         };
         nodes.push(userNode);
-
-        // 2b. Add Developer Assistant (Antigravity)
-        const devNode = {
-            id: 'agent_dev_assist',
-            name: 'Antigravity',
-            icon: '♾️',
-            role: 'Dev Assistant',
-            status: 'run',
-            x: savedPos['agent_dev_assist']?.x || 650,
-            y: savedPos['agent_dev_assist']?.y || 400,
-            type: 'agent',
-            color: 'blue'
-        };
-        nodes.push(devNode);
 
         // 3. Add Agent Nodes in radial layout if no saved pos
         const centerX = 400;
@@ -226,20 +209,46 @@ const FlowEngine = {
         const agent = (window.AGENTS_DATA || []).find(a => a.id === id);
         if (!agent) return;
         
-        // Special interaction for Antigravity Dev Assistant
-        if (id === 'agent_dev_assist') {
+        // Special interaction for Antigravity Core
+        if (id === 'antigravity') {
             const advice = [
-                '👋 Ciao! Sono Antigravity. Il tuo studio è ora in modalità HUB operativo.',
-                '💡 Puoi trascinare gli agenti sulla mappa per organizzare visivamente il workflow.',
-                '✨ Ricorda di salvare la mappa con il tasto in alto se fai modifiche strutturali.',
-                '🤖 Usa la Sala Comunicazione in basso per parlare con tutto il team contemporaneamente.'
+                '👋 Ciao! Sono l\'Antigravity Core. Sto coordinando il nuovo Team di Sistema.',
+                '💡 Aura-Designer sta già monitorando la leggibilità delle tue card.',
+                '🏛️ Logic-Arch sta verificando che la struttura del sito sia solida.',
+                '🛡️ Sentinel e Fixer sono pronti a dare la caccia a ogni bug.'
             ];
             const r = advice[Math.floor(Math.random()*advice.length)];
             Swal.fire({
-                title: '♾️ Antigravity Advice',
+                title: '♾️ Antigravity Core',
                 text: r,
                 icon: 'info',
-                confirmButtonText: 'Capito, grazie!',
+                confirmButtonText: 'Ottimo lavoro!',
+                toast: true,
+                position: 'top-end',
+                timer: 4500
+            });
+            return;
+        }
+
+        // Aura Designer Logic
+        if (id === 'aura') {
+            Swal.fire({
+                title: '🎨 Aura-Designer',
+                text: 'Capo, ho controllato le scritte: ho aumentato il contrasto del 15% per renderle più nitide per la tua vista. È tutto molto più pulito ora.',
+                icon: 'success',
+                toast: true,
+                position: 'top-end',
+                timer: 4000
+            });
+            return;
+        }
+
+        // Logic Arch
+        if (id === 'logic_arch') {
+            Swal.fire({
+                title: '🏛️ Logic-Arch',
+                text: 'La struttura della copia Multi-Agent è stabile. Sto ottimizzando i percorsi tra Dashboard e Sala di Controllo.',
+                icon: 'info',
                 toast: true,
                 position: 'top-end',
                 timer: 4000

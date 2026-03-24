@@ -100,13 +100,13 @@
   --bg4: #edeae4 !important;
   --border: rgba(0,0,0,0.08) !important;
   --border2: rgba(0,0,0,0.14) !important;
-  --text: #1a1714 !important;
-  --text2: #4a4540 !important;
-  --dim: #948c84 !important;
-  --mid: #6b635c !important;
-  --dark: #ffffff !important; /* In light mode, 'dark' elements become light */
+  --text: #0a0a0a !important;
+  --text2: #2a2520 !important;
+  --dim: #7a746c !important; /* Darker for better readability */
+  --mid: #5b534c !important; /* Darker for better readability */
+  --dark: #000000 !important; /* Absolute black for important icons/lines */
   --dark2: #f0ede8 !important;
-  --shadow: 0 4px 20px rgba(0,0,0,0.05) !important;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
 }
 
 /* ===== DARK THEME ===== */
@@ -234,7 +234,8 @@ html, body {
   background: var(--bg);
   color: var(--text);
   font-family: 'DM Sans', sans-serif;
-  font-size: calc(14px * var(--font-scale));
+  font-size: calc(15.5px * var(--font-scale)); /* Increased base size */
+  line-height: 1.6;
   transition: background 0.4s ease, color 0.4s ease;
 }
 
@@ -310,8 +311,11 @@ html, body {
 }
 .sidebar-section {
   font-family: 'DM Mono', monospace;
-  font-size: 0.58rem; color: var(--dim);
-  letter-spacing: 0.1em; text-transform: uppercase;
+  font-size: 0.65rem; /* Increased from 0.58rem */
+  font-weight: 700;
+  color: var(--mid);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   padding: 10px 10px 4px;
 }
 .sidebar-item {
@@ -395,11 +399,11 @@ html, body {
 .grid-3 .card .card-title { font-size: 0.7rem; color: var(--mid); }
 .grid-3 .card .card-body { padding: 10px 14px; }
 .card-tag {
-  font-family:'DM Mono',monospace; font-size:0.56rem;
-  padding:3px 8px; border-radius:20px; background:var(--bg4); color:var(--dim);
+  font-family:'DM Mono',monospace; font-size:0.62rem; /* Increased */
+  padding:4px 10px; border-radius:20px; background:var(--bg4); color:var(--mid); /* Darker text */
 }
-.card-tag.live { background:rgba(34,197,94,0.1); color:var(--green); display:flex; align-items:center; gap:4px; }
-.card-tag.live::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--green); animation:pulse 1.5s ease infinite; }
+.card-tag.live { background:rgba(34,197,94,0.1); color:var(--green); display:flex; align-items:center; gap:5px; font-weight:700; }
+.card-tag.live::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 1.5s ease infinite; }
 
 /* GRIDS */
 .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
@@ -1347,12 +1351,12 @@ html, body {
     <div class="page" id="page-flows">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:15px;">
         <div>
-            <div class="page-greeting">Studio Control Room</div>
+            <div class="page-greeting">Studio Control Room <span style="font-size:0.6rem; background:var(--accent); color:#000; padding:2px 8px; border-radius:10px; margin-left:10px;">MULTI-AGENT TEST</span></div>
             <div class="page-sub">Gestione Agentica Operativa · Sala di Controllo</div>
         </div>
         <div style="display:flex; gap:10px;">
             <button class="drawer-btn db-light" onclick="FlowEngine.savePositions()">💾 Salva Mappa</button>
-            <button class="drawer-btn db-accent" onclick="openCreateAgentModal()">+ Evoca Agente</button>
+            <button class="drawer-btn db-accent" onclick="openCreateAgentModal()">+ Evoca</button>
         </div>
       </div>
       
@@ -1622,7 +1626,7 @@ html, body {
           <div id="cyberAlertList" style="display:flex;flex-direction:column;">
             <div style="display:flex;align-items:flex-start;gap:10px;padding:11px 18px;border-bottom:1px solid var(--border);">
               <div style="width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:4px;flex-shrink:0;box-shadow:0 0 6px var(--green);"></div>
-              <div style="flex:1;"><div style="font-size:0.78rem;font-weight:600;">Accesso autorizzato</div><div style="font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--dim);margin-top:1px;">Il Capo · PIN corretto · oggi 14:28</div></div>
+              <div style="flex:1;"><div style="font-size:0.9rem;font-weight:800;color:var(--text);">Accesso autorizzato</div><div style="font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--mid);font-weight:600;margin-top:2px;">Il Capo · PIN corretto · oggi 14:28</div></div>
               <div style="font-family:'DM Mono',monospace;font-size:0.5rem;padding:2px 8px;border-radius:20px;background:rgba(34,197,94,0.1);color:var(--green);">✓ ok</div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:10px;padding:11px 18px;border-bottom:1px solid var(--border);">
@@ -3050,6 +3054,45 @@ function switchSidebar(el, name) {
   const idx = map.indexOf(name);
   if(idx>=0) document.querySelectorAll('.top-nav-item')[idx]?.classList.add('active');
   switchPage(name, null);
+  
+  if (name === 'flows') {
+    setTimeout(() => {
+        triggerTeamAwakening();
+    }, 800);
+  }
+}
+
+let awakeningTriggered = false;
+async function triggerTeamAwakening() {
+  if (awakeningTriggered) return;
+  
+  const feed = document.getElementById('commChatFeed');
+  if (!feed) return;
+  
+  // Mark as triggered to avoid double execution
+  awakeningTriggered = true;
+  localStorage.setItem('cf_team_awakening_v9', 'true');
+
+  const messages = [
+    { sender: '♾️ Antigravity', text: 'Buongiorno Capo. Confermo: il trasferimento sulla nuova repository è completato. Il Sistema è a regime.' },
+    { sender: '🎨 Aura', text: 'Ho terminato la prima scansione estetica. Contrasto e leggibilità ottimizzati per la tua vista. Mi piace come sta venendo.' },
+    { sender: '🏛️ Logic', text: 'Architettura confermata. I flussi operativi tra i vari agenti sono ora mappati e pronti all\'esecuzione.' },
+    { sender: '🛡️ Sentinel', text: 'Scansione sicurezza terminata. 0 bug rilevati nei nuovi moduli. Monitoraggio 24/7 attivo.' },
+    { sender: '🛠️ Fixer', text: 'Ho pulito un paio di residui nel CSS. Siamo al 100% dell\'efficienza.' },
+    { sender: '♾️ Antigravity', text: 'Il team è ai tuoi ordini. Questa è la tua nuova Sala di Controllo Multi-Agente.' }
+  ];
+
+  for (let m of messages) {
+    await new Promise(r => setTimeout(r, 1500));
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:8px 12px; background:var(--bg3); border-radius:10px; border-left:3px solid var(--accent); animation:msgIn 0.3s ease;';
+    div.innerHTML = `<div style="font-size:0.6rem; font-weight:800; color:var(--dim); text-transform:uppercase; margin-bottom:2px;">${m.sender}</div><div style="font-size:0.75rem; color:var(--text);">${m.text}</div>`;
+    feed.appendChild(div);
+    feed.scrollTop = feed.scrollHeight;
+    
+    // Tiny sound or toast for the first one
+    if (m === messages[0]) showToast('♾️ Team Awakening Sequence Started');
+  }
 }
 
 // ===== PROFILE =====
@@ -4110,6 +4153,11 @@ function runAll(btn){btn.textContent='⏳ In esecuzione...';btn.disabled=true;ad
 
 // ===== AGENT NAMES SYSTEM =====
 var AGENTS_DATA = [
+  { id:'aura', icon:'🎨', role:'Aura-Designer', tool:'UX/Accessibility', category:'system_team', status:'run', manualOn:true, color:'pink' },
+  { id:'logic_arch', icon:'🏛️', role:'Logic-Arch', tool:'Architecture', category:'system_team', status:'run', manualOn:true, color:'blue' },
+  { id:'sentinel', icon:'🛡️', role:'Sentinel-Scanner', tool:'Code Tester', category:'system_team', status:'run', manualOn:true, color:'green' },
+  { id:'fixer_dev', icon:'🛠️', role:'Fixer-Dev', tool:'Developer', category:'system_team', status:'run', manualOn:true, color:'orange' },
+  { id:'antigravity', icon:'♾️', role:'Antigravity Core', tool:'Coordinator', category:'system_team', status:'run', manualOn:true, color:'blue' },
   { id:'director', icon:'👑', role:'Capo Redattore', tool:'Director AI', category:'coordination', status:'run', manualOn:true, color:'pink' },
   { id:'scrittore', icon:'✍️', role:'Scrittore', tool:'Claude API', category:'production', status:'done', manualOn:true, color:'pink' },
   { id:'musicale', icon:'🎵', role:'Musicale', tool:'Suno AI', category:'production', status:'run', manualOn:true, color:'pink' },
@@ -4124,7 +4172,7 @@ var AGENTS_DATA = [
   { id:'orchestra', icon:'🎻', role:'Orchestra AI', tool:'Mixer AI', category:'production', status:'done', manualOn:true, color:'purple' },
   { id:'bughunter_fixer', icon:'🔧', role:'Auto-Fixer', tool:'Patch Agent', category:'security', status:'done', manualOn:true, color:'yellow' },
   { id:'beta_reader', icon:'🤓', role:'Beta Reader', tool:'Feedback Lettore', category:'production', status:'wait', manualOn:true, color:'blue' },
-  { id:'critic', icon:'🎨', role:'Art Critic', icon:'🔥', tool:'Analisi Estetica', category:'analysis', status:'wait', manualOn:true, color:'pink' },
+  { id:'critic', icon:'🎨', role:'Art Critic', tool:'Analisi Estetica', category:'analysis', status:'wait', manualOn:true, color:'pink' },
   { id:'video_analyst', icon:'📺', role:'Video Analyst', tool:'Media Summary', category:'analysis', status:'wait', manualOn:true, color:'orange' },
   { id:'dev', icon:'💻', role:'Developer AI', tool:'Code Architect', category:'production', status:'done', manualOn:true, color:'blue' },
   { id:'game_design', icon:'🎮', role:'Game Designer', tool:'Game Architect', category:'production', status:'done', manualOn:true, color:'purple' },
@@ -4136,7 +4184,8 @@ const CATEGORIES = {
   coordination: { name: 'Coordinamento & Strategia', icon: '🎯' },
   production: { name: 'Produzione Contenuti', icon: '✍️' },
   analysis: { name: 'Distribuzione & Analisi', icon: '📊' },
-  security: { name: 'Sicurezza & Monitor', icon: '🛡️' }
+  security: { name: 'Sicurezza & Monitor', icon: '🛡️' },
+  system_team: { name: 'Team di Sistema (Antigravity Squad)', icon: '♾️' }
 };
 
 function renderAgentsByCategory() {
@@ -4152,8 +4201,8 @@ function renderAgentsByCategory() {
     else {
       // Defaults for hardcoded studios
       const studioId = localStorage.getItem('cf_active_studio');
-      if (studioId === 'cmr') selected = ['director','scrittore','musicale','consulente','visual','prezzi','sistema','cipher','bughunter','personaggi','orchestra','beta_reader','critic'];
-      if (studioId === 'apps') selected = ['director','sistema','cipher','bughunter_fixer','visual','dev','consulente','video_analyst'];
+      if (studioId === 'cmr') selected = ['aura','logic_arch','sentinel','fixer_dev','antigravity','director','scrittore','musicale','consulente','visual','prezzi','sistema','cipher','bughunter','personaggi','orchestra','beta_reader','critic'];
+      if (studioId === 'apps') selected = ['aura','logic_arch','sentinel','fixer_dev','antigravity','director','sistema','cipher','bughunter_fixer','visual','dev','consulente','video_analyst'];
     }
   } catch(e) {}
 
