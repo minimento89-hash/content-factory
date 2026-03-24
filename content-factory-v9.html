@@ -57,6 +57,7 @@
     if (res.success) window.location.href = "login.html";
   };
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -471,9 +472,9 @@ html, body {
 .log-dot-outer.success .log-inner { background:var(--green); }
 .log-dot-outer.info .log-inner { background:var(--blue); }
 .log-dot-outer.warn .log-inner { background:var(--orange); }
-.log-time { font-family:'DM Mono',monospace; font-size:0.56rem; color:var(--dim); flex-shrink:0; margin-top:2px; }
-.log-text { font-size:0.76rem; color:var(--text2); line-height:1.4; }
-.log-text strong { color:var(--text); font-weight:600; }
+.log-time { font-family:'DM Mono',monospace; font-size:0.74rem; color:var(--dim); flex-shrink:0; margin-top:2px; }
+.log-text { font-size:0.92rem; color:var(--text2); line-height:1.5; }
+.log-text strong { color:var(--text); font-weight:700; }
 
 /* AGENT MINI */
 .agent-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:14px; }
@@ -983,12 +984,80 @@ html, body {
   
   @keyframes slideInUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  /* STUDIO CONTROL ROOM (V9 PIVOT) */
+  .control-room-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: 1fr 200px;
+    gap: 20px;
+    height: 75vh;
+    width: 100%;
+  }
+  .cr-monitor {
+    grid-row: 1 / 3;
+    background: var(--bg2);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .cr-map-area {
+    background: var(--bg2);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .cr-comm-hub {
+    background: var(--bg2);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    padding: 15px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  /* Agent Monitor styles from screenshot */
+  .monitor-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 18px; border-bottom: 1px solid var(--border);
+    transition: all 0.2s; cursor: pointer;
+  }
+  .monitor-item:hover { background: var(--bg3); }
+  .monitor-item.active-agent { background: var(--bg3); border-left: 3px solid var(--accent); }
+  .mi-av { 
+    width: 44px; height: 44px; border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 1.4rem; position: relative;
+    background: var(--bg4); border: 2px solid var(--border);
+  }
+  .mi-av::after {
+    content: ''; position: absolute; bottom: 0; right: 0;
+    width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg2);
+  }
+  .mi-av.online::after { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .mi-av.busy::after { background: var(--orange); }
+  .mi-av.offline::after { background: var(--dim); }
+  
+  .mi-info { flex: 1; }
+  .mi-name { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+  .mi-status { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+  .mi-status-icon { font-size: 0.85rem; }
+  .mi-status-text { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--dim); }
+  
+  .comm-chat-input {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px 15px; color: var(--text);
+    font-family: inherit; font-size: 0.78rem; outline: none; transition: border-color 0.2s;
+  }
+  .comm-chat-input:focus { border-color: var(--accent); }
 </style>
 </head>
-<script src="analytics-engine.js"></script>
-<script src="forge-engine.js"></script>
-<script src="flow-engine.js"></script>
-<script src="sentiment-engine.js"></script>
 <body>
 
 <!-- TOPBAR -->
@@ -1274,21 +1343,59 @@ html, body {
       </div>
     </div>
 
-    <!-- FLOWS (MAPPE STUDIO) -->
+    <!-- FLOWS (STUDIO CONTROL ROOM) -->
     <div class="page" id="page-flows">
-      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:15px;">
         <div>
-            <div class="page-greeting">Mappe Studio</div>
-            <div class="page-sub">Logic Flows · Architettura Agentica</div>
+            <div class="page-greeting">Studio Control Room</div>
+            <div class="page-sub">Gestione Agentica Operativa · Sala di Controllo</div>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <button class="drawer-btn db-light" onclick="FlowEngine.savePositions()">💾 Salva Mappa</button>
+            <button class="drawer-btn db-accent" onclick="openCreateAgentModal()">+ Evoca Agente</button>
         </div>
       </div>
-      <div class="card" style="height:600px; display:flex; flex-direction:column; padding:10px; position:relative; overflow:hidden;">
-        <div id="flowContainer" style="flex:1; width:100%; height:100%;">
-            <!-- SVG Rendered by FlowEngine -->
+      
+      <div class="control-room-layout">
+        <!-- LEFT: Agent Monitor -->
+        <div class="cr-monitor">
+            <div class="card-hdr" style="padding:15px; background:var(--bg3);">
+                <div class="card-title">🤖 Monitor Agenti</div>
+                <div class="ac-count" id="agentCountBadge">13</div>
+            </div>
+            <div id="agentMonitorList" style="flex:1; overflow-y:auto;">
+                <!-- Populated by renderAgentMonitor -->
+            </div>
         </div>
-        <div style="position:absolute; bottom:20px; right:20px; background:rgba(0,0,0,0.6); padding:8px 15px; border-radius:20px; font-family:'DM Mono',monospace; font-size:0.55rem; color:#fff; display:flex; gap:10px; align-items:center; border:1px solid rgba(255,255,255,0.1);">
-            <div style="display:flex; align-items:center; gap:5px;"><div style="width:6px; height:6px; border-radius:50%; background:var(--accent);"></div> Active Flow</div>
-            <div style="display:flex; align-items:center; gap:5px;"><div style="width:6px; height:6px; border-radius:50%; background:var(--dim);"></div> Static Link</div>
+        
+        <!-- CENTER/RIGHT: Interaction Map -->
+        <div class="cr-map-area">
+            <div id="flowContainer" style="width:100%; height:100%;">
+                <!-- SVG Rendered by FlowEngine -->
+            </div>
+            <div style="position:absolute; bottom:20px; right:20px; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); padding:8px 15px; border-radius:20px; font-family:'DM Mono',monospace; font-size:0.52rem; color:#fff; display:flex; gap:12px; align-items:center; border:1px solid rgba(255,255,255,0.1); pointer-events:none;">
+                <div style="display:flex; align-items:center; gap:5px;"><div style="width:5px; height:5px; border-radius:50%; background:var(--accent); box-shadow:0 0 5px var(--accent);"></div> Active</div>
+                <div style="display:flex; align-items:center; gap:5px;"><div style="width:5px; height:5px; border-radius:50%; background:var(--dim);"></div> Static</div>
+                <div style="opacity:0.6; margin-left:5px;">Drag to reorder</div>
+            </div>
+        </div>
+        
+        <!-- BOTTOM: Communication Hub -->
+        <div class="cr-comm-hub">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:var(--dim); letter-spacing:0.05em;">📢 Sala Comunicazione</div>
+                <div style="display:flex; gap:10px; font-size:0.55rem; font-family:'DM Mono',monospace;">
+                    <span style="color:var(--green)">● Team online</span>
+                    <span style="cursor:pointer; color:var(--blue)" onclick="FlowEngine.suggestNewAgent()">💡 Chiedi suggerimento</span>
+                </div>
+            </div>
+            <div id="commChatFeed" style="height:120px; overflow-y:auto; border-radius:8px; background:rgba(0,0,0,0.03); padding:10px; display:flex; flex-direction:column; gap:8px;">
+                <div style="font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--mid); opacity:0.7; text-align:center; padding:10px;">Benvenuto nella Sala di Controllo. Scrivi un messaggio per interagire con il team.</div>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <input type="text" class="comm-chat-input" id="commInput" placeholder="Chiedi qualcosa al team (es. 'Vi serve un nuovo agente?')..." onkeydown="if(event.key==='Enter') sendCommMessage()">
+                <button class="top-icon-btn" style="width:42px; height:42px; background:var(--dark); color:var(--bg); border:none;" onclick="sendCommMessage()">➤</button>
+            </div>
         </div>
       </div>
     </div>
@@ -2790,6 +2897,103 @@ function syncTheme() {
 
 function renderFlows() {
     FlowEngine.init('flowContainer');
+    renderAgentMonitor();
+}
+
+function renderAgentMonitor() {
+    const list = document.getElementById('agentMonitorList');
+    if(!list) return;
+    
+    // Status mapping for icons and classes based on user screenshot
+    const statusMap = {
+        'run': { class: 'online', icon: '⚡' },
+        'done': { class: 'busy', icon: '✓' },
+        'wait': { class: 'offline', icon: '💤' }
+    };
+
+    list.innerHTML = AGENTS_DATA.map(a => {
+        const s = statusMap[a.status] || statusMap['wait'];
+        const name = (window.agentNames && agentNames[a.id]) || a.role;
+        // Dynamic status text simulation if needed (fallback to original for now)
+        let statusText = `${a.tool} · ${a.status==='run'?'operativo':'in pausa'}`;
+        
+        return `
+            <div class="monitor-item" onclick="FlowEngine.showAgentStatus('${a.id}')">
+                <div class="mi-av ${s.class}">${a.icon}</div>
+                <div class="mi-info">
+                    <div class="mi-name">${name}</div>
+                    <div class="mi-status">
+                        <span class="mi-status-icon">${s.icon}</span>
+                        <span class="mi-status-text">${statusText}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    const badge = document.getElementById('agentCountBadge');
+    if(badge) badge.innerText = AGENTS_DATA.length;
+}
+
+function sendCommMessage() {
+    const input = document.getElementById('commInput');
+    if(!input) return;
+    const msg = input.value.trim();
+    if(!msg) return;
+    
+    addCommBubble('Tu', msg, 'user');
+    input.value = '';
+    
+    if(msg.toLowerCase().includes('nuovo agente') || msg.toLowerCase().includes('serve aiuto')) {
+        simulateBrainstorming();
+    } else {
+        setTimeout(() => {
+            const responses = [
+                'Ricevuto Capo. Monitoro il flusso...',
+                'Ottima idea, ne discuto col resto degli agenti.',
+                'Aggiunto ai log operativi.',
+                'Il team è sintonizzato.'
+            ];
+            const r = responses[Math.floor(Math.random()*responses.length)];
+            addCommBubble('Director', r, 'agent');
+        }, 800);
+    }
+}
+
+function addCommBubble(name, text, type) {
+    const feed = document.getElementById('commChatFeed');
+    if(!feed) return;
+    const b = document.createElement('div');
+    b.style.fontSize = '0.72rem';
+    b.style.padding = '8px 12px';
+    b.style.borderRadius = '12px';
+    b.style.marginBottom = '6px';
+    b.style.background = type==='user' ? 'var(--dark)' : 'var(--bg3)';
+    b.style.color = type==='user' ? 'var(--bg)' : 'var(--text2)';
+    b.style.alignSelf = type==='user' ? 'flex-end' : 'flex-start';
+    b.style.maxWidth = '85%';
+    b.style.boxShadow = 'var(--shadow)';
+    b.innerHTML = `<strong style="color:${type==='user'?'var(--accent)':'var(--text)'}">${name}:</strong> ${text}`;
+    feed.appendChild(b);
+    feed.scrollTop = feed.scrollHeight;
+}
+
+function simulateBrainstorming() {
+    const steps = [
+        { n: 'Director', t: 'Il Capo ha chiesto se ci serve aiuto! Analizziamo il workflow attuale...' },
+        { n: 'Scrittore', t: 'Sto lavorando molto sul capitolo attuale, un agente di "Ricerca Fonti" farebbe comodo.' },
+        { n: 'Sentinel', t: 'Confermo. Il carico di verifica dati è alto. Suggerisco di aggiungere un Ricercatore.' },
+        { n: 'Director', t: 'Suggerimento approvato. Capo, ecco il prompt: "Agisci come ricercatore esperto per supportare lo Scrittore". Clicca + per iniziare!' }
+    ];
+    
+    steps.forEach((s, i) => {
+        setTimeout(() => {
+            addCommBubble(s.n, s.t, 'agent');
+            if(i === steps.length - 1) {
+                showToast('💡 Il team ha raggiunto un consenso!');
+            }
+        }, (i + 1) * 1500);
+    });
 }
 
 const QUICK_GUIDES_DATA = [
@@ -3905,7 +4109,7 @@ function runAll(btn){btn.textContent='⏳ In esecuzione...';btn.disabled=true;ad
 
 
 // ===== AGENT NAMES SYSTEM =====
-let AGENTS_DATA = [
+var AGENTS_DATA = [
   { id:'director', icon:'👑', role:'Capo Redattore', tool:'Director AI', category:'coordination', status:'run', manualOn:true, color:'pink' },
   { id:'scrittore', icon:'✍️', role:'Scrittore', tool:'Claude API', category:'production', status:'done', manualOn:true, color:'pink' },
   { id:'musicale', icon:'🎵', role:'Musicale', tool:'Suno AI', category:'production', status:'run', manualOn:true, color:'pink' },
@@ -4335,5 +4539,11 @@ renderQuickGuides();
   </div>
 </div>
 
+<script src="analytics-engine.js"></script>
+<script src="forge-engine.js"></script>
+<script src="flow-engine.js"></script>
+<script src="sentiment-engine.js"></script>
+<script src="weather-engine.js"></script>
+<script src="gemini-engine.js"></script>
 </body>
 </html>
