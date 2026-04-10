@@ -1,0 +1,23 @@
+{
+  "name": "content-factory",
+  "version": "1.0.0",
+  "description": "Benvenuto nella versione sperimenta \"Multi-Agent\" di Content Factory. Questa repository è dedicata allo sviluppo assistito da un team di agenti di sistema specializzati.",
+  "main": "analytics-engine.js",
+  "scripts": {
+    "test": "jest --verbose"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
+  },
+  "devDependencies": {
+    "@jest/globals": "^30.3.0",
+    "jest": "^30.3.0",
+    "jsdom": "^24.1.3"
+  }
+}
